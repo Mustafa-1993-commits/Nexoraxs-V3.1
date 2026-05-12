@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexoraXS — Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { background: #0a0a0f; color: #e5e7eb; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { overflow-x: hidden; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .gradient-text { background: linear-gradient(120deg,#3b82f6,#8b5cf6 50%,#06b6d4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  ::selection { background: rgba(139,92,246,0.4); color: #fff; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+  .glow-blob { position: absolute; border-radius: 9999px; filter: blur(120px); opacity: 0.25; pointer-events: none; }
+
+  .nav-item { transition: background-color .15s ease, color .15s ease; }
+  .nav-item-active {
+    background: linear-gradient(90deg, rgba(59,130,246,0.15), rgba(139,92,246,0.08));
+    color: white;
+    position: relative;
+  }
+  .nav-item-active::before {
+    content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px;
+    background: linear-gradient(180deg,#3b82f6,#8b5cf6);
+    border-radius: 2px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    box-shadow: 0 6px 24px -10px rgba(59, 130, 246, 0.7), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.9); }
+
+  .card { border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); border-radius: 20px; }
+  .card-hover { transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }
+  .card-hover:hover { border-color: rgba(255,255,255,0.16); background-color: rgba(255,255,255,0.05); }
+
+  .chip { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+</style>
+</head>
+<body class="bg-[#0a0a0f] text-gray-200">
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ---------- Icon ----------
+const Icon = ({ name, className = "w-5 h-5", strokeWidth = 1.8 }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current && window.lucide) {
+      ref.current.innerHTML = '';
+      const def = window.lucide.icons[name] || window.lucide.icons.Circle;
+      const svg = window.lucide.createElement(def);
+      svg.setAttribute('stroke-width', strokeWidth);
+      svg.classList.add(...className.split(' ').filter(Boolean));
+      ref.current.appendChild(svg);
+    }
+  }, [name, className, strokeWidth]);
+  return <span ref={ref} className="inline-flex"></span>;
+};
+
+// ---------- Logo ----------
+const Logo = () => (
+  <div className="flex items-center gap-2.5">
+    <div className="relative w-7 h-7 rounded-lg overflow-hidden" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6 50%,#06b6d4)' }}>
+      <div className="absolute inset-[1.5px] rounded-[6px] bg-[#0a0a0f] flex items-center justify-center">
+        <div className="w-3 h-3 rounded-sm" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6,#06b6d4)' }}></div>
+      </div>
+    </div>
+    <span className="text-[15px] font-bold tracking-tight text-white">Nexora<span className="gradient-text">XS</span></span>
+  </div>
+);
+
+// ---------- Sidebar ----------
+const Sidebar = ({ current, setCurrent }) => {
+  const nav = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
+    { id: 'workspaces', label: 'Workspaces', icon: 'FolderKanban' },
+    { id: 'apps', label: 'App Launcher', icon: 'LayoutGrid' },
+    { id: 'billing', label: 'Billing', icon: 'CreditCard' },
+    { id: 'settings', label: 'Settings', icon: 'Settings' },
+  ];
+  const support = [
+    { id: 'docs', label: 'Documentation', icon: 'BookOpen' },
+    { id: 'changelog', label: 'Changelog', icon: 'Sparkles' },
+    { id: 'support', label: 'Support', icon: 'LifeBuoy' },
+  ];
+  return (
+    <aside className="hidden lg:flex flex-col w-[260px] shrink-0 border-r border-white/5 bg-[#0a0a0f]/95 sticky top-0 h-screen">
+      <div className="h-16 flex items-center px-6 border-b border-white/5">
+        <Logo />
+      </div>
+      <div className="px-3 py-5 flex-1 overflow-y-auto">
+        <div className="px-3 mb-2 text-[10px] font-mono uppercase tracking-[0.15em] text-gray-600">Platform</div>
+        <nav className="space-y-0.5">
+          {nav.map(n => (
+            <button key={n.id} onClick={() => setCurrent(n.id)} className={`nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${current === n.id ? 'nav-item-active' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+              <Icon name={n.icon} className="w-4 h-4" strokeWidth={2} />
+              <span>{n.label}</span>
+              {n.id === 'apps' && <span className="ml-auto chip text-blue-300 bg-blue-500/15 border border-blue-500/20 px-1.5 py-0.5 rounded">5</span>}
+            </button>
+          ))}
+        </nav>
+
+        <div className="px-3 mt-7 mb-2 text-[10px] font-mono uppercase tracking-[0.15em] text-gray-600">Resources</div>
+        <nav className="space-y-0.5">
+          {support.map(n => (
+            <button key={n.id} className="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-white/5 hover:text-white">
+              <Icon name={n.icon} className="w-4 h-4" strokeWidth={2} />
+              <span>{n.label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      <div className="border-t border-white/5 p-3">
+        <div className="rounded-xl border border-white/10 bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Icon name="Sparkles" className="w-4 h-4" strokeWidth={2} />
+            <span className="text-xs font-semibold text-white">Beta access</span>
+          </div>
+          <p className="text-[11px] text-gray-400 leading-relaxed">You&apos;re on the early-bird plan. Pricing locked in for 12 months.</p>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+// ---------- Topbar ----------
+const Topbar = ({ title }) => (
+  <header className="sticky top-0 z-30 h-16 border-b border-white/5 bg-[#0a0a0f]/85 backdrop-blur-xl">
+    <div className="h-full px-6 lg:px-8 flex items-center gap-4">
+      {/* Workspace switcher */}
+      <button className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+        <div className="w-6 h-6 rounded-md flex items-center justify-center text-white text-[11px] font-bold" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)' }}>M</div>
+        <div className="text-left leading-tight">
+          <div className="text-[11px] text-gray-500 font-mono">Workspace</div>
+          <div className="text-xs font-medium text-white">Mustafa&apos;s Co.</div>
+        </div>
+        <Icon name="ChevronsUpDown" className="w-3.5 h-3.5 text-gray-500 ml-1" />
+      </button>
+
+      <div className="text-gray-700 hidden sm:block">/</div>
+      <div className="text-sm font-medium text-gray-200 hidden sm:block">{title}</div>
+
+      <div className="flex-1"></div>
+
+      {/* Search */}
+      <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 w-64">
+        <Icon name="Search" className="w-4 h-4 text-gray-500" />
+        <input className="bg-transparent outline-none text-sm text-gray-300 flex-1 placeholder:text-gray-600" placeholder="Search…" />
+        <span className="chip text-gray-500 border border-white/10 px-1 rounded">⌘K</span>
+      </div>
+
+      <button className="w-9 h-9 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 transition-colors relative">
+        <Icon name="Bell" className="w-4 h-4" />
+        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+      </button>
+
+      <button className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+        <div className="w-7 h-7 rounded-md bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xs font-semibold flex items-center justify-center">MA</div>
+        <div className="hidden sm:block text-left leading-tight">
+          <div className="text-xs font-medium text-white">Mustafa A.</div>
+          <div className="text-[10px] text-gray-500 font-mono">Owner</div>
+        </div>
+        <Icon name="ChevronDown" className="w-3.5 h-3.5 text-gray-500" />
+      </button>
+    </div>
+  </header>
+);
+
+// ---------- Atoms ----------
+const PageHeader = ({ eyebrow, title, desc, action }) => (
+  <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+    <div>
+      {eyebrow && <div className="chip text-purple-400 mb-2">{eyebrow}</div>}
+      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">{title}</h1>
+      {desc && <p className="mt-2 text-sm text-gray-400 max-w-xl">{desc}</p>}
+    </div>
+    {action}
+  </div>
+);
+
+const StatCard = ({ label, value, sub, icon, color, trend }) => (
+  <div className="card card-hover p-5 relative overflow-hidden">
+    <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-3xl opacity-25" style={{ background: color }}></div>
+    <div className="relative flex items-start justify-between mb-4">
+      <div className="text-xs text-gray-500 font-mono uppercase tracking-wider">{label}</div>
+      <div className="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10" style={{ background: `${color}1f`, color }}>
+        <Icon name={icon} className="w-4 h-4" strokeWidth={2} />
+      </div>
+    </div>
+    <div className="relative flex items-baseline gap-2">
+      <div className="text-3xl font-bold text-white tracking-tight">{value}</div>
+      {trend && <div className={`text-xs font-mono ${trend.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'}`}>{trend}</div>}
+    </div>
+    {sub && <div className="relative mt-1.5 text-xs text-gray-500">{sub}</div>}
+  </div>
+);
+
+const Badge = ({ children, color = 'gray' }) => {
+  const map = {
+    blue:    'bg-blue-500/15 text-blue-300 border-blue-500/20',
+    emerald: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20',
+    purple:  'bg-purple-500/15 text-purple-300 border-purple-500/20',
+    pink:    'bg-pink-500/15 text-pink-300 border-pink-500/20',
+    orange:  'bg-orange-500/15 text-orange-300 border-orange-500/20',
+    cyan:    'bg-cyan-500/15 text-cyan-300 border-cyan-500/20',
+    gray:    'bg-white/5 text-gray-400 border-white/10',
+  };
+  return <span className={`chip inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${map[color]}`}>{children}</span>;
+};
+
+// ---------- Dashboard page ----------
+const DashboardPage = () => {
+  const apps = [
+    { name: 'Shops', icon: 'ShoppingBag', color: '#3b82f6', status: 'Active', enabled: true },
+    { name: 'CRM', icon: 'Users', color: '#06b6d4', status: 'Active', enabled: true },
+    { name: 'Clinics', icon: 'Stethoscope', color: '#10b981', status: 'Disabled', enabled: false },
+    { name: 'Restaurants', icon: 'UtensilsCrossed', color: '#ec4899', status: 'Disabled', enabled: false },
+  ];
+  const activity = [
+    { who: 'Sara M.', action: 'enabled the CRM app', when: '2m ago', icon: 'Power', color: '#10b981' },
+    { who: 'You', action: 'invited 3 team members to Shops', when: '1h ago', icon: 'UserPlus', color: '#3b82f6' },
+    { who: 'System', action: 'auto-renewed your Beta plan', when: 'Today, 09:00', icon: 'RefreshCcw', color: '#8b5cf6' },
+    { who: 'Omar K.', action: 'created workspace "Cairo branch"', when: 'Yesterday', icon: 'FolderPlus', color: '#06b6d4' },
+  ];
+  return (
+    <div>
+      <PageHeader
+        eyebrow="// overview"
+        title="Welcome back, Mustafa."
+        desc="Here&apos;s what&apos;s happening across your workspaces today."
+        action={
+          <div className="flex items-center gap-2">
+            <button className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-gray-300 inline-flex items-center gap-2 transition-colors">
+              <Icon name="Download" className="w-4 h-4" /> Export
+            </button>
+            <button className="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white inline-flex items-center gap-2">
+              <Icon name="Plus" className="w-4 h-4" /> New workspace
+            </button>
+          </div>
+        }
+      />
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Apps enabled" value="2" sub="of 5 available" icon="LayoutGrid" color="#3b82f6" trend="+1" />
+        <StatCard label="Team members" value="14" sub="3 admins, 11 members" icon="Users" color="#8b5cf6" trend="+3" />
+        <StatCard label="Workspaces" value="2" sub="Cairo + Alexandria" icon="FolderKanban" color="#06b6d4" />
+        <StatCard label="Current plan" value="Beta" sub="Renews May 12, 2027" icon="Sparkles" color="#ec4899" />
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-5 mt-5">
+        {/* Active workspace */}
+        <div className="card p-6 lg:col-span-2">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <div className="chip text-gray-500 mb-1">// active workspace</div>
+              <h3 className="text-lg font-semibold text-white">Mustafa&apos;s Co. — Cairo</h3>
+            </div>
+            <button className="text-xs text-gray-400 hover:text-white inline-flex items-center gap-1">
+              View details <Icon name="ArrowUpRight" className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-4 mb-6">
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1">Region</div>
+              <div className="text-sm font-medium text-white flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> eu-central-1</div>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1">Storage</div>
+              <div className="text-sm font-medium text-white">2.4 GB <span className="text-gray-500 font-mono text-xs">/ 10 GB</span></div>
+              <div className="h-1 mt-2 rounded-full bg-white/5 overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: '24%', background: 'linear-gradient(90deg,#3b82f6,#8b5cf6)' }}></div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1">API calls (mo)</div>
+              <div className="text-sm font-medium text-white">128,420</div>
+              <div className="text-[10px] font-mono text-emerald-400 mt-0.5">+18% vs last mo</div>
+            </div>
+          </div>
+
+          <div>
+            <div className="chip text-gray-500 mb-3">// enabled apps</div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {apps.filter(a => a.enabled).map(a => (
+                <div key={a.name} className="flex items-center gap-3 p-3 rounded-xl border border-white/10 bg-white/5 card-hover">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center border border-white/10" style={{ background: `${a.color}25`, color: a.color }}>
+                    <Icon name={a.icon} className="w-5 h-5" strokeWidth={2} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-white">{a.name}</div>
+                    <div className="text-[11px] text-gray-500 font-mono">{a.status}</div>
+                  </div>
+                  <a href="NexoraXS Shops.html" className="text-xs text-blue-400 hover:text-blue-300 inline-flex items-center gap-1">Open <Icon name="ArrowUpRight" className="w-3 h-3" /></a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Plan card */}
+        <div className="card p-6 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-50" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent 70%)' }}></div>
+          <div className="relative">
+            <div className="chip text-gray-500 mb-1">// current plan</div>
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-2xl font-bold gradient-text">Beta Early-Bird</h3>
+            </div>
+            <div className="mt-2 text-xs text-gray-400">Free during public beta · locked rate post-launch.</div>
+
+            <div className="mt-5 space-y-2">
+              {['Unlimited workspaces','All apps included','Priority support','API access'].map(f => (
+                <div key={f} className="flex items-center gap-2 text-sm text-gray-300">
+                  <Icon name="Check" className="w-4 h-4 text-emerald-400" strokeWidth={2.5} /> {f}
+                </div>
+              ))}
+            </div>
+
+            <button className="mt-6 w-full btn-primary py-2.5 rounded-lg text-sm font-medium text-white">
+              Manage plan
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Activity */}
+      <div className="card p-6 mt-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="chip text-gray-500 mb-1">// recent activity</div>
+            <h3 className="text-lg font-semibold text-white">Latest events</h3>
+          </div>
+          <button className="text-xs text-gray-400 hover:text-white">View all</button>
+        </div>
+        <div className="divide-y divide-white/5">
+          {activity.map((a, i) => (
+            <div key={i} className="flex items-center gap-4 py-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10" style={{ background: `${a.color}1a`, color: a.color }}>
+                <Icon name={a.icon} className="w-4 h-4" strokeWidth={2} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-gray-200"><span className="text-white font-medium">{a.who}</span> {a.action}</div>
+              </div>
+              <div className="text-xs font-mono text-gray-500">{a.when}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Workspaces page ----------
+const WorkspacesPage = () => {
+  const list = [
+    { name: 'Cairo HQ', desc: 'Main HQ workspace · 8 members', region: 'eu-central-1', apps: 2, members: 8, color: '#3b82f6', initials: 'CH' },
+    { name: 'Alexandria branch', desc: 'Retail operations · 5 members', region: 'eu-central-1', apps: 1, members: 5, color: '#8b5cf6', initials: 'AB' },
+    { name: 'Riyadh pilot', desc: 'New market test · 1 member', region: 'me-south-1', apps: 1, members: 1, color: '#06b6d4', initials: 'RP' },
+  ];
+  return (
+    <div>
+      <PageHeader
+        eyebrow="// workspaces"
+        title="Your workspaces"
+        desc="Each workspace is an isolated tenant — separate data, members, billing, and apps."
+        action={
+          <button className="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white inline-flex items-center gap-2">
+            <Icon name="Plus" className="w-4 h-4" /> New workspace
+          </button>
+        }
+      />
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {list.map((w, i) => (
+          <div key={i} className="card card-hover p-6 relative overflow-hidden">
+            <div className="absolute -top-12 -right-12 w-28 h-28 rounded-full blur-3xl opacity-30" style={{ background: w.color }}></div>
+            <div className="relative">
+              <div className="flex items-start justify-between mb-5">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm" style={{ background: `linear-gradient(135deg, ${w.color}, ${w.color}80)` }}>
+                  {w.initials}
+                </div>
+                <button className="text-gray-500 hover:text-white"><Icon name="MoreHorizontal" className="w-4 h-4" /></button>
+              </div>
+              <h3 className="text-base font-semibold text-white">{w.name}</h3>
+              <p className="text-xs text-gray-400 mt-1">{w.desc}</p>
+
+              <div className="mt-5 grid grid-cols-3 gap-2">
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-gray-600">Region</div>
+                  <div className="text-xs font-medium text-gray-200 mt-0.5">{w.region}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-gray-600">Apps</div>
+                  <div className="text-xs font-medium text-gray-200 mt-0.5">{w.apps}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-gray-600">Members</div>
+                  <div className="text-xs font-medium text-gray-200 mt-0.5">{w.members}</div>
+                </div>
+              </div>
+
+              <button className="mt-5 w-full py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-medium text-gray-200 inline-flex items-center justify-center gap-1.5 transition-colors">
+                Open workspace <Icon name="ArrowUpRight" className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* New workspace tile */}
+        <button className="rounded-[20px] border border-dashed border-white/10 hover:border-white/25 hover:bg-white/[0.02] p-6 min-h-[240px] flex flex-col items-center justify-center text-center transition-colors">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-white/5 border border-white/10 text-gray-300 mb-3">
+            <Icon name="Plus" className="w-5 h-5" />
+          </div>
+          <div className="text-sm font-medium text-white">Create workspace</div>
+          <p className="text-xs text-gray-500 mt-1 max-w-[200px]">Spin up a fresh tenant in seconds.</p>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Apps page ----------
+const AppsPage = () => {
+  const apps = [
+    { name: 'Shops', desc: 'Inventory, POS, orders & customers.', icon: 'ShoppingBag', color: '#3b82f6', enabled: true, status: 'Active', link: 'NexoraXS Shops.html' },
+    { name: 'CRM', desc: 'Leads, pipelines, deals & inbox.', icon: 'Users', color: '#06b6d4', enabled: true, status: 'Active' },
+    { name: 'Clinics', desc: 'Appointments, patient records, billing.', icon: 'Stethoscope', color: '#10b981', enabled: false, status: 'Available' },
+    { name: 'Maintenance', desc: 'Service jobs, technicians, parts.', icon: 'Wrench', color: '#f97316', enabled: false, status: 'Available' },
+    { name: 'Restaurants', desc: 'Tables, KOT, menu, delivery.', icon: 'UtensilsCrossed', color: '#ec4899', enabled: false, status: 'Available' },
+  ];
+  const [state, setState] = useState(() => Object.fromEntries(apps.map(a => [a.name, a.enabled])));
+  return (
+    <div>
+      <PageHeader
+        eyebrow="// app launcher"
+        title="Apps"
+        desc="Toggle apps on for this workspace. You only pay for what you actually use."
+      />
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {apps.map((a, i) => {
+          const on = state[a.name];
+          return (
+            <div key={i} className="card card-hover p-6 relative overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-28 h-28 rounded-full blur-3xl opacity-25" style={{ background: a.color }}></div>
+              <div className="relative">
+                <div className="flex items-start justify-between mb-5">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-white/10" style={{ background: `${a.color}25`, color: a.color }}>
+                    <Icon name={a.icon} className="w-5 h-5" strokeWidth={2} />
+                  </div>
+                  <button
+                    onClick={() => setState(s => ({ ...s, [a.name]: !s[a.name] }))}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-blue-500' : 'bg-white/10'}`}
+                  >
+                    <span className={`absolute top-0.5 ${on ? 'left-5' : 'left-0.5'} w-5 h-5 rounded-full bg-white shadow transition-all`}></span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-base font-semibold text-white">{a.name}</h3>
+                  <Badge color={on ? 'emerald' : 'gray'}>{on ? 'Enabled' : 'Disabled'}</Badge>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed min-h-[32px]">{a.desc}</p>
+
+                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-gray-500">v1.0 · stable</span>
+                  {on && a.link ? (
+                    <a href={a.link} className="text-xs font-medium text-blue-400 hover:text-blue-300 inline-flex items-center gap-1">Launch <Icon name="ArrowUpRight" className="w-3.5 h-3.5" /></a>
+                  ) : on ? (
+                    <span className="text-xs font-medium text-gray-400">Configure</span>
+                  ) : (
+                    <span className="text-xs font-mono text-gray-600">—</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ---------- Billing ----------
+const BillingPage = () => {
+  return (
+    <div>
+      <PageHeader
+        eyebrow="// billing"
+        title="Plan & billing"
+        desc="Manage your subscription, payment method, and invoices."
+      />
+
+      <div className="grid lg:grid-cols-3 gap-5">
+        {/* Plan */}
+        <div className="card p-6 lg:col-span-2 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-40" style={{ background: 'radial-gradient(circle, #8b5cf6, transparent 70%)' }}></div>
+          <div className="relative flex flex-col sm:flex-row items-start gap-6">
+            <div className="flex-1">
+              <div className="chip text-gray-500 mb-1">// current plan</div>
+              <h2 className="text-3xl font-bold gradient-text">Beta Early-Bird</h2>
+              <p className="mt-2 text-sm text-gray-400 max-w-md">You&apos;re on the free beta plan. Pricing locks in at the discounted rate when public launch ships.</p>
+
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <Badge color="emerald">Active</Badge>
+                <Badge color="gray">Renews May 12, 2027</Badge>
+                <Badge color="purple">Locked-in rate</Badge>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                <button className="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white inline-flex items-center gap-2">
+                  <Icon name="ArrowUpCircle" className="w-4 h-4" /> Upgrade plan
+                </button>
+                <button className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-gray-200 transition-colors">Cancel</button>
+              </div>
+            </div>
+            <div className="w-full sm:w-56 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-1">This month</div>
+              <div className="text-2xl font-bold text-white">$0.00</div>
+              <div className="text-xs text-emerald-400 font-mono mt-1">Free during beta</div>
+              <div className="mt-4 pt-4 border-t border-white/5 space-y-1.5 text-xs">
+                <div className="flex justify-between"><span className="text-gray-500">API calls</span><span className="text-gray-200">128k / ∞</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Seats</span><span className="text-gray-200">14 / ∞</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Storage</span><span className="text-gray-200">2.4 GB</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment method */}
+        <div className="card p-6">
+          <div className="chip text-gray-500 mb-1">// payment method</div>
+          <h3 className="text-lg font-semibold text-white">Card on file</h3>
+          <div className="mt-5 rounded-xl p-4 border border-white/10 bg-gradient-to-br from-blue-500/15 via-purple-500/10 to-cyan-500/10">
+            <div className="flex items-center justify-between">
+              <div className="text-xs font-mono uppercase tracking-wider text-gray-300">Visa</div>
+              <Icon name="CreditCard" className="w-4 h-4" />
+            </div>
+            <div className="mt-6 font-mono text-base text-white tracking-widest">•••• •••• •••• 4242</div>
+            <div className="mt-3 flex justify-between text-[11px] font-mono text-gray-300">
+              <span>Mustafa Ahmed</span><span>09/28</span>
+            </div>
+          </div>
+          <button className="mt-4 w-full py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-gray-200 inline-flex items-center justify-center gap-1.5 transition-colors">
+            <Icon name="Plus" className="w-4 h-4" /> Update card
+          </button>
+        </div>
+      </div>
+
+      {/* Invoices */}
+      <div className="card p-6 mt-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="chip text-gray-500 mb-1">// invoices</div>
+            <h3 className="text-lg font-semibold text-white">History</h3>
+          </div>
+          <button className="text-xs text-gray-400 hover:text-white inline-flex items-center gap-1">Download all <Icon name="Download" className="w-3.5 h-3.5" /></button>
+        </div>
+        <div className="rounded-xl border border-dashed border-white/10 py-14 text-center">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 mb-3">
+            <Icon name="FileText" className="w-5 h-5" />
+          </div>
+          <div className="text-sm text-gray-300 font-medium">No invoices yet</div>
+          <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">Invoices will appear here once public pricing goes live.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Settings ----------
+const SettingsPage = () => {
+  const [tab, setTab] = useState('profile');
+  const tabs = [
+    { id: 'profile', label: 'Profile', icon: 'User' },
+    { id: 'workspace', label: 'Workspace', icon: 'Building2' },
+    { id: 'team', label: 'Team', icon: 'Users' },
+    { id: 'security', label: 'Security', icon: 'ShieldCheck' },
+    { id: 'api', label: 'API keys', icon: 'KeyRound' },
+  ];
+  return (
+    <div>
+      <PageHeader
+        eyebrow="// settings"
+        title="Settings"
+        desc="Personal and workspace configuration."
+      />
+
+      <div className="grid lg:grid-cols-[220px_1fr] gap-6">
+        <nav className="space-y-1">
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${tab === t.id ? 'bg-white/5 text-white' : 'text-gray-400 hover:text-white hover:bg-white/[0.03]'}`}>
+              <Icon name={t.icon} className="w-4 h-4" />
+              {t.label}
+            </button>
+          ))}
+        </nav>
+
+        <div>
+          {tab === 'profile' && (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-white mb-1">Profile</h3>
+              <p className="text-xs text-gray-400 mb-6">Update your personal info. This is visible to your team.</p>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 text-white font-bold text-xl flex items-center justify-center">MA</div>
+                <div>
+                  <button className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-gray-200 transition-colors">Upload avatar</button>
+                  <div className="text-[11px] text-gray-500 mt-1.5 font-mono">PNG or JPG, max 1MB</div>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  { label: 'Full name', value: 'Mustafa Ahmed' },
+                  { label: 'Email', value: 'mustafa@nexoraxs.com' },
+                  { label: 'Role', value: 'Owner', disabled: true },
+                  { label: 'Timezone', value: 'Africa/Cairo (UTC+2)' },
+                ].map(f => (
+                  <div key={f.label}>
+                    <div className="text-[11px] font-mono uppercase tracking-wider text-gray-500 mb-1.5">{f.label}</div>
+                    <input
+                      defaultValue={f.value}
+                      disabled={f.disabled}
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-sm text-white outline-none focus:border-blue-500/50 disabled:opacity-60 transition-colors"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 flex justify-end gap-2">
+                <button className="px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-sm text-gray-200 transition-colors">Cancel</button>
+                <button className="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Save changes</button>
+              </div>
+            </div>
+          )}
+          {tab === 'workspace' && (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-white mb-1">Workspace settings</h3>
+              <p className="text-xs text-gray-400 mb-6">Configure the current workspace — Mustafa&apos;s Co.</p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  { label: 'Workspace name', value: 'Mustafa\u2019s Co.' },
+                  { label: 'Slug', value: 'mustafa-co' },
+                  { label: 'Region', value: 'eu-central-1', disabled: true },
+                  { label: 'Default currency', value: 'EGP' },
+                ].map(f => (
+                  <div key={f.label}>
+                    <div className="text-[11px] font-mono uppercase tracking-wider text-gray-500 mb-1.5">{f.label}</div>
+                    <input defaultValue={f.value} disabled={f.disabled} className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-sm text-white outline-none focus:border-blue-500/50 disabled:opacity-60 transition-colors" />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 flex justify-end gap-2">
+                <button className="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Save changes</button>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-white/5">
+                <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4 flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-lg bg-rose-500/15 border border-rose-500/20 flex items-center justify-center text-rose-300">
+                    <Icon name="AlertTriangle" className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-white">Delete workspace</div>
+                    <p className="text-xs text-gray-400 mt-0.5">This permanently removes the workspace and all its data. Cannot be undone.</p>
+                  </div>
+                  <button className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-xs font-medium text-rose-200 transition-colors">Delete</button>
+                </div>
+              </div>
+            </div>
+          )}
+          {tab === 'team' && (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-white mb-1">Team</h3>
+              <p className="text-xs text-gray-400 mb-6">Invite teammates and assign roles per workspace.</p>
+              <div className="rounded-xl border border-dashed border-white/10 py-12 text-center">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 mb-3">
+                  <Icon name="UserPlus" className="w-5 h-5" />
+                </div>
+                <div className="text-sm text-gray-300 font-medium">Team management coming soon</div>
+                <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">Roles, permissions & SSO land in the next release.</p>
+              </div>
+            </div>
+          )}
+          {tab === 'security' && (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-white mb-1">Security</h3>
+              <p className="text-xs text-gray-400 mb-6">Authentication & session controls.</p>
+              <div className="space-y-3">
+                {[
+                  { label: 'Two-factor authentication', desc: 'Require a TOTP code at sign-in.', on: true },
+                  { label: 'Sign-in alerts', desc: 'Email me when a new device signs in.', on: true },
+                  { label: 'Restrict by IP', desc: 'Allow access only from approved IPs.', on: false },
+                ].map((r, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-white">{r.label}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{r.desc}</div>
+                    </div>
+                    <div className={`relative w-11 h-6 rounded-full ${r.on ? 'bg-blue-500' : 'bg-white/10'}`}>
+                      <span className={`absolute top-0.5 ${r.on ? 'left-5' : 'left-0.5'} w-5 h-5 rounded-full bg-white shadow transition-all`}></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {tab === 'api' && (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-white mb-1">API keys</h3>
+              <p className="text-xs text-gray-400 mb-6">Use these tokens to call NexoraXS APIs from your backend.</p>
+              <div className="rounded-xl border border-white/10 bg-white/[0.02] divide-y divide-white/5">
+                {[
+                  { name: 'Production', key: 'nxs_live_••••••••••••4f2a', created: 'May 1, 2026' },
+                  { name: 'Sandbox', key: 'nxs_test_••••••••••••91c3', created: 'Apr 20, 2026' },
+                ].map((k, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4">
+                    <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-300"><Icon name="KeyRound" className="w-4 h-4" /></div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-white">{k.name}</div>
+                      <div className="text-[11px] font-mono text-gray-500">{k.key} · created {k.created}</div>
+                    </div>
+                    <button className="text-xs text-gray-400 hover:text-white">Revoke</button>
+                  </div>
+                ))}
+              </div>
+              <button className="mt-4 btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white inline-flex items-center gap-2">
+                <Icon name="Plus" className="w-4 h-4" /> Generate new key
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------- Shell ----------
+const App = () => {
+  const [current, setCurrent] = useState('dashboard');
+  const titles = {
+    dashboard: 'Dashboard',
+    workspaces: 'Workspaces',
+    apps: 'App Launcher',
+    billing: 'Billing',
+    settings: 'Settings',
+  };
+
+  useEffect(() => {
+    if (window.lucide) window.lucide.createIcons();
+  });
+
+  return (
+    <div className="relative flex min-h-screen">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="glow-blob" style={{ width: 600, height: 600, background: '#3b82f6', top: -200, left: -200 }}></div>
+        <div className="glow-blob" style={{ width: 500, height: 500, background: '#8b5cf6', top: 400, right: -200 }}></div>
+      </div>
+
+      <Sidebar current={current} setCurrent={setCurrent} />
+
+      <div className="flex-1 min-w-0 relative">
+        <Topbar title={titles[current]} />
+        <main className="px-6 lg:px-8 py-8">
+          {current === 'dashboard' && <DashboardPage />}
+          {current === 'workspaces' && <WorkspacesPage />}
+          {current === 'apps' && <AppsPage />}
+          {current === 'billing' && <BillingPage />}
+          {current === 'settings' && <SettingsPage />}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

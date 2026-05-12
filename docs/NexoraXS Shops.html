@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexoraXS — Shops</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { background: #0a0a0f; color: #e5e7eb; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { overflow-x: hidden; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .gradient-text { background: linear-gradient(120deg,#3b82f6,#8b5cf6 50%,#06b6d4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  ::selection { background: rgba(59,130,246,0.4); color: #fff; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+  .glow-blob { position: absolute; border-radius: 9999px; filter: blur(120px); opacity: 0.2; pointer-events: none; }
+
+  .nav-item { transition: background-color .15s ease, color .15s ease; }
+  .nav-item-active {
+    background: linear-gradient(90deg, rgba(59,130,246,0.18), rgba(59,130,246,0.05));
+    color: white; position: relative;
+  }
+  .nav-item-active::before {
+    content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px;
+    background: #3b82f6; border-radius: 2px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+    box-shadow: 0 6px 24px -10px rgba(59, 130, 246, 0.7), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.9); }
+  .btn-pos {
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    box-shadow: 0 6px 24px -8px rgba(6, 182, 212, 0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  .card { border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); border-radius: 20px; }
+  .chip { font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+</style>
+</head>
+<body class="bg-[#0a0a0f] text-gray-200">
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const Icon = ({ name, className = "w-5 h-5", strokeWidth = 1.8 }) => {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current && window.lucide) {
+      ref.current.innerHTML = '';
+      const def = window.lucide.icons[name] || window.lucide.icons.Circle;
+      const svg = window.lucide.createElement(def);
+      svg.setAttribute('stroke-width', strokeWidth);
+      svg.classList.add(...className.split(' ').filter(Boolean));
+      ref.current.appendChild(svg);
+    }
+  }, [name, className, strokeWidth]);
+  return <span ref={ref} className="inline-flex"></span>;
+};
+
+// ---------- Sidebar ----------
+const Sidebar = () => {
+  const items = [
+    { label: 'Dashboard', icon: 'LayoutDashboard', active: true },
+    { label: 'Products', icon: 'Package', count: 412 },
+    { label: 'Inventory', icon: 'Boxes', alert: 7 },
+    { label: 'Customers', icon: 'Users' },
+    { label: 'Sales', icon: 'Receipt' },
+    { label: 'POS', icon: 'ScanLine', pos: true },
+    { label: 'Reports', icon: 'BarChart3' },
+  ];
+  return (
+    <aside className="hidden lg:flex flex-col w-[260px] shrink-0 border-r border-white/5 bg-[#0a0a0f]/95 sticky top-0 h-screen">
+      <div className="h-16 flex items-center px-6 border-b border-white/5 gap-3">
+        <a href="NexoraXS Platform.html" className="w-7 h-7 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300" title="Back to platform">
+          <Icon name="ChevronLeft" className="w-4 h-4" />
+        </a>
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.18)', border: '1px solid rgba(59,130,246,0.3)' }}>
+            <span className="text-blue-300"><Icon name="ShoppingBag" className="w-4 h-4" strokeWidth={2.2} /></span>
+          </div>
+          <span className="text-[15px] font-bold tracking-tight text-white">Shops</span>
+        </div>
+      </div>
+
+      <div className="px-3 py-5 flex-1 overflow-y-auto">
+        <div className="px-3 mb-2 text-[10px] font-mono uppercase tracking-[0.15em] text-gray-600">Operations</div>
+        <nav className="space-y-0.5">
+          {items.map((n, i) => (
+            <button key={i} className={`nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${n.active ? 'nav-item-active' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
+              <Icon name={n.icon} className="w-4 h-4" strokeWidth={2} />
+              <span>{n.label}</span>
+              {n.count && <span className="ml-auto chip text-gray-500">{n.count}</span>}
+              {n.alert && <span className="ml-auto chip text-amber-300 bg-amber-500/15 border border-amber-500/20 px-1.5 py-0.5 rounded">{n.alert}</span>}
+              {n.pos && <span className="ml-auto chip text-cyan-300 bg-cyan-500/15 border border-cyan-500/20 px-1.5 py-0.5 rounded">F8</span>}
+            </button>
+          ))}
+        </nav>
+
+        <div className="px-3 mt-7 mb-2 text-[10px] font-mono uppercase tracking-[0.15em] text-gray-600">Configure</div>
+        <nav className="space-y-0.5">
+          {[
+            { label: 'Discounts', icon: 'Tag' },
+            { label: 'Taxes', icon: 'Percent' },
+            { label: 'Settings', icon: 'Settings' },
+          ].map((n, i) => (
+            <button key={i} className="nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-white/5 hover:text-white">
+              <Icon name={n.icon} className="w-4 h-4" strokeWidth={2} />
+              <span>{n.label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      <div className="border-t border-white/5 p-3">
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center text-cyan-300 bg-cyan-500/15 border border-cyan-500/20">
+            <Icon name="ScanLine" className="w-4 h-4" />
+          </div>
+          <div className="flex-1 leading-tight">
+            <div className="text-xs font-semibold text-white">Open POS</div>
+            <div className="text-[10px] font-mono text-gray-500">F8 · fullscreen</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+// ---------- Topbar ----------
+const Topbar = () => (
+  <header className="sticky top-0 z-30 h-16 border-b border-white/5 bg-[#0a0a0f]/85 backdrop-blur-xl">
+    <div className="h-full px-6 lg:px-8 flex items-center gap-4">
+      <button className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+        <div className="w-6 h-6 rounded-md flex items-center justify-center text-white text-[11px] font-bold bg-blue-500">M</div>
+        <div className="text-left leading-tight">
+          <div className="text-[11px] text-gray-500 font-mono">Store</div>
+          <div className="text-xs font-medium text-white">Mustafa&apos;s Co.</div>
+        </div>
+        <Icon name="ChevronsUpDown" className="w-3.5 h-3.5 text-gray-500 ml-1" />
+      </button>
+
+      <button className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+        <Icon name="MapPin" className="w-3.5 h-3.5 text-gray-400" />
+        <div className="text-left leading-tight">
+          <div className="text-[11px] text-gray-500 font-mono">Branch</div>
+          <div className="text-xs font-medium text-white">Maadi · Main</div>
+        </div>
+        <Icon name="ChevronsUpDown" className="w-3.5 h-3.5 text-gray-500 ml-1" />
+      </button>
+
+      <div className="flex-1"></div>
+
+      <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 w-64">
+        <Icon name="Search" className="w-4 h-4 text-gray-500" />
+        <input className="bg-transparent outline-none text-sm text-gray-300 flex-1 placeholder:text-gray-600" placeholder="Search products, orders…" />
+        <span className="chip text-gray-500 border border-white/10 px-1 rounded">⌘K</span>
+      </div>
+
+      <button className="btn-pos px-3.5 py-2 rounded-lg text-xs font-semibold text-white inline-flex items-center gap-2">
+        <Icon name="ScanLine" className="w-4 h-4" strokeWidth={2.2} /> Open POS
+      </button>
+
+      <button className="w-9 h-9 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 transition-colors relative">
+        <Icon name="Bell" className="w-4 h-4" />
+        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+      </button>
+
+      <button className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors">
+        <div className="w-7 h-7 rounded-md bg-gradient-to-br from-purple-500 to-blue-500 text-white text-xs font-semibold flex items-center justify-center">MA</div>
+        <Icon name="ChevronDown" className="w-3.5 h-3.5 text-gray-500" />
+      </button>
+    </div>
+  </header>
+);
+
+// ---------- Atoms ----------
+const Stat = ({ label, value, sub, icon, color, trend, spark }) => (
+  <div className="card p-5 relative overflow-hidden">
+    <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-3xl opacity-25" style={{ background: color }}></div>
+    <div className="relative flex items-start justify-between mb-3">
+      <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">{label}</div>
+      <div className="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10" style={{ background: `${color}1f`, color }}>
+        <Icon name={icon} className="w-4 h-4" strokeWidth={2} />
+      </div>
+    </div>
+    <div className="relative flex items-baseline gap-2">
+      <div className="text-2xl font-bold text-white tracking-tight">{value}</div>
+      {trend && <div className={`text-xs font-mono ${trend.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'}`}>{trend}</div>}
+    </div>
+    {sub && <div className="relative mt-1 text-xs text-gray-500">{sub}</div>}
+    {spark && (
+      <svg viewBox="0 0 100 30" className="relative mt-3 w-full h-8" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id={`sg-${label}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.5" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={spark} fill="none" stroke={color} strokeWidth="1.5" />
+        <path d={spark + ' L100,30 L0,30 Z'} fill={`url(#sg-${label})`} />
+      </svg>
+    )}
+  </div>
+);
+
+const Badge = ({ children, color = 'gray' }) => {
+  const map = {
+    blue:    'bg-blue-500/15 text-blue-300 border-blue-500/20',
+    emerald: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20',
+    amber:   'bg-amber-500/15 text-amber-300 border-amber-500/20',
+    rose:    'bg-rose-500/15 text-rose-300 border-rose-500/20',
+    purple:  'bg-purple-500/15 text-purple-300 border-purple-500/20',
+    gray:    'bg-white/5 text-gray-400 border-white/10',
+  };
+  return <span className={`chip inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${map[color]}`}>{children}</span>;
+};
+
+// ---------- Page ----------
+const ShopsDashboard = () => {
+  const stats = [
+    { label: 'Sales today', value: 'EGP 24,180', sub: '32 orders · Maadi branch', icon: 'TrendingUp', color: '#3b82f6', trend: '+12%',
+      spark: 'M0,20 L10,18 L20,15 L30,16 L40,12 L50,14 L60,9 L70,11 L80,6 L90,8 L100,4' },
+    { label: 'Products', value: '412', sub: '38 categories', icon: 'Package', color: '#8b5cf6', trend: '+4',
+      spark: 'M0,20 L10,19 L20,18 L30,17 L40,16 L50,15 L60,15 L70,14 L80,13 L90,12 L100,11' },
+    { label: 'Low stock', value: '7', sub: 'Below threshold', icon: 'AlertTriangle', color: '#f97316', trend: '-2',
+      spark: 'M0,12 L10,14 L20,15 L30,13 L40,16 L50,18 L60,20 L70,19 L80,21 L90,22 L100,24' },
+    { label: 'Customers', value: '1,284', sub: '+86 this month', icon: 'Users', color: '#06b6d4', trend: '+7%',
+      spark: 'M0,22 L10,21 L20,19 L30,20 L40,17 L50,18 L60,14 L70,15 L80,11 L90,12 L100,8' },
+  ];
+
+  const sales = [
+    { id: '#ORD-10428', customer: 'Aya Hassan', items: 4, total: 'EGP 1,240', method: 'Visa', time: '12:42', status: 'Paid' },
+    { id: '#ORD-10427', customer: 'Walk-in',    items: 1, total: 'EGP 95',    method: 'Cash', time: '12:38', status: 'Paid' },
+    { id: '#ORD-10426', customer: 'Omar Khaled', items: 7, total: 'EGP 3,610', method: 'Visa', time: '12:21', status: 'Refund' },
+    { id: '#ORD-10425', customer: 'Layla N.',   items: 2, total: 'EGP 540',   method: 'Mada', time: '12:11', status: 'Paid' },
+    { id: '#ORD-10424', customer: 'Walk-in',    items: 3, total: 'EGP 870',   method: 'Cash', time: '11:58', status: 'Paid' },
+    { id: '#ORD-10423', customer: 'Hany M.',    items: 5, total: 'EGP 2,150', method: 'Visa', time: '11:42', status: 'Pending' },
+  ];
+
+  const lowStock = [
+    { name: 'Espresso Beans 1kg', sku: 'BV-COF-001', stock: 3, threshold: 10, color: '#f97316' },
+    { name: 'Oat Milk Carton', sku: 'BV-DRY-014', stock: 5, threshold: 20, color: '#8b5cf6' },
+    { name: 'Paper Cups 12oz', sku: 'PK-CUP-12', stock: 12, threshold: 50, color: '#06b6d4' },
+    { name: 'Caramel Syrup', sku: 'SY-CRM-04', stock: 2, threshold: 8, color: '#ec4899' },
+  ];
+
+  const statusColor = { Paid: 'emerald', Refund: 'rose', Pending: 'amber' };
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8">
+        <div>
+          <div className="flex items-center gap-2 text-xs text-gray-500 font-mono mb-2">
+            <a href="NexoraXS Platform.html" className="hover:text-gray-300">Platform</a>
+            <Icon name="ChevronRight" className="w-3 h-3" />
+            <span className="text-gray-300">Shops</span>
+            <Icon name="ChevronRight" className="w-3 h-3" />
+            <span>Dashboard</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">Shops Dashboard</h1>
+          <p className="mt-1.5 text-sm text-gray-400">Monday, May 12 · Maadi branch · live data</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5">
+            {['Today','Week','Month'].map((p, i) => (
+              <button key={p} className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${i === 0 ? 'bg-white/10 text-white' : 'text-gray-400 hover:text-white'}`}>{p}</button>
+            ))}
+          </div>
+          <button className="px-3 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-xs text-gray-300 inline-flex items-center gap-1.5 transition-colors">
+            <Icon name="Download" className="w-3.5 h-3.5" /> Export
+          </button>
+          <button className="btn-primary px-3.5 py-2 rounded-lg text-xs font-semibold text-white inline-flex items-center gap-2">
+            <Icon name="Plus" className="w-4 h-4" /> New product
+          </button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((s, i) => <Stat key={i} {...s} />)}
+      </div>
+
+      {/* Quick actions */}
+      <div className="card p-4 mt-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="chip text-gray-500 px-2">// quick actions</div>
+          {[
+            { label: 'Add product', icon: 'PackagePlus', color: '#3b82f6' },
+            { label: 'New sale', icon: 'Receipt', color: '#06b6d4' },
+            { label: 'Add customer', icon: 'UserPlus', color: '#8b5cf6' },
+            { label: 'Stock adjustment', icon: 'PackageSearch', color: '#f97316' },
+            { label: 'Daily Z-report', icon: 'FileText', color: '#10b981' },
+          ].map((a, i) => (
+            <button key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/5 text-xs text-gray-200 transition-colors">
+              <span className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: `${a.color}25`, color: a.color }}>
+                <Icon name={a.icon} className="w-3.5 h-3.5" strokeWidth={2.2} />
+              </span>
+              {a.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent sales + low stock */}
+      <div className="grid lg:grid-cols-3 gap-5 mt-5">
+        {/* Sales table */}
+        <div className="card lg:col-span-2 overflow-hidden">
+          <div className="p-5 flex items-center justify-between border-b border-white/5">
+            <div>
+              <div className="chip text-gray-500 mb-1">// recent sales</div>
+              <h3 className="text-base font-semibold text-white">Today&apos;s transactions</h3>
+            </div>
+            <button className="text-xs text-gray-400 hover:text-white inline-flex items-center gap-1">View all <Icon name="ArrowUpRight" className="w-3.5 h-3.5" /></button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[10px] font-mono uppercase tracking-wider text-gray-500 border-b border-white/5">
+                  <th className="px-5 py-3 font-normal">Order</th>
+                  <th className="px-5 py-3 font-normal">Customer</th>
+                  <th className="px-5 py-3 font-normal hidden sm:table-cell">Items</th>
+                  <th className="px-5 py-3 font-normal">Total</th>
+                  <th className="px-5 py-3 font-normal hidden md:table-cell">Method</th>
+                  <th className="px-5 py-3 font-normal">Status</th>
+                  <th className="px-5 py-3 font-normal text-right">Time</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {sales.map((s, i) => (
+                  <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="px-5 py-3.5 font-mono text-xs text-gray-300">{s.id}</td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-md bg-gradient-to-br from-blue-500/50 to-purple-500/50 text-white text-[10px] font-semibold flex items-center justify-center">{s.customer.split(' ').map(p => p[0]).slice(0,2).join('')}</div>
+                        <span className="text-gray-200">{s.customer}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-3.5 text-gray-400 hidden sm:table-cell">{s.items}</td>
+                    <td className="px-5 py-3.5 font-semibold text-white">{s.total}</td>
+                    <td className="px-5 py-3.5 hidden md:table-cell">
+                      <span className="inline-flex items-center gap-1.5 text-gray-300">
+                        <Icon name={s.method === 'Cash' ? 'Banknote' : 'CreditCard'} className="w-3.5 h-3.5 text-gray-500" /> {s.method}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5"><Badge color={statusColor[s.status]}>{s.status}</Badge></td>
+                    <td className="px-5 py-3.5 text-right font-mono text-xs text-gray-500">{s.time}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Low stock */}
+        <div className="card overflow-hidden">
+          <div className="p-5 flex items-center justify-between border-b border-white/5">
+            <div>
+              <div className="chip text-amber-400 mb-1">// low stock alert</div>
+              <h3 className="text-base font-semibold text-white">Reorder soon</h3>
+            </div>
+            <span className="chip text-amber-300 bg-amber-500/15 border border-amber-500/20 px-2 py-1 rounded-full">7</span>
+          </div>
+          <div className="divide-y divide-white/5">
+            {lowStock.map((p, i) => {
+              const pct = Math.min(100, Math.round((p.stock / p.threshold) * 100));
+              return (
+                <div key={i} className="p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center border border-white/10 shrink-0" style={{ background: `${p.color}1f`, color: p.color }}>
+                    <Icon name="Package" className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-white truncate">{p.name}</div>
+                    <div className="text-[11px] font-mono text-gray-500">{p.sku}</div>
+                    <div className="mt-1.5 h-1 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: pct < 30 ? '#ef4444' : '#f59e0b' }}></div>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-sm font-semibold text-white">{p.stock}</div>
+                    <div className="text-[10px] font-mono text-gray-500">/ {p.threshold}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="p-4 border-t border-white/5">
+            <button className="w-full py-2 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/5 text-xs font-medium text-gray-200 inline-flex items-center justify-center gap-1.5 transition-colors">
+              <Icon name="PackagePlus" className="w-3.5 h-3.5" /> Create reorder draft
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Top products + Sales by hour */}
+      <div className="grid lg:grid-cols-2 gap-5 mt-5">
+        <div className="card p-5">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <div className="chip text-gray-500 mb-1">// top products</div>
+              <h3 className="text-base font-semibold text-white">Best sellers this week</h3>
+            </div>
+            <button className="text-xs text-gray-400 hover:text-white">View report</button>
+          </div>
+          <div className="space-y-4">
+            {[
+              { name: 'Iced Latte', cat: 'Beverages', units: 482, revenue: 'EGP 18,540', pct: 92, color: '#3b82f6' },
+              { name: 'Chicken Sandwich', cat: 'Food', units: 311, revenue: 'EGP 14,920', pct: 74, color: '#8b5cf6' },
+              { name: 'Croissant', cat: 'Bakery', units: 268, revenue: 'EGP 6,432', pct: 64, color: '#06b6d4' },
+              { name: 'Cold Brew', cat: 'Beverages', units: 224, revenue: 'EGP 9,856', pct: 53, color: '#ec4899' },
+              { name: 'Avocado Toast', cat: 'Food', units: 180, revenue: 'EGP 10,800', pct: 43, color: '#10b981' },
+            ].map((p, i) => (
+              <div key={i}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-xs text-gray-500 w-5">#{i+1}</span>
+                    <div>
+                      <div className="text-sm font-medium text-white">{p.name}</div>
+                      <div className="text-[11px] text-gray-500">{p.cat} · {p.units} sold</div>
+                    </div>
+                  </div>
+                  <div className="text-sm font-semibold text-white">{p.revenue}</div>
+                </div>
+                <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${p.pct}%`, background: p.color }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sales by hour */}
+        <div className="card p-5 relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-30" style={{ background: '#3b82f6' }}></div>
+          <div className="relative">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <div className="chip text-gray-500 mb-1">// sales by hour</div>
+                <h3 className="text-base font-semibold text-white">Today&apos;s rhythm</h3>
+              </div>
+              <div className="flex items-center gap-3 text-[11px] font-mono text-gray-400">
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-blue-500"></span>Today</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-white/15"></span>Last Mon</span>
+              </div>
+            </div>
+            <div className="flex items-end gap-2 h-44">
+              {[18,22,14,10,8,12,28,42,68,76,90,82,74,65,52,45,38,52,68,84,72,55,38,22].map((v, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+                  <div className="w-full flex items-end gap-0.5 h-full">
+                    <div className="flex-1 rounded-t" style={{ height: `${v}%`, background: 'linear-gradient(180deg,#60a5fa,#3b82f6)' }}></div>
+                    <div className="flex-1 rounded-t bg-white/10" style={{ height: `${Math.max(5, v - 12)}%` }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 flex justify-between text-[10px] font-mono text-gray-600">
+              <span>00</span><span>06</span><span>12</span><span>18</span><span>24</span>
+            </div>
+
+            <div className="mt-5 pt-5 border-t border-white/5 grid grid-cols-3 gap-3 text-center">
+              <div>
+                <div className="text-[10px] font-mono uppercase text-gray-500">Peak hour</div>
+                <div className="text-sm font-semibold text-white mt-0.5">10:00</div>
+              </div>
+              <div>
+                <div className="text-[10px] font-mono uppercase text-gray-500">Avg ticket</div>
+                <div className="text-sm font-semibold text-white mt-0.5">EGP 755</div>
+              </div>
+              <div>
+                <div className="text-[10px] font-mono uppercase text-gray-500">vs last week</div>
+                <div className="text-sm font-semibold text-emerald-400 mt-0.5">+12.4%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------- App ----------
+const App = () => {
+  useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+  return (
+    <div className="relative flex min-h-screen">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="glow-blob" style={{ width: 600, height: 600, background: '#3b82f6', top: -200, left: -200 }}></div>
+        <div className="glow-blob" style={{ width: 500, height: 500, background: '#06b6d4', top: 400, right: -200 }}></div>
+      </div>
+      <Sidebar />
+      <div className="flex-1 min-w-0 relative">
+        <Topbar />
+        <main className="px-6 lg:px-8 py-8">
+          <ShopsDashboard />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
