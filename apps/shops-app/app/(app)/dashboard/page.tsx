@@ -124,7 +124,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Period selector */}
           <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5">
             {["Today", "Week", "Month"].map((p) => (

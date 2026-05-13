@@ -444,8 +444,8 @@ NexoraXS aims to become a **Business Operating System** supporting:
 ## 20. Active Feature Plan
 
 <!-- SPECKIT START -->
-**Current feature**: `011-shops-app-ui-polish`
-**Plan**: [specs/011-shops-app-ui-polish/plan.md](specs/011-shops-app-ui-polish/plan.md)
-**Spec**: [specs/011-shops-app-ui-polish/spec.md](specs/011-shops-app-ui-polish/spec.md)
-**Branch**: `011-shops-app-ui-polish`
+**Current feature**: `012-shops-app-ui-qa`
+**Plan**: [specs/012-shops-app-ui-qa/plan.md](specs/012-shops-app-ui-qa/plan.md)
+**Spec**: [specs/012-shops-app-ui-qa/spec.md](specs/012-shops-app-ui-qa/spec.md)
+**Branch**: `012-shops-app-ui-qa`
 <!-- SPECKIT END -->
