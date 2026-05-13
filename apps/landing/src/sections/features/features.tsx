@@ -1,71 +1,109 @@
+import {
+  Boxes,
+  Building2,
+  CloudCog,
+  KeyRound,
+  Network,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
 interface FeatureCard {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   description: string;
+  iconBg: string;
+  accent: string;
 }
 
 const features: FeatureCard[] = [
   {
-    icon: "⚡",
+    icon: Boxes,
     title: "Modular Architecture",
     description:
-      "Launch and manage independent business apps under one unified platform.",
+      "Start with the platform core, then add focused business apps as the product expands.",
+    iconBg: "bg-blue-500/15",
+    accent: "text-blue-300",
   },
   {
-    icon: "🔐",
+    icon: KeyRound,
     title: "Shared Authentication",
     description:
-      "One login, every app — your session works seamlessly across all NexoraXS tools.",
+      "Designed around one account experience across the core platform and app modules.",
+    iconBg: "bg-purple-500/15",
+    accent: "text-purple-300",
   },
   {
-    icon: "🏢",
+    icon: Building2,
     title: "Workspace Management",
     description:
-      "Organise teams, roles, and permissions in dedicated business workspaces.",
+      "Keep teams, billing, and enabled apps organized around workspace boundaries.",
+    iconBg: "bg-cyan-500/15",
+    accent: "text-cyan-300",
   },
   {
-    icon: "🛡️",
+    icon: ShieldCheck,
     title: "Multi-Tenant Isolation",
     description:
-      "Complete data separation per workspace — your business data is always private.",
+      "Business data is modeled around workspace-level isolation from the start.",
+    iconBg: "bg-emerald-500/15",
+    accent: "text-emerald-300",
   },
   {
-    icon: "☁️",
+    icon: CloudCog,
     title: "Cloud-Native Infrastructure",
     description:
-      "Built for scale from day one with Docker, PostgreSQL, and Redis.",
+      "The MVP stack is planned around Next.js, Laravel, PostgreSQL, Redis, and Docker.",
+    iconBg: "bg-orange-500/15",
+    accent: "text-orange-300",
   },
   {
-    icon: "🤖",
+    icon: Sparkles,
     title: "AI-Ready Platform",
     description:
-      "Designed to integrate AI-powered workflows as your business grows.",
+      "The platform is structured so future AI workflows can be added without reshaping the core.",
+    iconBg: "bg-pink-500/15",
+    accent: "text-pink-300",
   },
 ];
 
 export default function Features() {
   return (
-    <section id="features" className="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20 lg:py-28">
+    <section
+      id="features"
+      className="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-20 lg:py-28"
+    >
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold md:text-4xl">Everything Your Business Needs</h2>
-        <p className="mt-4 text-white/60">
+        <span className="mono-chip inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-cyan-200">
+          // why nexoraxs
+        </span>
+        <h2 className="mt-5 text-3xl font-bold md:text-4xl">
+          Everything your business needs
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-white/60">
           Build, manage, and scale your business with one unified platform.
         </p>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {features.map((feature) => (
-          <div
-            key={feature.title}
-            className="rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-blue-500/40"
-          >
-            <div className="mb-4 text-3xl">{feature.icon}</div>
-            <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
-            <p className="text-sm leading-relaxed text-white/60">
-              {feature.description}
-            </p>
-          </div>
-        ))}
+        {features.map((feature) => {
+          const Icon = feature.icon;
+
+          return (
+            <div key={feature.title} className="glass-card glass-card-hover p-6">
+              <div
+                className={`mb-5 flex h-11 w-11 items-center justify-center rounded-2xl ${feature.iconBg}`}
+              >
+                <Icon className={`h-5 w-5 ${feature.accent}`} aria-hidden="true" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
+              <p className="text-sm leading-relaxed text-white/60">
+                {feature.description}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

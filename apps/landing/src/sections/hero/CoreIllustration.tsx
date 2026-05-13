@@ -1,54 +1,95 @@
-import { motion } from "framer-motion";
 import { ShoppingBag, Stethoscope, Utensils, Wrench } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const apps = [
-  { id: "shop", label: "Shops", icon: ShoppingBag, color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20", pos: "top-0 left-0", delay: 0 },
-  { id: "clinic", label: "Clinics", icon: Stethoscope, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", pos: "top-0 right-0", delay: 0.2 },
-  { id: "resto", label: "Restaurants", icon: Utensils, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", pos: "bottom-0 left-0", delay: 0.4 },
-  { id: "maint", label: "Maintenance", icon: Wrench, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", pos: "bottom-0 right-0", delay: 0.6 },
+interface SatelliteApp {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  position: string;
+  animation: string;
+  accent: string;
+  iconBg: string;
+}
+
+const satelliteApps: SatelliteApp[] = [
+  {
+    id: "shops",
+    label: "Shops",
+    icon: ShoppingBag,
+    position: "left-0 top-6",
+    animation: "animate-float-b",
+    accent: "text-blue-300",
+    iconBg: "bg-blue-500/15",
+  },
+  {
+    id: "clinics",
+    label: "Clinics",
+    icon: Stethoscope,
+    position: "right-0 top-6",
+    animation: "animate-float-c",
+    accent: "text-emerald-300",
+    iconBg: "bg-emerald-500/15",
+  },
+  {
+    id: "maintenance",
+    label: "Maintenance",
+    icon: Wrench,
+    position: "bottom-8 left-0",
+    animation: "animate-float-d",
+    accent: "text-orange-300",
+    iconBg: "bg-orange-500/15",
+  },
+  {
+    id: "restaurants",
+    label: "Restaurants",
+    icon: Utensils,
+    position: "bottom-8 right-0",
+    animation: "animate-float-b",
+    accent: "text-pink-300",
+    iconBg: "bg-pink-500/15",
+  },
 ];
 
 export function CoreIllustration() {
   return (
-    <div className="relative w-full max-w-lg aspect-square mx-auto">
-      {/* Central Core */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 z-20"
-        animate={{ y: [-10, 10, -10] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="relative w-full h-full">
-          <div className="absolute inset-0 bg-[#161A2E] rounded-3xl border border-purple-500/30 shadow-[0_0_50px_-10px_rgba(109,76,255,0.3)] flex flex-col items-center justify-center backdrop-blur-xl z-20">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center mb-2 shadow-lg">
-              <span className="text-white font-bold text-3xl">N</span>
-            </div>
-            <div className="text-white font-bold text-xl tracking-wider">CORE</div>
-            <div className="text-purple-300/60 text-xs uppercase tracking-widest mt-1">System</div>
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-cyan-500 rounded-3xl blur-2xl opacity-20 z-10" />
-        </div>
-      </motion.div>
+    <div className="relative mx-auto aspect-square w-full max-w-lg">
+      <div className="absolute inset-8 rounded-full border border-white/5 bg-white/[0.015]" />
+      <div className="absolute inset-20 rounded-full border border-white/5" />
 
-      {/* Orbiting App Cards */}
-      {apps.map((app) => (
-        <motion.div
-          key={app.id}
-          className={`absolute ${app.pos} z-10`}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 + app.delay, duration: 0.5 }}
-        >
-          <motion.div
-            className={`w-28 h-28 ${app.bg} backdrop-blur-md rounded-2xl border ${app.border} flex flex-col items-center justify-center shadow-lg`}
-            whileHover={{ scale: 1.05, y: -5 }}
-            animate={{ y: [0, -5, 0] }}
-            transition={{ y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: app.delay }, scale: { duration: 0.2 } }}
+      <div className="absolute left-1/2 top-1/2 z-20 h-44 w-44 -translate-x-1/2 -translate-y-1/2">
+        <div className="animate-float relative h-full w-full">
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-600/30 to-cyan-500/20 blur-2xl" />
+          <div className="glass-card relative z-10 flex h-full w-full flex-col items-center justify-center rounded-3xl border-purple-400/20 shadow-[0_0_70px_rgba(139,92,246,0.28)]">
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-400 shadow-lg shadow-purple-500/25">
+              <span className="text-3xl font-bold text-white">N</span>
+            </div>
+            <div className="text-xl font-bold text-white">CORE</div>
+            <div className="mono-chip mt-2 text-purple-200/70">Platform</div>
+          </div>
+        </div>
+      </div>
+
+      {satelliteApps.map((app) => {
+        const Icon = app.icon;
+
+        return (
+          <div
+            key={app.id}
+            className={`absolute z-10 ${app.position} ${app.animation}`}
           >
-            <app.icon className={`w-8 h-8 ${app.color} mb-2`} />
-            <span className="text-white text-sm font-medium">{app.label}</span>
-          </motion.div>
-        </motion.div>
-      ))}
+            <div className="glass-card flex h-28 w-32 flex-col items-center justify-center gap-2 rounded-2xl transition-transform duration-200 hover:-translate-y-1">
+              <div
+                className={`flex h-10 w-10 items-center justify-center rounded-xl ${app.iconBg}`}
+              >
+                <Icon className={`h-5 w-5 ${app.accent}`} aria-hidden="true" />
+              </div>
+              <span className="text-sm font-medium text-white/90">
+                {app.label}
+              </span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

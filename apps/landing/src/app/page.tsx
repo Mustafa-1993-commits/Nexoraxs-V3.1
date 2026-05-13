@@ -1,9 +1,11 @@
 import Navbar from "../sections/navbar/navbar";
 import Hero from "../sections/hero/hero";
 import Features from "../sections/features/features";
+import Platform from "../sections/platform/platform";
 import Apps from "../sections/apps/apps";
 import Pricing from "../sections/pricing/pricing";
 import FAQ from "../sections/faq/faq";
+import CTA from "../sections/cta/cta";
 import Footer from "../sections/footer/footer";
 
 export default function Home() {
@@ -12,9 +14,11 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Features />
+      <Platform />
       <Apps />
       <Pricing />
       <FAQ />
+      <CTA />
       <Footer />
     </main>
   );

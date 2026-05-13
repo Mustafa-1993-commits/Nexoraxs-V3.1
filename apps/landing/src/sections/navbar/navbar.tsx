@@ -37,7 +37,7 @@ export default function Navbar() {
           ))}
           <a
             href="#"
-            className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-blue-500"
+            className="btn-primary rounded-xl px-4 py-2 text-sm font-medium text-white"
           >
             Get Started
           </a>
@@ -75,7 +75,7 @@ export default function Navbar() {
             ))}
             <a
               href="#"
-              className="mt-2 block w-full rounded-xl bg-blue-600 px-4 py-3 text-center text-sm font-medium transition-colors hover:bg-blue-500"
+              className="btn-primary mt-2 w-full rounded-xl px-4 py-3 text-center text-sm font-medium text-white"
             >
               Get Started
             </a>

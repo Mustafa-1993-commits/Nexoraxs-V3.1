@@ -49,7 +49,7 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
             {linkGroups.map((group) => (
               <div key={group.heading}>
-                <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                <h4 className="mono-chip mb-3 text-white/40">
                   {group.heading}
                 </h4>
                 {group.links.map((link) => (
@@ -66,10 +66,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-8">
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/5 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-white/40">
             © 2026 NexoraXS. All rights reserved.
           </p>
+          <p className="text-sm text-white/40">Built with NexoraXS</p>
         </div>
       </div>
     </footer>

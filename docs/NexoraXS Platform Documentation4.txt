@@ -261,7 +261,7 @@ Promotions
 Payments
 Online orders
 11. Monorepo Structure
-nexoraxs-v2/
+nexoraxs-v3/
 │
 ├── apps/
 │   ├── core-platform/
@@ -363,7 +363,7 @@ Windows 11 Pro
 ├── Cloud Code
 └── VMware Ubuntu VM
 Project Path
-/home/mustafa/projects/nexoraxs-v2
+/home/mustafa/projects/nexoraxs-v3
 Current Local Development URLs
 Core Platform:
 http://localhost:3000

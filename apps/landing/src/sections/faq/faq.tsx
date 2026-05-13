@@ -1,3 +1,8 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
 interface FAQItem {
   question: string;
   answer: string;
@@ -7,59 +12,86 @@ const faqs: FAQItem[] = [
   {
     question: "What is NexoraXS?",
     answer:
-      "NexoraXS is a modular Business Operating System — one platform where you can run multiple business apps (Shops, Clinics, Maintenance, and more) under a single login and workspace.",
+      "NexoraXS is an MVP-stage modular SaaS platform that combines a core platform shell with focused business apps under workspace-based access.",
   },
   {
     question: "Can I use multiple apps under one account?",
     answer:
-      "Yes. Once you create a workspace you can enable any available NexoraXS app for that workspace. All apps share the same authentication and billing.",
+      "That is the intended platform model. The core platform is designed for shared authentication, workspaces, billing, and an app launcher for enabled modules.",
   },
   {
     question: "Is my business data kept separate from other users?",
     answer:
-      "Absolutely. NexoraXS uses strict workspace-level data isolation. Your data is never visible to other workspaces or businesses on the platform.",
+      "The product is being built around workspace-level isolation, so business data belongs to its workspace and app modules must query within that boundary.",
   },
   {
     question: "What apps are available right now?",
     answer:
-      "The Shops app (commerce & POS) is available in the current release. Clinics, Maintenance, Restaurants, and CRM are coming soon.",
+      "The current MVP scope focuses on the Core Platform and Shops app. Clinics, Maintenance, Restaurants, and CRM are future app modules.",
   },
   {
     question: "How does pricing work?",
     answer:
-      "We're finalising pricing plans. You can get started for free during our early access period with no credit card required.",
+      "Beta access is positioned as free during beta. Future paid plans will be defined after the MVP validates the platform and app model.",
   },
   {
     question: "How do I get started?",
     answer:
-      "Click any 'Get Started' button on this page to create your free NexoraXS account and set up your first workspace in minutes.",
+      "Use the beta entry points on this page to follow the MVP onboarding path as the platform becomes ready for early users.",
   },
 ];
 
 export default function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20 lg:py-28">
+    <section
+      id="faq"
+      className="mx-auto max-w-3xl px-4 py-16 md:px-6 md:py-20 lg:py-28"
+    >
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold md:text-4xl">Frequently Asked Questions</h2>
+        <span className="mono-chip inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-cyan-200">
+          // faq
+        </span>
+        <h2 className="mt-5 text-3xl font-bold md:text-4xl">
+          Frequently Asked Questions
+        </h2>
         <p className="mt-4 text-white/60">
           Everything you need to know about NexoraXS.
         </p>
       </div>
 
-      <div className="divide-y divide-white/10">
-        {faqs.map((item) => (
-          <details key={item.question} className="group py-4">
-            <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between font-medium text-white/90 hover:text-white">
-              {item.question}
-              <span className="ml-4 flex-shrink-0 text-white/40 transition-transform duration-200 group-open:rotate-180">
-                ▾
-              </span>
-            </summary>
-            <p className="mt-3 text-sm leading-relaxed text-white/60">
-              {item.answer}
-            </p>
-          </details>
-        ))}
+      <div className="space-y-3">
+        {faqs.map((item, index) => {
+          const isOpen = openIndex === index;
+          const answerId = `faq-answer-${index}`;
+
+          return (
+            <div key={item.question} className="glass-card overflow-hidden">
+              <button
+                type="button"
+                className="flex min-h-14 w-full items-center justify-between gap-4 px-5 py-4 text-left font-medium text-white/90 transition-colors hover:text-white"
+                aria-expanded={isOpen}
+                aria-controls={answerId}
+                onClick={() => setOpenIndex(isOpen ? null : index)}
+              >
+                <span>{item.question}</span>
+                <ChevronDown
+                  className={`h-5 w-5 flex-shrink-0 text-white/40 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                />
+              </button>
+              <div
+                id={answerId}
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-96" : "max-h-0"}`}
+              >
+                <p className="px-5 pb-5 text-sm leading-relaxed text-white/60">
+                  {item.answer}
+                </p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
