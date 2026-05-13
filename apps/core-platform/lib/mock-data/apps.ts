@@ -3,6 +3,8 @@ export interface App {
   name: string;
   description: string;
   available: boolean;
+  buttonLabel?: string;
+  subtitle?: string;
 }
 
 export const mockApps: App[] = [
@@ -11,6 +13,8 @@ export const mockApps: App[] = [
     name: "Shops",
     description: "Commerce & POS — manage products, sales, and customers.",
     available: true,
+    buttonLabel: "Open Shops",
+    subtitle: "Business management · POS · Commerce",
   },
   {
     id: "clinics",

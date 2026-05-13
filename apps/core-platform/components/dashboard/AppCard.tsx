@@ -1,6 +1,6 @@
 import type { App } from "@/lib/mock-data/apps";
 
-export function AppCard({ name, description, available }: App) {
+export function AppCard({ name, description, available, buttonLabel, subtitle }: App) {
   return (
     <div className="flex flex-col rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-white/20">
       <div className="flex items-start justify-between gap-4">
@@ -14,13 +14,16 @@ export function AppCard({ name, description, available }: App) {
       <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">
         {description}
       </p>
+      {subtitle && (
+        <span className="chip mt-2 block text-white/40">{subtitle}</span>
+      )}
       <div className="mt-5">
         {available ? (
           <button
             type="button"
             className="w-full rounded-xl bg-blue-600 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-500"
           >
-            Open
+            {buttonLabel ?? "Open"}
           </button>
         ) : (
           <button

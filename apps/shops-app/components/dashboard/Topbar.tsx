@@ -30,7 +30,7 @@ export function Topbar() {
           <Icon name="map-pin" className="h-3.5 w-3.5 text-gray-400" />
           <div className="text-left leading-tight">
             <div className="font-mono text-[11px] text-gray-500">Branch</div>
-            <div className="text-xs font-medium text-white">Maadi · Main</div>
+            <div className="text-xs font-medium text-white">Maadi Main</div>
           </div>
           <Icon name="chevrons-up-down" className="ml-1 h-3.5 w-3.5 text-gray-500" />
         </button>

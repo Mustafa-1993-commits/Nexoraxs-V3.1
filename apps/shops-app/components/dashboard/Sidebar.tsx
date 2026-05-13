@@ -51,10 +51,11 @@ export function Sidebar() {
         <div className="flex h-16 items-center gap-3 border-b border-white/5 px-5">
           <a
             href="#"
-            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
-            title="Back to platform"
+            aria-label="Back to platform"
+            className="flex flex-shrink-0 items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
           >
-            <Icon name="chevron-left" className="h-4 w-4" />
+            <Icon name="chevron-left" className="h-4 w-4 flex-shrink-0" />
+            <span className="text-xs">Back to Platform</span>
           </a>
           <Logo />
           <button
