@@ -189,7 +189,7 @@ export default function SettingsPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <p className="chip mb-2 text-white/30">// settings</p>
+        <p className="chip mb-2 text-white/30">{"// settings"}</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">Settings</h1>
         <p className="mt-2 text-sm text-white/50">Personal and workspace configuration.</p>
       </div>

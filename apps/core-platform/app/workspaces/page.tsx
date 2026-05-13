@@ -17,20 +17,6 @@ export default function WorkspacesPage() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#0a0a0f]">
-      {/* Glow blobs */}
-      <div
-        className="pointer-events-none absolute -left-40 -top-40 h-80 w-80 rounded-full opacity-20 blur-3xl"
-        style={{ background: "#3b82f6" }}
-      />
-      <div
-        className="pointer-events-none absolute -right-40 top-1/4 h-80 w-80 rounded-full opacity-15 blur-3xl"
-        style={{ background: "#8b5cf6" }}
-      />
-      <div
-        className="pointer-events-none absolute -bottom-40 left-1/3 h-80 w-80 rounded-full opacity-15 blur-3xl"
-        style={{ background: "#06b6d4" }}
-      />
-
       {/* Top brand bar */}
       <header className="relative z-10 border-b border-white/5 bg-[#0a0a0f]/60 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
@@ -67,7 +53,7 @@ export default function WorkspacesPage() {
       <main className="relative z-10 mx-auto max-w-xl px-4 pb-16 pt-14">
         {/* Heading */}
         <div className="mb-10 text-center">
-          <p className="chip mb-3 text-white/30">// workspace</p>
+          <p className="chip mb-3 text-white/30">{"// workspace"}</p>
           <h1 className="text-3xl font-bold tracking-tight text-white">
             Select a workspace
           </h1>

@@ -3,7 +3,7 @@ export default function BillingPage() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <p className="chip mb-2 text-white/30">// billing</p>
+        <p className="chip mb-2 text-white/30">{"// billing"}</p>
         <h1 className="text-3xl font-bold tracking-tight text-white">
           Plan &amp; billing
         </h1>
@@ -20,7 +20,7 @@ export default function BillingPage() {
             style={{ background: "radial-gradient(circle,#8b5cf6,transparent 70%)" }}
           />
           <div className="relative">
-            <p className="chip mb-1 text-white/30">// current plan</p>
+            <p className="chip mb-1 text-white/30">{"// current plan"}</p>
             <h2 className="gradient-text text-3xl font-bold">Beta Early-Bird</h2>
             <p className="mt-2 max-w-md text-sm text-white/50">
               You&apos;re on the free beta plan. Pricing locks in at the discounted rate when public launch ships.
@@ -51,7 +51,7 @@ export default function BillingPage() {
 
         {/* Payment card */}
         <div className="card p-6">
-          <p className="chip mb-1 text-white/30">// payment method</p>
+          <p className="chip mb-1 text-white/30">{"// payment method"}</p>
           <h3 className="text-lg font-semibold text-white">Card on file</h3>
 
           <div
@@ -86,7 +86,7 @@ export default function BillingPage() {
       <div className="card mt-5 p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="chip mb-1 text-white/30">// invoices</p>
+            <p className="chip mb-1 text-white/30">{"// invoices"}</p>
             <h3 className="text-lg font-semibold text-white">History</h3>
           </div>
           <button type="button" className="text-xs text-white/40 transition-colors hover:text-white">

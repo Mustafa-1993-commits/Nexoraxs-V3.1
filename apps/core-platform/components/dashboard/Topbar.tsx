@@ -16,18 +16,20 @@ export function Topbar() {
 
   return (
     <header className="sticky top-0 z-30 h-16 border-b border-white/5 bg-[#0a0a0f]/85 backdrop-blur-xl">
-      <div className="flex h-full items-center gap-4 pl-16 pr-4 md:px-6 lg:px-8">
+      <div className="flex h-full items-center gap-2 pl-20 pr-3 sm:gap-4 md:px-6 lg:px-8">
         {/* Workspace switcher */}
-        <button className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 transition-colors hover:bg-white/10">
+        <button className="flex max-w-[8.5rem] items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 transition-colors hover:bg-white/10 sm:max-w-none">
           <div
             className="flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold text-white"
             style={{ background: "linear-gradient(135deg,#3b82f6,#8b5cf6)" }}
           >
             M
           </div>
-          <div className="text-left leading-tight">
+          <div className="min-w-0 text-left leading-tight">
             <div className="font-mono text-[11px] text-white/40">Workspace</div>
-            <div className="text-xs font-medium text-white">Mustafa&apos;s Co.</div>
+            <div className="truncate text-xs font-medium text-white">
+              Mustafa&apos;s Co.
+            </div>
           </div>
           <Icon name="chevron-down" className="ml-1 h-3.5 w-3.5 text-white/40" />
         </button>
