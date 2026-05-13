@@ -415,6 +415,14 @@ if [ "$DRY_RUN" != true ]; then
     fi
 
     printf '# To persist: export SPECIFY_FEATURE=%q\n' "$BRANCH_NAME" >&2
+
+    # Pre-write feature.json so all downstream commands (setup-plan.sh, setup-tasks.sh,
+    # etc.) resolve to the correct feature directory immediately — even if /speckit.specify
+    # is interrupted before it runs. /speckit.specify will overwrite with the confirmed
+    # path once the spec directory is actually created.
+    if [[ -d "$REPO_ROOT/.specify" ]]; then
+        printf '{"feature_directory":"specs/%s"}\n' "$BRANCH_NAME" > "$REPO_ROOT/.specify/feature.json"
+    fi
 fi
 
 if $JSON_MODE; then
