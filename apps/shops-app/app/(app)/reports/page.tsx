@@ -80,7 +80,7 @@ export default function ReportsPage() {
           <div className="mt-4 flex h-44 items-end gap-2">
             {weekData.map((day) => (
               <div key={day.day} className="flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex w-full items-end">
+                <div className="flex w-full items-end" style={{ height: "100%" }}>
                   <div
                     className="w-full rounded-t bg-blue-500/70"
                     style={{ height: `${day.pct}%` }}

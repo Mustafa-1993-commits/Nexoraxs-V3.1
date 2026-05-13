@@ -65,9 +65,9 @@ export default function CustomersPage() {
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-semibold text-white">{customer.name}</div>
-              <div className="text-xs text-gray-500">{customer.contact}</div>
-              <div className="text-xs text-gray-400">Last order: {customer.lastOrder}</div>
+              <div className="truncate text-sm font-semibold text-white">{customer.name}</div>
+              <div className="truncate text-xs text-gray-500">{customer.contact}</div>
+              <div className="truncate text-xs text-gray-400">Last order: {customer.lastOrder}</div>
             </div>
 
             <div className="flex-shrink-0 text-sm font-semibold text-white">
