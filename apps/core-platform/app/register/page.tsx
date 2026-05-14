@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] px-4">
       <div className="w-full max-w-md">
@@ -38,7 +43,12 @@ export default function RegisterPage() {
             />
 
             <div className="pt-2">
-              <Button variant="primary" type="button" className="w-full">
+              <Button
+                variant="primary"
+                type="button"
+                className="w-full"
+                onClick={() => router.push("/login")}
+              >
                 Create Account
               </Button>
             </div>

@@ -444,8 +444,8 @@ NexoraXS aims to become a **Business Operating System** supporting:
 ## 20. Active Feature Plan
 
 <!-- SPECKIT START -->
-**Current feature**: `022-onboarding-country-currency-from-workspace`
-**Plan**: [specs/022-onboarding-country-currency-from-workspace/plan.md](specs/022-onboarding-country-currency-from-workspace/plan.md)
-**Spec**: [specs/022-onboarding-country-currency-from-workspace/spec.md](specs/022-onboarding-country-currency-from-workspace/spec.md)
-**Branch**: `023-onboarding-country-currency-from-workspace`
+**Current feature**: `023-core-auth-workspace-routing-qa`
+**Plan**: [specs/023-core-auth-workspace-routing-qa/plan.md](specs/023-core-auth-workspace-routing-qa/plan.md)
+**Spec**: [specs/023-core-auth-workspace-routing-qa/spec.md](specs/023-core-auth-workspace-routing-qa/spec.md)
+**Branch**: `023-core-auth-workspace-routing-qa`
 <!-- SPECKIT END -->
