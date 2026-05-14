@@ -83,7 +83,7 @@ export default function Apps() {
     >
       <div className="mb-12 text-center">
         <span className="mono-chip inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-purple-200">
-          // app launcher
+          {"// app launcher"}
         </span>
         <h2 className="mt-5 text-3xl font-bold md:text-4xl">Our Apps</h2>
         <p className="mx-auto mt-4 max-w-2xl text-white/60">

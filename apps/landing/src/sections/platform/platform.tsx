@@ -26,7 +26,7 @@ export default function Platform() {
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mb-12 max-w-3xl">
           <span className="mono-chip inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-blue-200">
-            // platform model
+            {"// platform model"}
           </span>
           <h2 className="mt-5 text-3xl font-bold md:text-4xl">
             One Core. Many Apps.

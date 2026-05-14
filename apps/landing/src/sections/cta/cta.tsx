@@ -12,7 +12,7 @@ export default function CTA() {
 
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <span className="mono-chip inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-blue-200">
-          // next step
+          {"// next step"}
         </span>
         <h2 className="mt-5 text-3xl font-bold md:text-5xl">
           Start building your business today

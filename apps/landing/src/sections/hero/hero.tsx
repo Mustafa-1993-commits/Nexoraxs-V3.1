@@ -1,5 +1,8 @@
 "use client";
 import { useState } from "react";
+
+const CORE_LOGIN_URL =
+  (process.env.NEXT_PUBLIC_CORE_PLATFORM_URL ?? "http://localhost:3001") + "/login";
 import { motion } from "framer-motion";
 import { SplashScreen } from "./SplashScreen";
 import { CoreIllustration } from "./CoreIllustration";
@@ -30,7 +33,7 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <span className="mono-chip inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-cyan-200">
-              // platform
+              {"// platform"}
             </span>
             <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
               Business operations, connected by one{" "}
@@ -43,7 +46,7 @@ export default function Hero() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <a
-                href="#pricing"
+                href={CORE_LOGIN_URL}
                 className="btn-primary rounded-2xl px-6 py-3 font-semibold text-white"
               >
                 Get Started

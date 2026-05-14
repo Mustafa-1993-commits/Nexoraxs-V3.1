@@ -2,7 +2,9 @@
 
 import { useSyncExternalStore } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { getBranch } from "@/lib/mode";
+import { getBranch, getStoreName } from "@/lib/mode";
+
+const FALLBACK_STORE = "Mustafa's Co.";
 
 export function Topbar() {
   const mounted = useSyncExternalStore(
@@ -10,6 +12,7 @@ export function Topbar() {
     () => true,
     () => false,
   );
+  const storeName = mounted ? getStoreName() ?? FALLBACK_STORE : FALLBACK_STORE;
   const branch = mounted ? getBranch() ?? "Maadi Main" : "Maadi Main";
 
   return (
@@ -22,11 +25,11 @@ export function Topbar() {
           className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 transition-colors hover:bg-white/10"
         >
           <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-blue-500 text-[11px] font-bold text-white">
-            M
+            {storeName[0]?.toUpperCase() ?? "S"}
           </div>
           <div className="text-left leading-tight">
             <div className="font-mono text-[11px] text-gray-500">Store</div>
-            <div className="text-xs font-medium text-white">Mustafa&apos;s Co.</div>
+            <div className="max-w-[8rem] truncate text-xs font-medium text-white">{storeName}</div>
           </div>
           <Icon name="chevrons-up-down" className="ml-1 h-3.5 w-3.5 text-gray-500" />
         </button>

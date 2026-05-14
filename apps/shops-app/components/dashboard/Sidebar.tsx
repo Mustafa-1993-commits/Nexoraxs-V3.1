@@ -7,6 +7,9 @@ import { Badge } from "@/components/dashboard/Badge";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Logo } from "@/components/ui/Logo";
 
+const CORE_PLATFORM_URL =
+  process.env.NEXT_PUBLIC_CORE_PLATFORM_URL ?? "http://localhost:3001";
+
 type NavItem = {
   label: string;
   href: string;
@@ -63,7 +66,7 @@ export function Sidebar() {
         {/* Header: back link + logo */}
         <div className="flex h-16 items-center gap-3 border-b border-white/5 px-5">
           <a
-            href="#"
+            href={`${CORE_PLATFORM_URL}/dashboard`}
             aria-label="Back to platform"
             className="flex flex-shrink-0 items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
           >

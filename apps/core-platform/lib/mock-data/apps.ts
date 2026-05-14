@@ -5,7 +5,10 @@ export interface App {
   available: boolean;
   buttonLabel?: string;
   subtitle?: string;
+  href?: string;
 }
+
+const SHOPS_URL = process.env.NEXT_PUBLIC_SHOPS_APP_URL ?? "http://localhost:3002";
 
 export const mockApps: App[] = [
   {
@@ -15,6 +18,7 @@ export const mockApps: App[] = [
     available: true,
     buttonLabel: "Open Shops",
     subtitle: "Business management · POS · Commerce",
+    href: SHOPS_URL,
   },
   {
     id: "clinics",
