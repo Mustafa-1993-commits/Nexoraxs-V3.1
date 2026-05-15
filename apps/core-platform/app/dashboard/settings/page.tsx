@@ -1,6 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { getMockUserEmail, getMockUserName } from "@/lib/session";
+
+const subscribeToNothing = () => () => {};
+
+function getInitials(name: string): string {
+  return (
+    name.trim().split(/\s+/).filter(Boolean)
+      .slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("")
+    || "WO"
+  );
+}
 
 type TabId = "profile" | "workspace" | "team" | "security" | "api";
 
@@ -26,6 +37,9 @@ function Field({ label, value, disabled = false }: { label: string; value: strin
 }
 
 function ProfileTab() {
+  const userName  = useSyncExternalStore(subscribeToNothing, () => getMockUserName()  ?? "Workspace owner",     () => "Workspace owner");
+  const userEmail = useSyncExternalStore(subscribeToNothing, () => getMockUserEmail() ?? "owner@nexoraxs.local", () => "owner@nexoraxs.local");
+
   return (
     <div className="card p-6">
       <h3 className="text-lg font-semibold text-white">Profile</h3>
@@ -33,7 +47,7 @@ function ProfileTab() {
 
       <div className="mb-6 mt-6 flex items-center gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-xl text-xl font-bold text-white" style={{ background: "linear-gradient(135deg,#8b5cf6,#3b82f6)" }}>
-          MA
+          {getInitials(userName)}
         </div>
         <div>
           <button type="button" className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70 transition-colors hover:bg-white/10">
@@ -44,8 +58,8 @@ function ProfileTab() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Full name"  value="Mustafa Ahmed" />
-        <Field label="Email"      value="mustafa@nexoraxs.com" />
+        <Field label="Full name"  value={userName} />
+        <Field label="Email"      value={userEmail} />
         <Field label="Role"       value="Owner" disabled />
         <Field label="Timezone"   value="Africa/Cairo (UTC+2)" />
       </div>

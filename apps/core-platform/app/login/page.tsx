@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { isWorkspaceOnboardingComplete } from "@/lib/session";
+import { initMockUserFallback, isWorkspaceOnboardingComplete } from "@/lib/session";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const handleSignIn = () => {
+    initMockUserFallback();
     router.push(isWorkspaceOnboardingComplete() ? "/workspaces" : "/onboarding");
   };
 

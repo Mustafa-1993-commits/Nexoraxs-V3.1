@@ -444,8 +444,8 @@ NexoraXS aims to become a **Business Operating System** supporting:
 ## 20. Active Feature Plan
 
 <!-- SPECKIT START -->
-**Current feature**: `024-onboarding-branch-country-currency`
-**Plan**: [specs/024-onboarding-branch-country-currency/plan.md](specs/024-onboarding-branch-country-currency/plan.md)
-**Spec**: [specs/024-onboarding-branch-country-currency/spec.md](specs/024-onboarding-branch-country-currency/spec.md)
-**Branch**: `024-onboarding-branch-country-currency`
+**Current feature**: `026-core-mock-account-session`
+**Plan**: [specs/026-core-mock-account-session/plan.md](specs/026-core-mock-account-session/plan.md)
+**Spec**: [specs/026-core-mock-account-session/spec.md](specs/026-core-mock-account-session/spec.md)
+**Branch**: `027-mock-account-session`
 <!-- SPECKIT END -->

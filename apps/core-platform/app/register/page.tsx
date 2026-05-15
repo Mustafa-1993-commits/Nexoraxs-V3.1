@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { saveMockUser } from "@/lib/session";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] px-4">
@@ -26,6 +30,8 @@ export default function RegisterPage() {
               type="text"
               placeholder="Mustafa Mohamed"
               autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
             <Input
               label="Email address"
@@ -33,6 +39,8 @@ export default function RegisterPage() {
               type="email"
               placeholder="you@company.com"
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               label="Password"
@@ -47,7 +55,10 @@ export default function RegisterPage() {
                 variant="primary"
                 type="button"
                 className="w-full"
-                onClick={() => router.push("/login")}
+                onClick={() => {
+                  saveMockUser(name.trim(), email.trim());
+                  router.push("/login");
+                }}
               >
                 Create Account
               </Button>
