@@ -1,20 +1,30 @@
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Topbar } from "@/components/dashboard/Topbar";
+"use client";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex min-h-screen bg-[#0a0a0f]">
-      <Sidebar />
-      <div className="flex flex-1 flex-col md:ml-64">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          {children}
-        </main>
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "@/lib/store";
+import { CoreShell } from "@/components/shell/CoreShell";
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { isHydrated, isAuthenticated, isOnboardingComplete } = useApp();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (!isAuthenticated) {
+      router.replace("/login");
+    } else if (!isOnboardingComplete) {
+      router.replace("/onboarding");
+    }
+  }, [isHydrated, isAuthenticated, isOnboardingComplete, router]);
+
+  if (!isHydrated || !isAuthenticated || !isOnboardingComplete) {
+    return (
+      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#0c0e14" }}>
+        <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid #4f46e5", borderTopColor: "transparent", animation: "nx-spin 0.8s linear infinite" }} />
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <CoreShell>{children}</CoreShell>;
 }

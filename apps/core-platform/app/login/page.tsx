@@ -3,104 +3,110 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Input } from "@nexoraxs/ui";
-import { initMockUserFallback, isWorkspaceOnboardingComplete } from "@/lib/session";
+import { CheckCircle } from "lucide-react";
+import { useApp } from "@/lib/store";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { PasswordInput } from "@/components/auth/PasswordInput";
+import { SocialAuth } from "@/components/auth/SocialAuth";
 
-function LoginContent() {
+function LoginForm() {
+  const { loginUser, isAuthenticated, isOnboardingComplete } = useApp();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const resetSuccess = searchParams.get("reset") === "success";
-  const [showBanner, setShowBanner] = useState(resetSuccess);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resetBanner, setResetBanner] = useState(searchParams.get("reset") === "success");
 
   useEffect(() => {
-    if (!resetSuccess) return;
-    const t = setTimeout(() => setShowBanner(false), 4000);
-    return () => clearTimeout(t);
-  }, [resetSuccess]);
+    if (isAuthenticated) {
+      if (isOnboardingComplete) router.replace("/dashboard/apps");
+      else router.replace("/onboarding");
+    }
+  }, [isAuthenticated, isOnboardingComplete, router]);
 
-  const handleSignIn = () => {
-    initMockUserFallback();
-    router.push(isWorkspaceOnboardingComplete() ? "/workspaces" : "/onboarding");
-  };
+  useEffect(() => {
+    if (resetBanner) {
+      const t = setTimeout(() => setResetBanner(false), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [resetBanner]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const result = loginUser(email, password);
+    setLoading(false);
+    if (result === "invalid_credentials") {
+      setError("Invalid email or password.");
+    }
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] px-4">
-      <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
-          {showBanner && (
-            <div className="mb-5 flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <p className="text-sm text-emerald-300">
-                Password reset successfully — you can now sign in.
-              </p>
-            </div>
-          )}
-
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold text-white">NexoraXS</h1>
-            <p className="mt-2 text-sm text-white/50">
-              Sign in to your account
-            </p>
-          </div>
-
-          <form className="space-y-4">
-            <Input
-              label="Email address"
-              id="email"
-              type="email"
-              placeholder="you@company.com"
-              autoComplete="email"
-            />
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-
-            <div className="flex items-center justify-end">
-              <a
-                href="/forgot-password"
-                className="text-sm text-white/40 hover:text-white transition-colors"
-              >
-                Forgot password?
-              </a>
-            </div>
-
-            <div className="pt-2">
-              <Button
-                variant="primary"
-                type="button"
-                className="w-full"
-                onClick={handleSignIn}
-              >
-                Sign In
-              </Button>
-            </div>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-white/40">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              Create one
-            </Link>
-          </p>
+    <AuthShell title="Sign in to NexoraXS" subtitle="Welcome back — your workspace is ready.">
+      {resetBanner && (
+        <div className="nx-auth-banner">
+          <CheckCircle size={16} />
+          Password reset successfully — you can now sign in.
         </div>
+      )}
+
+      <SocialAuth />
+      <form onSubmit={handleSubmit} className="nx-auth-form-fields" style={{ marginTop: 4 }}>
+        {error && (
+          <div className="nx-auth-banner" style={{ background: "var(--danger-weak)", borderColor: "var(--danger)", color: "var(--danger)" }}>
+            {error}
+          </div>
+        )}
+
+        <div className="nx-field">
+          <label className="nx-field-label" htmlFor="email">Email</label>
+          <input
+            id="email"
+            className="nx-input"
+            type="email"
+            placeholder="you@company.com"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="nx-field">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label className="nx-field-label" htmlFor="password">Password</label>
+            <Link href="/forgot-password" className="nx-link" style={{ fontSize: 12 }}>Forgot password?</Link>
+          </div>
+          <PasswordInput
+            id="password"
+            placeholder="Your password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <button type="submit" className="nx-auth-btn" disabled={loading} style={{ marginTop: 8 }}>
+          {loading ? "Signing in…" : "Sign in"}
+        </button>
+      </form>
+
+      <div className="nx-auth-below">
+        Don&apos;t have an account?{" "}
+        <Link href="/register" className="nx-link">Create account</Link>
       </div>
-    </div>
+    </AuthShell>
   );
 }
 
 export default function LoginPage() {
   return (
     <Suspense>
-      <LoginContent />
+      <LoginForm />
     </Suspense>
   );
 }

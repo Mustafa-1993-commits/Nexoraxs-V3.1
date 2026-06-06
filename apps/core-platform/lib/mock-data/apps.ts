@@ -6,6 +6,7 @@ export interface OSItem {
   description: string;
   state: OSState;
   href?: string;
+  businessUnit?: string;
 }
 
 const SHOPS_URL = process.env.NEXT_PUBLIC_SHOPS_APP_URL ?? "http://localhost:3002";

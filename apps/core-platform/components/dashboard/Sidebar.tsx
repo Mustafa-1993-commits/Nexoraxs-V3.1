@@ -1,3 +1,4 @@
+// @deprecated — use components/shell/Shell.tsx instead
 "use client";
 
 import { Icon, Logo } from "@nexoraxs/ui";
@@ -5,11 +6,6 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { navItems } from "@/lib/mock-data/nav-items";
-const resources = [
-  { label: "Documentation", href: "#" },
-  { label: "Changelog",     href: "#" },
-  { label: "Support",       href: "#" },
-];
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,37 +69,6 @@ export function Sidebar() {
             })}
           </nav>
 
-          {/* Resources section */}
-          <p className="chip mb-2 px-3 text-white/30">Resources</p>
-          <nav className="space-y-0.5">
-            {resources.map((r) => (
-              <a
-                key={r.label}
-                href={r.href}
-                className="nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-white/50 hover:bg-white/5 hover:text-white"
-              >
-                {r.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-
-        {/* Beta access card */}
-        <div className="border-t border-white/5 p-3">
-          <div
-            className="rounded-xl border border-white/10 p-4"
-            style={{
-              background:
-                "linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.05),transparent)",
-            }}
-          >
-            <div className="mb-2 flex items-center gap-2">
-              <span className="text-xs font-semibold text-white">✦ Beta access</span>
-            </div>
-            <p className="text-[11px] leading-relaxed text-white/40">
-              Early-bird plan. Pricing locked in for 12 months.
-            </p>
-          </div>
         </div>
       </aside>
     </>

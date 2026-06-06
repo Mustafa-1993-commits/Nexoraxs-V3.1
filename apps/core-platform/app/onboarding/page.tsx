@@ -1,632 +1,475 @@
 "use client";
 
-import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore, type ComponentProps } from "react";
-
-import { Icon } from "@nexoraxs/ui";
+import type { LucideIcon } from "lucide-react";
 import {
-  completeWorkspaceOnboarding,
-  getMockUserName,
-  isWorkspaceOnboardingComplete,
-  saveWorkspaceCountry,
-  saveWorkspaceSetup,
-} from "@/lib/session";
+  ArrowLeft,
+  ArrowRight,
+  Box,
+  Briefcase,
+  Building2,
+  Check,
+  Cpu,
+  Dumbbell,
+  GitBranch,
+  HeartPulse,
+  Info,
+  Languages,
+  MapPin,
+  Moon,
+  Pill,
+  Shirt,
+  ShoppingBag,
+  ShoppingCart,
+  Sparkles,
+  Store,
+  Stethoscope,
+  Sun,
+  Utensils,
+  UsersRound,
+  Wrench,
+} from "lucide-react";
+import { useApp } from "@/lib/store";
+import { OS_BU_PRESETS, COUNTRIES, CURRENCIES, TIMEZONES, OPERATING_SYSTEMS, ONB_PLANS } from "@/lib/store";
+import { PhaseStepper } from "@/components/onboarding/PhaseStepper";
 
-const subscribeToNothing = () => () => {};
-
-const regionOptions = [
-  { value: "me-central", label: "Middle East (Central)" },
-  { value: "eu-central", label: "EU (Central)" },
-  { value: "us-east", label: "US East" },
-  { value: "ap-southeast", label: "Asia Pacific (SE)" },
-] as const;
-
-const REGION_COUNTRIES: Record<string, readonly { value: string; label: string }[]> = {
-  "me-central": [
-    { value: "Egypt",                label: "Egypt"                },
-    { value: "Saudi Arabia",         label: "Saudi Arabia"         },
-    { value: "United Arab Emirates", label: "United Arab Emirates" },
-    { value: "Kuwait",               label: "Kuwait"               },
-    { value: "Qatar",                label: "Qatar"                },
-  ],
-  "eu-central": [
-    { value: "Germany",     label: "Germany"     },
-    { value: "France",      label: "France"      },
-    { value: "Netherlands", label: "Netherlands" },
-    { value: "Poland",      label: "Poland"      },
-    { value: "Spain",       label: "Spain"       },
-  ],
-  "us-east": [
-    { value: "United States", label: "United States" },
-    { value: "Canada",        label: "Canada"        },
-  ],
-  "ap-southeast": [
-    { value: "Singapore",   label: "Singapore"   },
-    { value: "Malaysia",    label: "Malaysia"    },
-    { value: "Thailand",    label: "Thailand"    },
-    { value: "Indonesia",   label: "Indonesia"   },
-    { value: "Philippines", label: "Philippines" },
-  ],
+const STEP_KEYS = ["language", "workspace", "branch", "chooseos", "plan", "bu"] as const;
+type StepKey = (typeof STEP_KEYS)[number];
+const CORE_COUNT = 3;
+const STEP_LABELS: Record<StepKey, string> = {
+  language: "Language",
+  workspace: "Workspace",
+  branch: "Main Branch",
+  chooseos: "Operating System",
+  plan: "Plan",
+  bu: "Business Unit",
 };
 
-const osCards = [
-  {
-    id: "commerce",
-    name: "Commerce OS",
-    description: "Retail, inventory, and point-of-sale management.",
-    available: true,
-    icon: "apps" as const,
-  },
-  {
-    id: "healthcare",
-    name: "Healthcare OS",
-    description: "Clinic, appointment, and patient management — coming soon.",
-    available: false,
-    icon: "apps" as const,
-  },
-  {
-    id: "hr",
-    name: "HR OS",
-    description: "Employee, payroll, and attendance management — coming soon.",
-    available: false,
-    icon: "apps" as const,
-  },
-  {
-    id: "crm",
-    name: "CRM OS",
-    description: "Leads, pipelines, and customer communications — coming soon.",
-    available: false,
-    icon: "apps" as const,
-  },
-  {
-    id: "gym",
-    name: "Gym OS",
-    description: "Memberships, trainers, and class management — coming soon.",
-    available: false,
-    icon: "apps" as const,
-  },
-  {
-    id: "maintenance",
-    name: "Maintenance OS",
-    description: "Field service and repair ticket workflows — coming soon.",
-    available: false,
-    icon: "apps" as const,
-  },
-] as const;
-
-type Step = 1 | 2 | 3;
-type RegionValue = (typeof regionOptions)[number]["value"];
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+interface FormState {
+  lang: "en" | "ar";
+  name: string;
+  country: string;
+  currency: string;
+  tz: string;
+  chosenOS: string | null;
+  plan: string | null;
+  buName: string;
+  buPreset: string | null;
+  branch: string;
+  branchCity: string;
 }
 
-function StepIndicator({ currentStep }: { currentStep: Step }) {
-  const items: { step: Step; label: string }[] = [
-    { step: 1, label: "Workspace" },
-    { step: 2, label: "Apps" },
-    { step: 3, label: "Review" },
-  ];
+const iconMap: Record<string, LucideIcon> = {
+  box: Box,
+  cpu: Cpu,
+  dumbbell: Dumbbell,
+  "git-branch": GitBranch,
+  "heart-pulse": HeartPulse,
+  pill: Pill,
+  shirt: Shirt,
+  "shopping-bag": ShoppingBag,
+  "shopping-cart": ShoppingCart,
+  sparkles: Sparkles,
+  store: Store,
+  stethoscope: Stethoscope,
+  utensils: Utensils,
+  "users-round": UsersRound,
+  wrench: Wrench,
+};
 
-  return (
-    <div className="w-full max-w-2xl">
-      <div className="flex items-start gap-2 sm:gap-3">
-        {items.map((item, index) => {
-          const completed = currentStep > item.step;
-          const active = currentStep === item.step;
-
-          return (
-            <div key={item.label} className="flex min-w-0 flex-1 items-start gap-2 sm:gap-3">
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className={[
-                    "flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold transition-colors",
-                    completed
-                      ? "border-emerald-500/40 bg-emerald-500/20 text-emerald-300"
-                      : active
-                        ? "border-blue-500/40 bg-blue-500 text-white"
-                        : "border-white/10 bg-white/[0.03] text-white/35",
-                  ].join(" ")}
-                >
-                  {completed ? <Icon name="check" className="h-4 w-4" /> : item.step}
-                </div>
-                <div
-                  className={[
-                    "text-center text-[11px] font-medium sm:text-xs",
-                    active || completed ? "text-white/90" : "text-white/35",
-                  ].join(" ")}
-                >
-                  {item.label}
-                </div>
-              </div>
-
-              {index < items.length - 1 ? (
-                <div className="mt-4 h-px flex-1 rounded-full bg-white/10">
-                  <div
-                    className={[
-                      "h-px w-full rounded-full",
-                      currentStep > item.step
-                        ? "bg-blue-500/70"
-                        : "bg-transparent",
-                    ].join(" ")}
-                  />
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+function CatalogIcon({ name, size = 19 }: { name: string; size?: number }) {
+  const Icon = iconMap[name] ?? Box;
+  return <Icon size={size} strokeWidth={1.8} />;
 }
 
-function SummaryCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: ComponentProps<typeof Icon>["name"];
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-white/70">
-        <Icon name={icon} className="h-4 w-4" />
-      </div>
-      <div className="text-xs font-medium text-white/40">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-white">{value}</div>
-    </div>
-  );
+function planPriceParts(price: string): { amount: string; per?: string } {
+  if (price === "Free") return { amount: "Free", per: "14-day trial" };
+  if (price === "Custom") return { amount: "Custom", per: "Contact sales" };
+  return { amount: price.replace(" EGP/mo", ""), per: "EGP / mo" };
 }
 
 export default function OnboardingPage() {
+  const {
+    isHydrated, isAuthenticated, isOnboardingComplete,
+    lang, setLang, theme, toggleTheme, showToast, logoutUser,
+    createWorkspace, createBranch, selectOS, selectPlan,
+    createBusinessUnit, completeOnboarding,
+  } = useApp();
   const router = useRouter();
-  const mounted = useSyncExternalStore(subscribeToNothing, () => true, () => false);
-  const isComplete = mounted ? isWorkspaceOnboardingComplete() : false;
-  const mockUserName = useSyncExternalStore(
-    subscribeToNothing,
-    () => getMockUserName() ?? "Workspace owner",
-    () => "Workspace owner",
-  );
 
-  const [currentStep, setCurrentStep] = useState<Step>(1);
-  const [workspaceName, setWorkspaceName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
-  const [region, setRegion] = useState<RegionValue>("me-central");
-  const [country, setCountry] = useState<string>("Egypt");
-  const [shopsEnabled, setShopsEnabled] = useState(true);
+  const [step, setStep] = useState(0);
+  const [f, setF] = useState<FormState>({
+    lang,
+    name: "",
+    country: "Egypt",
+    currency: "EGP",
+    tz: "Africa/Cairo",
+    chosenOS: null,
+    plan: null,
+    buName: "",
+    buPreset: null,
+    branch: "",
+    branchCity: "",
+  });
 
-  const canProceed =
-    currentStep === 1
-      ? workspaceName.trim() !== "" && slug.trim() !== ""
-      : currentStep === 2
-        ? shopsEnabled
-        : true;
+  const upd = (patch: Partial<FormState>) => setF((p) => ({ ...p, ...patch }));
 
-  const handleNameChange = (value: string) => {
-    setWorkspaceName(value);
-    if (!slugManuallyEdited) {
-      setSlug(toSlug(value));
-    }
-  };
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (!isAuthenticated) { router.replace("/login"); return; }
+    if (isOnboardingComplete) { router.replace("/dashboard/apps"); return; }
+  }, [isHydrated, isAuthenticated, isOnboardingComplete, router]);
 
-  const handleSlugChange = (value: string) => {
-    setSlugManuallyEdited(true);
-    setSlug(value);
-  };
+  const cur = STEP_KEYS[step] as StepKey;
+  const isLast = step === STEP_KEYS.length - 1;
+  const stepLabels = STEP_KEYS.map((k) => STEP_LABELS[k]);
 
-  const handleRegionChange = (newRegion: RegionValue) => {
-    setRegion(newRegion);
-    const firstCountry = REGION_COUNTRIES[newRegion]?.[0]?.value ?? "";
-    setCountry(firstCountry);
-  };
+  const canNext = (() => {
+    if (cur === "workspace") return !!f.name.trim();
+    if (cur === "branch") return !!f.branch.trim();
+    if (cur === "chooseos") return !!f.chosenOS;
+    if (cur === "plan") return !!f.plan;
+    if (cur === "bu") return !!(f.buName.trim() && f.buPreset);
+    return true;
+  })();
 
-  const handleBack = () => {
-    setCurrentStep((step) => (step > 1 ? ((step - 1) as Step) : step));
-  };
+  const osObj = OPERATING_SYSTEMS.find((o) => o.id === f.chosenOS);
+  const osName = osObj?.name || "your operating system";
+  const presets = OS_BU_PRESETS[f.chosenOS as keyof typeof OS_BU_PRESETS] || [];
 
-  const handleContinue = () => {
-    if (currentStep === 3) {
-      saveWorkspaceSetup({
-        workspaceName,
-        slug,
-        region,
-        country,
-        shopsEnabled,
-      });
-      saveWorkspaceCountry(country);
-      completeWorkspaceOnboarding();
+  function finish() {
+    createWorkspace({
+      name: f.name,
+      country: f.country,
+      currency: f.currency || "EGP",
+      timezone: f.tz || "Africa/Cairo",
+    });
+    createBranch({ name: f.branch, isMain: true });
+    selectOS(f.chosenOS!);
+    selectPlan(f.plan as "starter" | "pro" | "business");
+    createBusinessUnit({ name: f.buName, preset: f.buPreset!, osId: f.chosenOS! });
+    completeOnboarding();
+    if (f.chosenOS === "commerce") {
+      showToast("Workspace ready — open Commerce OS from the Product Hub.", "success");
       router.push("/dashboard/apps");
-      return;
+    } else {
+      showToast(`${osName} is coming soon — Commerce OS is the active system in this MVP.`, "info");
+      router.push("/dashboard");
     }
+  }
 
-    if (canProceed) {
-      setCurrentStep((step) => ((step + 1) as Step));
-    }
-  };
+  function next() {
+    if (isLast) { finish(); return; }
+    setStep((s) => s + 1);
+  }
+  function back() {
+    if (step > 0) { setStep((s) => s - 1); return; }
+    router.push("/welcome");
+  }
+  function signOut() { logoutUser(); router.push("/login"); }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0f] text-white">
-      <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0a0a0f]/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div>
-            <div className="text-sm font-semibold tracking-tight text-white">
-              NexoraXS
-            </div>
-            <div className="text-[11px] text-white/35">
-              Core workspace onboarding
-            </div>
-          </div>
-          <div className="hidden text-right sm:block">
-            <div className="text-xs font-medium text-white/70">Workspace setup</div>
-            <div className="text-[11px] text-white/35">Three-step flow</div>
-          </div>
+    <div className="nx-onb">
+      {/* Top bar */}
+      <div className="nx-onb-bar">
+        <span style={{ fontWeight: 800, fontSize: 17, color: "var(--accent)", letterSpacing: "-.02em" }}>NexoraXS</span>
+        <span className="nx-spacer" />
+        <button className="nx-icon-btn" onClick={toggleTheme} title="Toggle theme">
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+        <div className="nx-langswitch" style={{ background: "var(--surface-3)" }}>
+          <button
+            className={lang === "en" ? "on" : ""}
+            style={{ color: lang === "en" ? "var(--text)" : "var(--text-3)" }}
+            onClick={() => { setLang("en"); upd({ lang: "en" }); }}
+          >EN</button>
+          <button
+            className={lang === "ar" ? "on" : ""}
+            style={{ color: lang === "ar" ? "var(--text)" : "var(--text-3)" }}
+            onClick={() => { setLang("ar"); upd({ lang: "ar" }); }}
+          >ع</button>
         </div>
-      </header>
+        <button className="nx-link" style={{ fontSize: 13 }} onClick={signOut}>Sign out</button>
+      </div>
 
-      <main className="flex flex-1 flex-col">
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pb-28 pt-8 sm:px-6 sm:pb-32 sm:pt-10 lg:px-8">
-          {!mounted ? (
-            <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6">
-              <div className="h-10 w-full rounded-2xl border border-white/10 bg-white/[0.03]" />
-              <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-6 sm:p-8">
-                <div className="h-6 w-40 rounded-full bg-white/10" />
-                <div className="mt-4 h-24 rounded-2xl bg-white/[0.02]" />
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <div className="h-24 rounded-2xl bg-white/[0.02]" />
-                  <div className="h-24 rounded-2xl bg-white/[0.02]" />
-                </div>
-              </div>
-            </div>
-          ) : isComplete ? (
-            <div className="mx-auto flex w-full max-w-xl flex-1 items-center">
-              <div className="w-full rounded-[28px] border border-white/10 bg-white/[0.04] p-8 shadow-2xl shadow-black/20">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-                  <Icon name="check" className="h-6 w-6" />
-                </div>
-                <h1 className="mt-5 text-center text-2xl font-bold tracking-tight text-white">
-                  Workspace already set up
-                </h1>
-                <p className="mt-3 text-center text-sm leading-relaxed text-white/55">
-                  Your workspace onboarding is complete. Go to the dashboard to
-                  manage apps and workspace settings.
-                </p>
-                <div className="mt-7 flex justify-center">
-                  <Link
-                    href="/dashboard/apps"
-                    className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+      {/* Phase stepper */}
+      <div style={{ padding: "22px 24px 6px", display: "flex", justifyContent: "center" }}>
+        <PhaseStepper steps={stepLabels} current={step} coreCount={CORE_COUNT} />
+      </div>
+
+      {/* Body */}
+      <div className="nx-onb-body" style={{ paddingTop: 18 }}>
+        <div
+          key={cur}
+          className={["nx-onb-card", cur === "plan" || cur === "chooseos" ? "wide" : ""].filter(Boolean).join(" ")}
+        >
+          {/* ── Step: Language ── */}
+          {cur === "language" && (
+            <>
+              <h1 className="nx-onb-h">Choose your language</h1>
+              <p className="nx-onb-sub">You can change this anytime. Arabic switches the interface to right-to-left.</p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 24 }}>
+                {([
+                  ["en", "English", "LTR · Left to right"],
+                  ["ar", "العربية", "RTL · من اليمين لليسار"],
+                ] as const).map(([id, name, sub]) => (
+                  <button
+                    key={id}
+                    className={"nx-choice" + (f.lang === id ? " on" : "")}
+                    style={{ flexDirection: "column", alignItems: "flex-start", gap: 6 }}
+                    onClick={() => { upd({ lang: id }); setLang(id); }}
                   >
-                    Go to dashboard
-                  </Link>
+                    <span className="nx-choice-ic"><Languages size={19} /></span>
+                    <span style={{ fontWeight: 700, fontSize: 16 }}>{name}</span>
+                    <span style={{ fontSize: 12, color: "var(--text-2)" }}>{sub}</span>
+                    <span className="nx-choice-check"><Check size={13} /></span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ── Step: Workspace ── */}
+          {cur === "workspace" && (
+            <>
+              <span className="nx-eyebrow">Your company</span>
+              <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Create your workspace</h1>
+              <p className="nx-onb-sub">The workspace is your company or group — the home for billing, teams and every operating system.</p>
+              <div className="nx-form-grid" style={{ marginTop: 22 }}>
+                <div className="nx-field">
+                  <label className="nx-field-label">Workspace name</label>
+                  <div className="nx-input-wrap">
+                    <Building2 size={16} className="nx-input-icon" />
+                    <input
+                      className="nx-input has-icon"
+                      value={f.name}
+                      onChange={(e) => upd({ name: e.target.value })}
+                      placeholder="Acme Group"
+                    />
+                  </div>
+                  <div className="nx-field-hint">e.g. Mustafa Group — your parent company, not a single shop.</div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div className="nx-field">
+                    <label className="nx-field-label">Country</label>
+                    <select className="nx-input" value={f.country} onChange={(e) => upd({ country: e.target.value })}>
+                      {COUNTRIES.map((c) => <option key={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="nx-field">
+                    <label className="nx-field-label">Currency</label>
+                    <select className="nx-input" value={f.currency} onChange={(e) => upd({ currency: e.target.value })}>
+                      {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.code} — {c.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="nx-field">
+                  <label className="nx-field-label">Timezone</label>
+                  <select className="nx-input" value={f.tz} onChange={(e) => upd({ tz: e.target.value })}>
+                    {TIMEZONES.map((c) => <option key={c}>{c}</option>)}
+                  </select>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6">
-              <StepIndicator currentStep={currentStep} />
-
-              <section className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/15 sm:p-8">
-                {currentStep === 1 && (
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/30">
-                        Step 1
-                      </p>
-                      <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">
-                        Set up your workspace
-                      </h2>
-                      <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55">
-                        Your workspace is the account container for your team,
-                        settings, and connected apps.
-                      </p>
-                    </div>
-
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <label className="sm:col-span-2">
-                        <span className="mb-1.5 block text-xs font-medium text-white/45">
-                          Workspace name
-                        </span>
-                        <input
-                          autoFocus
-                          value={workspaceName}
-                          onChange={(event) =>
-                            handleNameChange(event.target.value)
-                          }
-                          placeholder="Mustafa's Co."
-                          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-blue-500/50"
-                        />
-                      </label>
-
-                      <label className="sm:col-span-2">
-                        <span className="mb-1.5 block text-xs font-medium text-white/45">
-                          Workspace slug
-                        </span>
-                        <div className="flex items-stretch overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors focus-within:border-blue-500/50">
-                          <div className="flex items-center border-r border-white/10 px-4 text-sm text-white/35">
-                            nexoraxs.com/
-                          </div>
-                          <input
-                            value={slug}
-                            onChange={(event) =>
-                              handleSlugChange(event.target.value)
-                            }
-                            placeholder="mustafas-co"
-                            className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none placeholder:text-white/25"
-                          />
-                        </div>
-                      </label>
-
-                      <label>
-                        <span className="mb-1.5 flex items-center gap-2 text-xs font-medium text-white/45">
-                          <Icon name="globe" className="h-3.5 w-3.5" />
-                          Region
-                        </span>
-                        <select
-                          value={region}
-                          onChange={(event) =>
-                            handleRegionChange(event.target.value as RegionValue)
-                          }
-                          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-                        >
-                          {regionOptions.map((option) => (
-                            <option
-                              key={option.value}
-                              value={option.value}
-                              className="bg-[#0f1017] text-white"
-                            >
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-
-                      <label>
-                        <span className="mb-1.5 flex items-center gap-2 text-xs font-medium text-white/45">
-                          <Icon name="globe" className="h-3.5 w-3.5" />
-                          Country
-                        </span>
-                        <select
-                          value={country}
-                          onChange={(event) => setCountry(event.target.value)}
-                          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-                        >
-                          {(REGION_COUNTRIES[region] ?? []).map((option) => (
-                            <option
-                              key={option.value}
-                              value={option.value}
-                              className="bg-[#0f1017] text-white"
-                            >
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    </div>
-
-                    <p className="rounded-2xl border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-xs leading-relaxed text-blue-100/85">
-                      Workspace name and slug identify your account. Region sets
-                      the default data residency. Country sets your
-                      workspace&apos;s primary operating region.
-                    </p>
-                  </div>
-                )}
-
-                {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/30">
-                        Step 2
-                      </p>
-                      <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">
-                        Choose your operating systems
-                      </h2>
-                      <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55">
-                        Select the operating systems you want to activate in this workspace.
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      {osCards.map((app) => {
-                        const active = app.id === "commerce" && shopsEnabled;
-
-                        return (
-                          <button
-                            key={app.id}
-                            type="button"
-                            disabled={!app.available}
-                            onClick={() => {
-                              if (app.available) {
-                                setShopsEnabled((value) => !value);
-                              }
-                            }}
-                            className={[
-                              "flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-colors",
-                              app.available
-                                ? active
-                                  ? "border-blue-500/60 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,0.25)]"
-                                  : "border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.05]"
-                                : "cursor-not-allowed border-white/10 bg-white/[0.02] opacity-55",
-                            ].join(" ")}
-                          >
-                            <div
-                              className={[
-                                "flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border text-white/70",
-                                active
-                                  ? "border-blue-500/30 bg-blue-500/15 text-blue-200"
-                                  : "border-white/10 bg-white/[0.03]",
-                              ].join(" ")}
-                            >
-                              <Icon name={app.icon} className="h-5 w-5" />
-                            </div>
-
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-start justify-between gap-3">
-                                <div>
-                                  <div className="text-sm font-semibold text-white">
-                                    {app.name}
-                                  </div>
-                                  <p className="mt-1 text-xs leading-relaxed text-white/45">
-                                    {app.description}
-                                  </p>
-                                </div>
-
-                                {app.available ? (
-                                  <span
-                                    className={[
-                                      "rounded-full px-2.5 py-1 text-[11px] font-medium",
-                                      active
-                                        ? "bg-blue-500/15 text-blue-100"
-                                        : "bg-white/5 text-white/45",
-                                    ].join(" ")}
-                                  >
-                                    {active ? "Selected" : "Available"}
-                                  </span>
-                                ) : (
-                                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/40">
-                                    Coming Soon
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            {active ? (
-                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white">
-                                <Icon name="check" className="h-4 w-4" />
-                              </div>
-                            ) : app.available ? (
-                              <div className="h-6 w-6 rounded-full border border-white/20" />
-                            ) : null}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {!shopsEnabled && (
-                      <p className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-xs leading-relaxed text-amber-100/85">
-                        At least one operating system must be selected to continue.
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-                          <Icon name="check" className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/30">
-                            Step 3
-                          </p>
-                          <h2 className="mt-1 text-2xl font-bold tracking-tight text-white">
-                            Your workspace is ready
-                          </h2>
-                        </div>
-                      </div>
-                      <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55">
-                        Review your setup before entering the dashboard. You can
-                        change workspace settings later.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                      <SummaryCard
-                        icon="building"
-                        label="Workspace name"
-                        value={workspaceName || "Untitled workspace"}
-                      />
-                      <SummaryCard
-                        icon="globe"
-                        label="Workspace slug"
-                        value={`nexoraxs.com/${slug || "workspace"}`}
-                      />
-                      <SummaryCard
-                        icon="globe"
-                        label="Region"
-                        value={
-                          regionOptions.find((option) => option.value === region)
-                            ?.label ?? region
-                        }
-                      />
-                      <SummaryCard
-                        icon="globe"
-                        label="Country"
-                        value={country}
-                      />
-                      <SummaryCard
-                        icon="users"
-                        label="Team owner"
-                        value={mockUserName}
-                      />
-                      <SummaryCard
-                        icon="apps"
-                        label="Active OS"
-                        value={shopsEnabled ? "Commerce OS" : "None selected"}
-                      />
-                    </div>
-
-                    <p className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-xs leading-relaxed text-emerald-100/85">
-                      <span className="font-semibold text-emerald-200">
-                        Ready to launch.
-                      </span>{" "}
-                      This saves a lightweight workspace setup snapshot to
-                      session storage and takes you to the dashboard.
-                    </p>
-                  </div>
-                )}
-              </section>
-            </div>
+            </>
           )}
-        </div>
-      </main>
 
-      {!mounted || isComplete ? null : (
-        <nav className="sticky bottom-0 z-20 border-t border-white/5 bg-[#0a0a0f]/90 backdrop-blur-xl">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              className="inline-flex min-w-[7.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-white/[0.05] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Back
+          {/* ── Step: Branch ── */}
+          {cur === "branch" && (
+            <>
+              <span className="nx-eyebrow">Core setup · last step</span>
+              <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Add your main branch</h1>
+              <p className="nx-onb-sub">A branch is a physical operating location for your workspace. You can add more branches later.</p>
+              <div className="nx-form-grid" style={{ marginTop: 22 }}>
+                <div className="nx-field">
+                  <label className="nx-field-label">Branch name</label>
+                  <div className="nx-input-wrap">
+                    <MapPin size={16} className="nx-input-icon" />
+                    <input
+                      className="nx-input has-icon"
+                      value={f.branch}
+                      onChange={(e) => upd({ branch: e.target.value })}
+                      placeholder="Main Branch"
+                    />
+                  </div>
+                </div>
+                <div className="nx-field">
+                  <label className="nx-field-label">City</label>
+                  <input
+                    className="nx-input"
+                    value={f.branchCity}
+                    onChange={(e) => upd({ branchCity: e.target.value })}
+                    placeholder="Alexandria"
+                  />
+                </div>
+                {f.name && f.branch && (
+                  <div style={{
+                    background: "var(--accent-weak)", border: "1px solid var(--accent-weak-2)",
+                    borderRadius: "var(--r)", padding: "14px 16px",
+                    display: "flex", gap: 12, alignItems: "center",
+                  }}>
+                    <span style={{ width: 36, height: 36, borderRadius: "var(--r-sm)", background: "var(--accent)", color: "#fff", display: "grid", placeItems: "center", flexShrink: 0 }}>
+                      <Check size={18} />
+                    </span>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>Core platform ready</div>
+                      <p style={{ fontSize: 12.5, color: "var(--text-2)", marginTop: 3 }}>
+                        {f.name} · {f.branch} · {f.country}. Next, activate your first operating system.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* ── Step: Choose OS ── */}
+          {cur === "chooseos" && (
+            <>
+              <span className="nx-eyebrow">Product Hub</span>
+              <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Choose an operating system</h1>
+              <p className="nx-onb-sub">Pick the system to set up first. You can add more to {f.name} anytime — each has its own subscription.</p>
+              <div className="nx-hub-grid" style={{ marginTop: 22 }}>
+                {OPERATING_SYSTEMS.map((os) => {
+                  const avail = os.status === "available";
+                  const on = f.chosenOS === os.id;
+                  return (
+                    <button
+                      key={os.id}
+                      className={["nx-choice", on ? "on" : "", !avail ? "disabled" : ""].filter(Boolean).join(" ")}
+                      style={{ flexDirection: "column", alignItems: "flex-start", gap: 10, padding: 16 }}
+                      onClick={() => avail && upd({ chosenOS: os.id, buPreset: null })}
+                      disabled={!avail}
+                    >
+                      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                        <span
+                          className="nx-choice-ic"
+                          style={{ background: os.accent + "1a", color: os.accent }}
+                        >
+                          <CatalogIcon name={os.icon} />
+                        </span>
+                        <span className={`nx-badge ${avail ? "tone-pos" : "tone-neutral"}`} style={{ fontSize: 11 }}>
+                          {avail ? "Available" : "Soon"}
+                        </span>
+                      </div>
+                      <span style={{ fontWeight: 700, fontSize: 14 }}>{os.name}</span>
+                      <span style={{ fontSize: 11.5, color: "var(--text-2)", lineHeight: 1.4, fontWeight: 600 }}>{os.tagline}</span>
+                      {on && <span className="nx-choice-check" style={{ insetBlockStart: 16, insetInlineEnd: 16 }}><Check size={13} /></span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* ── Step: Plan ── */}
+          {cur === "plan" && (
+            <>
+              <span className="nx-eyebrow">{osName}</span>
+              <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Choose a plan</h1>
+              <p className="nx-onb-sub">Start free for 14 days. Pick the plan for {osName} — you only pay for the systems you switch on.</p>
+              <div className="nx-plan-grid">
+                {ONB_PLANS.map((p) => {
+                  const price = planPriceParts(p.price);
+                  return (
+                    <button
+                      key={p.key}
+                      className={"nx-choice nx-plan-choice" + (f.plan === p.key ? " on" : "")}
+                      onClick={() => upd({ plan: p.key })}
+                    >
+                      {p.popular && <span className="nx-plan-pop">Recommended</span>}
+                      <span className="nx-plan-name">{p.name}</span>
+                      <span className="nx-plan-price">
+                        {price.amount}
+                        {price.per ? <span>{price.per}</span> : null}
+                      </span>
+                      <span className="nx-plan-tagline">{p.tagline}</span>
+                      <span className="nx-plan-sep" />
+                      <span className="nx-plan-features">
+                        {p.features.map((ft) => (
+                          <span key={ft}>
+                            <Check size={13} strokeWidth={2.1} />{ft}
+                          </span>
+                        ))}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* ── Step: Business Unit ── */}
+          {cur === "bu" && (
+            <>
+              <span className="nx-eyebrow">First business unit</span>
+              <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Create a business unit for {osName}</h1>
+              <p className="nx-onb-sub">A business unit is one activity or business line inside your workspace.</p>
+              <div className="nx-form-grid" style={{ marginTop: 22 }}>
+                <div className="nx-field">
+                  <label className="nx-field-label">Business unit name</label>
+                  <div className="nx-input-wrap">
+                    <Briefcase size={16} className="nx-input-icon" />
+                    <input
+                      className="nx-input has-icon"
+                      value={f.buName}
+                      onChange={(e) => upd({ buName: e.target.value })}
+                      placeholder={presets[0] ? "e.g. " + presets[0].label : "Business unit name"}
+                    />
+                  </div>
+                </div>
+                <div className="nx-field">
+                  <label className="nx-field-label">Choose a {osName} type</label>
+                  <div className="nx-field-hint" style={{ marginBottom: 10 }}>
+                    {f.chosenOS === "commerce"
+                      ? "Applies smart defaults. Pharmacy is a preset inside Commerce OS — not Healthcare OS."
+                      : `Applies smart defaults for ${osName}.`}
+                  </div>
+                  <div className="nx-bu-preset-grid">
+                    {presets.map((p) => (
+                      <button
+                        key={p.id}
+                        className={"nx-choice" + (f.buPreset === p.id ? " on" : "")}
+                        onClick={() => upd({ buPreset: p.id, buName: f.buName || p.label })}
+                      >
+                        <span className="nx-choice-ic nx-choice-ic-sm">
+                          <CatalogIcon name={p.icon} size={16} />
+                        </span>
+                        <span style={{ fontWeight: 700, fontSize: 12.5 }}>{p.label}</span>
+                        {f.buPreset === p.id && <span className="nx-choice-check"><Check size={12} /></span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "12px 14px", background: "var(--surface-2)", borderRadius: "var(--r)", border: "1px solid var(--border)" }}>
+                  <Info size={16} style={{ color: "var(--accent)", flexShrink: 0, marginTop: 1 }} />
+                  <span style={{ fontSize: 12.5, color: "var(--text-2)", lineHeight: 1.5 }}>
+                    {f.chosenOS === "commerce"
+                      ? "This connects Commerce OS to your workspace. You can add more business units and operating systems later."
+                      : `This sets up ${osName} for your workspace. You can add more business units later.`}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Nav actions */}
+          <div className="nx-onb-actions">
+            <button className="nx-btn" onClick={back} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <ArrowLeft size={16} />Back
             </button>
-
             <button
-              type="button"
-              onClick={handleContinue}
-              disabled={!canProceed}
-              className={[
-                "inline-flex min-w-[10rem] items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white transition-colors",
-                currentStep === 3
-                  ? "bg-emerald-600 hover:bg-emerald-500"
-                  : "bg-blue-600 hover:bg-blue-500",
-                !canProceed ? "cursor-not-allowed opacity-50 hover:bg-inherit" : "",
-              ].join(" ")}
+              className="nx-btn-primary"
+              disabled={!canNext}
+              onClick={next}
+              style={{ display: "flex", alignItems: "center", gap: 8 }}
             >
-              {currentStep === 3 ? (
-                <>
-                  <Icon name="zap" className="h-4 w-4" />
-                  Continue to dashboard
-                </>
-              ) : (
-                "Continue"
-              )}
+              {isLast ? "Finish setup" : "Continue"}
+              {isLast ? <Check size={16} /> : <ArrowRight size={16} />}
             </button>
           </div>
-        </nav>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

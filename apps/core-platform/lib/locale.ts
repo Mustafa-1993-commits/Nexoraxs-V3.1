@@ -1,6 +1,7 @@
+// @deprecated — use lib/store/ instead
 export type Locale = "en" | "ar";
 
-const LOCALE_KEY = "nexoraxs_locale";
+const LOCALE_KEY = "core_locale";
 const LOCALE_EVENT = "nexoraxs:locale-change";
 
 export function getLocale(): Locale {

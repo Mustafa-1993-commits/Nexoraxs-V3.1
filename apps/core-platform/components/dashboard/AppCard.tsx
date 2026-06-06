@@ -2,7 +2,7 @@
 
 import type { OSItem } from "@/lib/mock-data/apps";
 
-export function OSCard({ name, description, state, href }: OSItem) {
+export function OSCard({ name, description, state, href, businessUnit }: OSItem) {
   const dimmed = state === "coming-soon" || state === "locked";
 
   return (
@@ -10,7 +10,14 @@ export function OSCard({ name, description, state, href }: OSItem) {
       className={`flex flex-col rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-white/20 ${dimmed ? "opacity-50" : ""}`}
     >
       <div className="flex items-start justify-between gap-4">
-        <h3 className="text-base font-semibold text-white">{name}</h3>
+        <div>
+          <h3 className="text-base font-semibold text-white">{name}</h3>
+          {businessUnit && (
+            <span className="mt-1 inline-block rounded-full bg-blue-500/15 px-2 py-0.5 text-xs text-blue-400">
+              {businessUnit}
+            </span>
+          )}
+        </div>
         {state === "coming-soon" && (
           <span className="flex-shrink-0 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-white/40">
             Coming Soon
