@@ -54,23 +54,31 @@ export function Shell({ mode, navGroups, children }: ShellProps) {
       {/* Topbar */}
       <div className="nx-topbar">
         <div className="nx-topbar-brand">
-          <button
-            className="nx-burger nx-icon-btn"
-            onClick={() => setSidebarOpen((o) => !o)}
-            aria-label="Menu"
+          {/* NexoraXS wordmark PNG — light/white variant for dark topbar */}
+          <Link
+            href={mode === "commerce" ? "http://localhost:3002/dashboard" : "/dashboard/apps"}
+            style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}
           >
-            <Menu size={20} />
-          </button>
-          <Link href={mode === "commerce" ? "http://localhost:3002/dashboard" : "/dashboard/apps"} style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill="#6366f1" />
-              <path d="M8 22L14 10L20 18L23 14L28 22H8Z" fill="white" fillOpacity=".9" />
-            </svg>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/branding/logo-top.png"
+              alt="NexoraXS"
+              style={{ height: 28, width: "auto", display: "block" }}
+            />
           </Link>
-          <span className="nx-topbar-product">
-            {mode === "commerce" ? "Commerce OS" : "NexoraXS"}
-          </span>
+          {mode === "commerce" && (
+            <span className="nx-topbar-product">Commerce OS</span>
+          )}
         </div>
+
+        {/* Burger — hidden on desktop via CSS, shown on mobile */}
+        <button
+          className="nx-burger nx-icon-btn"
+          onClick={() => setSidebarOpen((o) => !o)}
+          aria-label="Menu"
+        >
+          <Menu size={20} />
+        </button>
 
         {/* Search (placeholder) */}
         <div className="nx-topbar-search">

@@ -67,6 +67,9 @@ export interface CommerceProduct {
   unit?: string;
   low?: number;
   lowStockThreshold: number;
+  brand?: string;
+  expiry?: string;
+  image?: string | null;
   notes: string;
   createdAt: string;
   updatedAt: string;

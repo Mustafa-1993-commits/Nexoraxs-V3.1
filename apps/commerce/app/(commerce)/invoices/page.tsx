@@ -2,18 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, FileText, Eye, X, ExternalLink } from "lucide-react";
+import { Search, FileText, X, ExternalLink } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { type CommerceInvoice } from "@/lib/store";
-import { fmtDate } from "@/lib/store";
+import { fmtDate, computeDoc } from "@/lib/store";
 
 export default function InvoicesPage() {
-  const { invoices, money, currentWorkspace, getCommerceSetup } = useApp();
+  const { invoices, orders, money, currentWorkspace, getCommerceSetup } = useApp();
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<CommerceInvoice | null>(null);
   const setup = getCommerceSetup();
 
   const filtered = invoices.filter((inv) => !q || inv.invoiceNumber.includes(q)).slice().reverse();
+
+  function orderNumber(orderId: string): string {
+    const o = orders.find((x) => x.id === orderId);
+    return o ? o.orderNumber : orderId.slice(0, 8);
+  }
 
   return (
     <div className="nx-main-scroll">
@@ -35,26 +40,32 @@ export default function InvoicesPage() {
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border)", background: "var(--surface-2)" }}>
-                  {["Invoice", "Order", "Date", "Items", "Total", ""].map((h) => (
-                    <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--text-2)" }}>{h}</th>
+                  {["Invoice", "Order", "Date", "Net", setup.vatRegistered ? (setup.taxLabel || "VAT") : null, "Total", ""].filter(Boolean).map((h) => (
+                    <th key={h!} style={{ padding: "10px 14px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "var(--text-2)" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((inv) => (
-                  <tr key={inv.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                    <td style={{ padding: "11px 14px", fontWeight: 600, fontSize: 13, fontFamily: "var(--mono)" }}>{inv.invoiceNumber}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12.5, color: "var(--text-2)", fontFamily: "var(--mono)" }}>{inv.orderId}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12.5, color: "var(--text-2)" }}>{fmtDate(inv.createdAt)}</td>
-                    <td style={{ padding: "11px 14px", fontSize: 12.5, color: "var(--text-2)" }}>{inv.items.reduce((s, i) => s + i.qty, 0)} items</td>
-                    <td style={{ padding: "11px 14px", fontWeight: 700, fontSize: 13 }}>{money(inv.total)}</td>
-                    <td style={{ padding: "11px 14px" }}>
-                      <button onClick={() => setSelected(inv)} style={{ padding: "5px 10px", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: "var(--r-sm)", cursor: "pointer", display: "flex", gap: 5, alignItems: "center", fontSize: 12 }}>
-                        <Eye size={12} />View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((inv) => {
+                  const doc = computeDoc(inv.items, setup, inv.discount || 0);
+                  return (
+                    <tr key={inv.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                      <td style={{ padding: "11px 14px", fontWeight: 600, fontSize: 13, fontFamily: "var(--mono)" }}>{inv.invoiceNumber}</td>
+                      <td style={{ padding: "11px 14px", fontSize: 12.5, color: "var(--accent)", fontFamily: "var(--mono)" }}>
+                        <Link href={`/orders/${inv.orderId}`} style={{ color: "var(--accent)", textDecoration: "none" }}>{orderNumber(inv.orderId)}</Link>
+                      </td>
+                      <td style={{ padding: "11px 14px", fontSize: 12.5, color: "var(--text-2)" }}>{fmtDate(inv.createdAt)}</td>
+                      <td style={{ padding: "11px 14px", fontSize: 13, color: "var(--text-2)" }}>{money(doc.net)}</td>
+                      {setup.vatRegistered && <td style={{ padding: "11px 14px", fontSize: 13, color: "var(--text-2)" }}>{money(doc.vat)}</td>}
+                      <td style={{ padding: "11px 14px", fontWeight: 700, fontSize: 13 }}>{money(doc.total)}</td>
+                      <td style={{ padding: "11px 14px" }}>
+                        <button onClick={() => setSelected(inv)} style={{ padding: "5px 10px", background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: "var(--r-sm)", cursor: "pointer", display: "flex", gap: 5, alignItems: "center", fontSize: 12 }}>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

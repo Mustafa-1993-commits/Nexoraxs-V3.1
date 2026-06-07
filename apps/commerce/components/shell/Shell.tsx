@@ -62,14 +62,22 @@ export function Shell({ mode, navGroups, children }: ShellProps) {
           >
             <Menu size={20} />
           </button>
-          <Link href={mode === "commerce" ? "/dashboard" : "/dashboard/apps"} style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-            <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill="#6366f1" />
-              <path d="M8 22L14 10L20 18L23 14L28 22H8Z" fill="white" fillOpacity=".9" />
-            </svg>
+          <Link href={mode === "commerce" ? "/dashboard" : "/dashboard/apps"} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+            <span style={{
+              width: 26, height: 26, borderRadius: 7, display: "grid", placeItems: "center",
+              background: "linear-gradient(135deg,#3b82f6,#6d4ae6 55%,#7c3aed)",
+              boxShadow: "0 4px 14px -4px rgba(99,80,230,.55), inset 0 1px 0 rgba(255,255,255,.28)", flexShrink: 0,
+            }}>
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none">
+                <path d="M5 19V5l14 14V5" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <span style={{ fontWeight: 800, fontSize: 15, letterSpacing: "-0.02em", color: "#fff" }}>
+              Nexora<span style={{ background: "linear-gradient(120deg,#60a5fa,#c4b5fd)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>XS</span>
+            </span>
           </Link>
           <span className="nx-topbar-product">
-            {mode === "commerce" ? "Commerce OS" : "NexoraXS"}
+            {mode === "commerce" ? "Commerce OS" : "Core Platform"}
           </span>
         </div>
 

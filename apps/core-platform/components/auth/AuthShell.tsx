@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { NexoraLogo } from "@nexoraxs/ui";
 
 interface AuthShellProps {
   title: string;
@@ -20,7 +19,8 @@ export function AuthShell({ title, subtitle, footer, narrow, children }: AuthShe
       <div className={`nx-auth-stage${narrow ? " narrow" : ""}`}>
         {/* Logo wordmark */}
         <Link href="/" className="nx-auth-logo" style={{ textDecoration: "none" }}>
-          <NexoraLogo variant="top" className="nx-auth-logo-img" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- Auth uses the runtime public wordmark asset directly. */}
+          <img src="/branding/nexoraxs-wordmark-light.png" alt="NexoraXS" className="nx-auth-logo-img" />
         </Link>
 
         {/* Auth card */}

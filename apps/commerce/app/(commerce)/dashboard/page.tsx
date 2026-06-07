@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   TrendingUp, Package, AlertTriangle, Landmark, ScanBarcode, Globe,
   PackagePlus, UserPlus, SlidersHorizontal, ReceiptText, Check,
-  ArrowRight,
+  ArrowRight, ChevronRight, Zap, Download, Plus,
 } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { nxRevenue, nxOrdersForPeriod, nxBestSellers, nxOrderDate } from "@/lib/store";
@@ -33,7 +33,7 @@ function KpiCard({
 }
 
 export default function CommerceDashboardPage() {
-  const { orders, products, customers, invoices, money, currentBranch, getCommerceSetup } = useApp();
+  const { orders, products, customers, invoices, money, currentBranch, getCommerceSetup, subscriptions, showToast } = useApp();
   const [period, setPeriod] = useState<Period>("today");
 
   const setup = getCommerceSetup();
@@ -66,17 +66,24 @@ export default function CommerceDashboardPage() {
   const posReady = doneCount >= 4;
   const periodSuffix = period === "today" ? "today" : period === "week" ? "this week" : "this month";
 
+  const sub = subscriptions.find((s) => s.osId === "commerce");
+  const subStatus = sub ? (sub.status === "active" ? "Active" : sub.status === "trialing" ? "Trial" : "Unified") : "Unified";
+
   return (
     <div className="nx-main-scroll">
-      <div style={{ padding: "24px 28px", maxWidth: 1200, margin: "0 auto" }}>
+      <div style={{ padding: "28px 32px 48px", maxWidth: 1280, margin: "0 auto" }}>
 
         {/* Page header */}
-        <div className="nx-page-head">
+        <div className="nx-dash-head">
           <div>
-            <h1 className="nx-page-title">Commerce Dashboard</h1>
+            <div className="nx-dash-crumb">Platform <ChevronRight size={12} /> Commerce OS <ChevronRight size={12} /> Dashboard</div>
+            <div className="nx-row" style={{ gap: 10, marginTop: 4 }}>
+              <h1 className="nx-page-title" style={{ fontSize: 26 }}>Commerce Dashboard</h1>
+              <span className="nx-badge tone-accent"><Zap size={11} />{subStatus}</span>
+            </div>
             <p className="nx-page-sub">{todayStr} · {branchName}</p>
           </div>
-          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="nx-row" style={{ gap: 10, flexWrap: "wrap" }}>
             <div className="nx-seg">
               {(["today", "week", "month"] as Period[]).map((p) => (
                 <button key={p} className={period === p ? "on" : ""} onClick={() => setPeriod(p)}>
@@ -84,38 +91,35 @@ export default function CommerceDashboardPage() {
                 </button>
               ))}
             </div>
+            <button className="nx-btn nx-btn-secondary nx-btn-md" onClick={() => showToast("Export is coming soon", "info")}>
+              <Download size={15} />Export
+            </button>
+            <Link href="/products/new" className="nx-btn nx-btn-primary nx-btn-md" style={{ textDecoration: "none" }}>
+              <Plus size={15} />New product
+            </Link>
           </div>
         </div>
 
         {/* Setup hero */}
         {!allDone && (
-          <div className="nx-card" style={{ padding: "20px 22px", marginBottom: 20 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+          <div className="nx-card nx-setup-hero" style={{ marginBottom: 20 }}>
+            <div className="nx-setup-hero-top">
               <div>
                 <span className="nx-eyebrow">Get started</span>
-                <h2 style={{ fontWeight: 800, fontSize: 17, marginTop: 4 }}>Finish setting up Commerce OS</h2>
-                <p style={{ fontSize: 13, color: "var(--text-2)", marginTop: 4 }}>
-                  {doneCount} of 5 steps done — you&apos;re almost ready to make your first sale.
-                </p>
+                <h2 className="nx-setup-hero-title">Finish setting up Commerce OS</h2>
+                <p className="nx-setup-hero-sub">{doneCount} of 5 steps done — you&apos;re almost ready to make your first sale.</p>
               </div>
-              <div style={{ fontFamily: "var(--mono)", fontWeight: 800, fontSize: 22, color: "var(--accent)", flexShrink: 0 }}>
-                {Math.round((doneCount / 5) * 100)}%
-              </div>
+              <div className="nx-setup-pct">{Math.round((doneCount / 5) * 100)}%</div>
             </div>
-            <div style={{ height: 4, background: "var(--surface-3)", borderRadius: 4, margin: "14px 0 18px", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${(doneCount / 5) * 100}%`, background: "var(--accent)", borderRadius: 4, transition: "width .4s" }} />
+            <div className="nx-progress" style={{ margin: "4px 0 18px" }}>
+              <span style={{ width: `${(doneCount / 5) * 100}%` }} />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="nx-setup-tasks">
               {checklist.map((c) => (
-                <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13.5 }}>
-                  <span style={{
-                    width: 20, height: 20, borderRadius: "50%", border: `2px solid ${c.done ? "var(--accent)" : "var(--border-strong)"}`,
-                    background: c.done ? "var(--accent)" : "transparent", display: "grid", placeItems: "center", flexShrink: 0, transition: "all .2s",
-                  }}>
-                    {c.done && <Check size={11} color="#fff" strokeWidth={3} />}
-                  </span>
-                  <span style={{ color: c.done ? "var(--text-2)" : "var(--text)", fontWeight: c.done ? 500 : 600 }}>{c.label}</span>
-                  {!c.done && <ArrowRight size={13} style={{ color: "var(--accent)", marginLeft: "auto" }} />}
+                <div key={c.label} className={"nx-task" + (c.done ? " done" : "")}>
+                  <span className="nx-check-ring">{c.done && <Check size={12} />}</span>
+                  <span className="nx-task-label">{c.label}</span>
+                  {!c.done && <ArrowRight size={15} className="nx-task-go" />}
                 </div>
               ))}
             </div>
@@ -135,7 +139,7 @@ export default function CommerceDashboardPage() {
                 {posReady ? "Ready · in-store checkout" : "Needs setup"}
               </div>
             </div>
-            <Link href="/pos" className="nx-btn nx-btn-sm" style={{ textDecoration: "none" }}>
+            <Link href="/pos" className="nx-btn nx-btn-primary nx-btn-sm" style={{ textDecoration: "none" }}>
               Open <ArrowRight size={13} />
             </Link>
           </div>

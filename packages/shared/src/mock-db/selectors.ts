@@ -1,4 +1,4 @@
-import type { CommerceOrder, CommerceProduct } from "@nexoraxs/types";
+import type { CommerceCustomer, CommerceOrder, CommerceProduct } from "@nexoraxs/types";
 import type { Lang } from "./schema";
 
 export function money(n: number, lang: Lang = "en"): string {
@@ -134,6 +134,15 @@ export function nxGroupSales(orders: CommerceOrder[], period: string, now?: Date
     if (d && d.getMonth() === ref.getMonth()) buckets[d.getDate() - 1].total += nxOrderTotal(o);
   });
   return { buckets, axis: ["1", String(Math.ceil(daysIn / 2)), String(daysIn)], kind: "day" };
+}
+
+export function nxNewCustomers(customers: CommerceCustomer[], period: string, now?: Date): number {
+  const inP = nxPeriodFilter(period, now);
+  return (customers || []).filter((c) => {
+    if (!c.createdAt) return false;
+    const d = new Date(c.createdAt);
+    return !isNaN(d.getTime()) && inP(d);
+  }).length;
 }
 
 export { computeDoc, fmtDate } from "../commerce/documents";

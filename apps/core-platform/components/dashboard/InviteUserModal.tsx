@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { getBUName, getBranchName } from "@/lib/core-session";
 
 const WORKSPACE_ROLES = ["Owner", "Admin", "Member"] as const;
-const OS_OPTIONS      = ["Commerce OS"] as const;
+const OS_OPTIONS = ["Commerce OS"] as const;
 
 const COMMERCE_OS_ROLES = [
   "Commerce Admin",
@@ -41,11 +42,10 @@ const EMPTY_FORM = {
 };
 
 export function InviteUserModal({ open, onClose, onInvite }: Props) {
-  const backdropRef = useRef<HTMLDivElement>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const upd = (p: Partial<typeof EMPTY_FORM>) => setForm((f) => ({ ...f, ...p }));
 
-  const buName     = getBUName()     ?? null;
+  const buName = getBUName() ?? null;
   const branchName = getBranchName() ?? null;
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function InviteUserModal({ open, onClose, onInvite }: Props) {
     onInvite({
       id: `mock-${Date.now()}`,
       email: form.email.trim(),
-      name:  form.name.trim() || undefined,
+      name: form.name.trim() || undefined,
       workspaceRole: form.workspaceRole,
       osAccess: form.os,
       businessUnitAccess: form.buAccess,
@@ -72,147 +72,96 @@ export function InviteUserModal({ open, onClose, onInvite }: Props) {
     onClose();
   }
 
-  function handleBackdropClick(e: React.MouseEvent) {
-    if (e.target === backdropRef.current) onClose();
-  }
-
   return (
-    <div
-      ref={backdropRef}
-      onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-    >
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f1017] p-6 shadow-2xl">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">Invite user</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/5 hover:text-white"
-            aria-label="Close"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          {/* Email */}
-          <label className="block">
-            <span className="mb-1.5 block text-xs font-medium text-white/45">Email *</span>
-            <input
-              type="email"
-              autoFocus
-              value={form.email}
-              onChange={(e) => upd({ email: e.target.value, emailError: "" })}
-              placeholder="colleague@example.com"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-blue-500/50"
-            />
-            {form.emailError && <p className="mt-1 text-xs text-rose-400">{form.emailError}</p>}
-          </label>
-
-          {/* Name */}
-          <label className="block">
-            <span className="mb-1.5 block text-xs font-medium text-white/45">Name (optional)</span>
-            <input
-              value={form.name}
-              onChange={(e) => upd({ name: e.target.value })}
-              placeholder="Full name"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-blue-500/50"
-            />
-          </label>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {/* Workspace role */}
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-white/45">Workspace role</span>
-              <select
-                value={form.workspaceRole}
-                onChange={(e) => upd({ workspaceRole: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-              >
-                {WORKSPACE_ROLES.map((r) => (
-                  <option key={r} value={r} className="bg-[#0f1017] text-white">{r}</option>
-                ))}
-              </select>
-            </label>
-
-            {/* Operating System */}
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-white/45">Operating System</span>
-              <select
-                value={form.os}
-                onChange={(e) => upd({ os: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-              >
-                {OS_OPTIONS.map((o) => (
-                  <option key={o} value={o} className="bg-[#0f1017] text-white">{o}</option>
-                ))}
-              </select>
-            </label>
-
-            {/* Business Unit */}
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-white/45">Business Unit</span>
-              <select
-                value={form.buAccess}
-                onChange={(e) => upd({ buAccess: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-              >
-                <option value="All" className="bg-[#0f1017] text-white">All</option>
-                {buName && (
-                  <option value={buName} className="bg-[#0f1017] text-white">{buName}</option>
-                )}
-              </select>
-            </label>
-
-            {/* Branch */}
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-white/45">Branch</span>
-              <select
-                value={form.branchAccess}
-                onChange={(e) => upd({ branchAccess: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-              >
-                <option value="All" className="bg-[#0f1017] text-white">All</option>
-                {branchName && (
-                  <option value={branchName} className="bg-[#0f1017] text-white">{branchName}</option>
-                )}
-              </select>
-            </label>
+    <div className="nx-modal-scrim" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="nx-modal" style={{ maxWidth: 520 }}>
+        <div className="nx-modal-head">
+          <div>
+            <h3 className="nx-modal-title">Invite a team member</h3>
+            <p style={{ fontSize: 12.5, color: "var(--text-3)", marginTop: 2 }}>
+              They&apos;ll get an email to join your workspace.
+            </p>
           </div>
-
-          {/* OS Role */}
-          <label className="block">
-            <span className="mb-1.5 block text-xs font-medium text-white/45">OS Role</span>
-            <select
-              value={form.osRole}
-              onChange={(e) => upd({ osRole: e.target.value })}
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-blue-500/50"
-            >
-              {COMMERCE_OS_ROLES.map((r) => (
-                <option key={r} value={r} className="bg-[#0f1017] text-white">{r}</option>
-              ))}
-            </select>
-          </label>
+          <button className="nx-icon-btn" onClick={onClose} aria-label="Close">
+            <X size={18} />
+          </button>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 transition-colors hover:bg-white/10"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
-          >
-            Send Invite
-          </button>
+        <div className="nx-modal-body">
+          <div className="nx-form-grid">
+            {/* Email */}
+            <div className="nx-field">
+              <label className="nx-field-label">Email *</label>
+              <input
+                className={`nx-input${form.emailError ? " error" : ""}`}
+                type="email"
+                autoFocus
+                value={form.email}
+                onChange={(e) => upd({ email: e.target.value, emailError: "" })}
+                placeholder="colleague@example.com"
+              />
+              {form.emailError && <p style={{ fontSize: 12, color: "var(--neg)", marginTop: 4 }}>{form.emailError}</p>}
+            </div>
+
+            {/* Name */}
+            <div className="nx-field">
+              <label className="nx-field-label">Name <span style={{ color: "var(--text-3)", fontWeight: 400 }}>(optional)</span></label>
+              <input
+                className="nx-input"
+                value={form.name}
+                onChange={(e) => upd({ name: e.target.value })}
+                placeholder="Full name"
+              />
+            </div>
+
+            {/* Workspace role + OS access row */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="nx-field">
+                <label className="nx-field-label">Workspace role</label>
+                <select className="nx-input" value={form.workspaceRole} onChange={(e) => upd({ workspaceRole: e.target.value })}>
+                  {WORKSPACE_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+                <span style={{ fontSize: 11, color: "var(--text-3)", marginTop: 3 }}>Controls workspace-level access like billing and team.</span>
+              </div>
+              <div className="nx-field">
+                <label className="nx-field-label">Operating system</label>
+                <select className="nx-input" value={form.os} onChange={(e) => upd({ os: e.target.value })}>
+                  {OS_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* BU + Branch row */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div className="nx-field">
+                <label className="nx-field-label">Business unit</label>
+                <select className="nx-input" value={form.buAccess} onChange={(e) => upd({ buAccess: e.target.value })}>
+                  <option value="All">All</option>
+                  {buName && <option value={buName}>{buName}</option>}
+                </select>
+              </div>
+              <div className="nx-field">
+                <label className="nx-field-label">Branch</label>
+                <select className="nx-input" value={form.branchAccess} onChange={(e) => upd({ branchAccess: e.target.value })}>
+                  <option value="All">All</option>
+                  {branchName && <option value={branchName}>{branchName}</option>}
+                </select>
+              </div>
+            </div>
+
+            {/* OS Role */}
+            <div className="nx-field">
+              <label className="nx-field-label">OS role</label>
+              <select className="nx-input" value={form.osRole} onChange={(e) => upd({ osRole: e.target.value })}>
+                {COMMERCE_OS_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="nx-modal-foot">
+          <button className="nx-btn nx-btn-secondary nx-btn-md" onClick={onClose}>Cancel</button>
+          <button className="nx-btn nx-btn-primary nx-btn-md" onClick={handleSubmit}>Send invite</button>
         </div>
       </div>
     </div>

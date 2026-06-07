@@ -389,14 +389,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
       branchId,
       name: data.name, preset: data.preset, presetId: data.preset, createdAt: nowISO(),
     };
-    const updatedBranches = state.branches.map((b) => b.id === branchId ? { ...b, businessUnitId: bu.id } : b);
     const newBUs = [...state.businessUnits, bu];
     writeCollection(STORAGE_KEYS.businessUnits, newBUs);
-    writeCollection(STORAGE_KEYS.branches, updatedBranches);
     writeSession(STORAGE_KEYS.currentBusinessUnitId, bu.id);
-    setState((prev) => ({ ...prev, businessUnits: newBUs, branches: updatedBranches, currentBusinessUnitId: bu.id }));
+    // Read fresh from localStorage so a preceding synchronous createBranch call's
+    // persisted branch isn't lost (state.branches is still the stale closure value).
+    const freshBranches = readCollection<Branch>(STORAGE_KEYS.branches);
+    const updatedBranches = freshBranches.map((b) => b.id === branchId ? { ...b, businessUnitId: bu.id } : b);
+    writeCollection(STORAGE_KEYS.branches, updatedBranches);
+    setState((prev) => ({
+      ...prev,
+      businessUnits: newBUs,
+      branches: prev.branches.map((b) => b.id === branchId ? { ...b, businessUnitId: bu.id } : b),
+      currentBusinessUnitId: bu.id,
+    }));
     return bu;
-  }, [state.businessUnits, state.branches, state.currentWorkspaceId, state.currentOSSubscriptionId, state.currentBranchId]);
+  }, [state.businessUnits, state.currentWorkspaceId, state.currentOSSubscriptionId, state.currentBranchId]);
 
   const completeOnboarding = useCallback(() => {
     const osId = state.currentOSId || readSession<string | null>(STORAGE_KEYS.currentOSId, null) || "commerce";

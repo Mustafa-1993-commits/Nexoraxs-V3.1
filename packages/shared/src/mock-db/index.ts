@@ -38,6 +38,7 @@ export {
   nxRevenue,
   nxBestSellers,
   nxGroupSales,
+  nxNewCustomers,
   computeDoc,
   fmtDate,
 } from "./selectors";

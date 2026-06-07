@@ -1,9 +1,24 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Building2 } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { BrandMark } from "@/components/ui/BrandMark";
+
+function WorkspaceIcon({ size }: { size: number }) {
+  const ic = Math.round(size * 0.5);
+  return (
+    <span
+      className="nx-choice-ic"
+      style={{
+        width: size, height: size, borderRadius: Math.round(size * 0.28),
+        background: "#14161d", color: "#fff", flexShrink: 0,
+      }}
+    >
+      <Building2 size={ic} strokeWidth={2} />
+    </span>
+  );
+}
 
 interface ContextSwitcherProps {
   mode: "core" | "commerce";
@@ -23,12 +38,12 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
   }, []);
 
   const name = mode === "commerce" ? (currentBU?.name ?? "Commerce OS") : (currentWorkspace?.name ?? "Workspace");
-  const sub = mode === "commerce" ? (currentBranch?.name ?? "") : "";
+  const sub = mode === "commerce" ? (currentBranch?.name ?? "") : "Workspace";
 
   return (
     <div ref={ref} className="nx-sb-context">
       <button className="nx-sb-switch" onClick={() => setOpen((o) => !o)}>
-        <BrandMark name={name} size={32} radius={8} />
+        {mode === "core" ? <WorkspaceIcon size={32} /> : <BrandMark name={name} size={32} radius={8} />}
         <span className="nx-sb-switch-txt">
           <span className="nx-sb-switch-name">{name}</span>
           {sub && <span className="nx-sb-switch-sub">{sub}</span>}
@@ -42,7 +57,7 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
             <>
               <div className="nx-dd-label">Workspace</div>
               <button className="nx-dd-item" onClick={() => setOpen(false)}>
-                <BrandMark name={currentWorkspace.name} size={22} radius={6} />
+                <WorkspaceIcon size={22} />
                 <span style={{ flex: 1, textAlign: "start" }}>{currentWorkspace.name}</span>
                 <Check size={14} style={{ color: "var(--accent)" }} />
               </button>

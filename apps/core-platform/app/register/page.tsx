@@ -46,8 +46,8 @@ export default function RegisterPage() {
   const [step, setStep] = useState<"email" | "details">("email");
 
   useEffect(() => {
-    if (isAuthenticated) router.replace("/welcome");
-  }, [isAuthenticated, router]);
+    if (isAuthenticated && step === "email") router.replace("/welcome");
+  }, [isAuthenticated, router, step]);
 
   if (isAuthenticated) return null;
 
@@ -88,7 +88,7 @@ export default function RegisterPage() {
     if (result === "email_taken") {
       setError("An account with this email already exists.");
     } else {
-      router.push("/welcome");
+      router.push("/verify");
     }
   }
 

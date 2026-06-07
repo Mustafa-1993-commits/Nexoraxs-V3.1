@@ -14,7 +14,7 @@ export { t } from "@nexoraxs/shared";
 export type { Lang } from "@nexoraxs/shared";
 export {
   money, taxBreak, nxOrdersForPeriod, nxRevenue, nxBestSellers,
-  nxGroupSales, nxOrderDate, nxOrderTotal, computeDoc, fmtDate,
+  nxGroupSales, nxNewCustomers, nxOrderDate, nxOrderTotal, computeDoc, fmtDate,
 } from "@nexoraxs/shared";
 export type { SalesBucket, SalesGroup } from "@nexoraxs/shared";
 export { uid, nowISO, normalizeEmail, getUserDisplayName } from "@nexoraxs/shared";

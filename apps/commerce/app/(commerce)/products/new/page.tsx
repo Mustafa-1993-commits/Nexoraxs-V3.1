@@ -1,128 +1,245 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { useRef, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ArrowLeft, ScanBarcode, Lock, ImageUp, Upload, RefreshCw, Check, CircleAlert,
+} from "lucide-react";
 import { useApp } from "@/lib/store";
+import { type CommerceProduct } from "@/lib/store";
 
 type ProductForm = {
-  name: string; sku: string; barcode: string; category: string;
-  price: string; cost: string; stock: string; lowStockThreshold: string;
-  taxable: boolean; unit: string; notes: string;
+  name: string; category: string; brand: string; sku: string; barcode: string;
+  price: string; cost: string; taxable: boolean;
+  stock: string; unit: string; lowStockThreshold: string; expiry: string;
+  notes: string; image: string | null;
 };
 
-export default function NewProductPage() {
+function Field({
+  label, optional, hint, error, children,
+}: { label: string; optional?: boolean; hint?: string; error?: string; children: React.ReactNode }) {
+  return (
+    <label className="nx-field">
+      <span className="nx-field-label">{label}{optional && <span className="nx-field-optional">Optional</span>}</span>
+      {children}
+      {error ? <span className="nx-field-error"><CircleAlert size={13} />{error}</span>
+        : hint ? <span className="nx-field-hint">{hint}</span> : null}
+    </label>
+  );
+}
+
+function NewProductForm() {
   const router = useRouter();
-  const { addProduct, showToast, getCommerceSetup } = useApp();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("edit");
+  const { products, addProduct, updateProduct, showToast, getCommerceSetup } = useApp();
+  const editing = editId ? products.find((p) => p.id === editId) ?? null : null;
+
   const setup = getCommerceSetup();
   const categories = setup.categories?.length ? setup.categories : ["General"];
   const units = (setup as { units?: string[] }).units || ["Piece"];
 
-  const [form, setForm] = useState<ProductForm>({
-    name: "", sku: "", barcode: "", category: categories[0] ?? "General",
-    price: "", cost: "", stock: "0", lowStockThreshold: "5",
-    taxable: true, unit: units[0] ?? "Piece", notes: "",
+  const [form, setForm] = useState<ProductForm>(() => editing ? {
+    name: editing.name, category: editing.category || categories[0] || "General", brand: editing.brand || "",
+    sku: editing.sku || "", barcode: editing.barcode || "",
+    price: String(editing.price || ""), cost: String(editing.cost || ""), taxable: editing.taxable ?? true,
+    stock: editing.stock != null ? String(editing.stock) : "", unit: editing.unit || units[0] || "Piece",
+    lowStockThreshold: String(editing.lowStockThreshold || 5), expiry: editing.expiry || "",
+    notes: editing.notes || "", image: editing.image ?? null,
+  } : {
+    name: "", category: categories[0] || "General", brand: "", sku: "", barcode: "",
+    price: "", cost: "", taxable: true,
+    stock: "", unit: units[0] || "Piece", lowStockThreshold: "5", expiry: "",
+    notes: "", image: null,
   });
+  const [errors, setErrors] = useState<{ name?: string; price?: string }>({});
   const [saving, setSaving] = useState(false);
+  const imgRef = useRef<HTMLInputElement>(null);
 
   const upd = (p: Partial<ProductForm>) => setForm((f) => ({ ...f, ...p }));
 
+  function onImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => upd({ image: reader.result as string });
+    reader.readAsDataURL(file);
+  }
+
   function handleSave() {
-    if (!form.name.trim()) { showToast("Product name is required", "warn"); return; }
-    if (!form.price) { showToast("Selling price is required", "warn"); return; }
+    const err: { name?: string; price?: string } = {};
+    if (!form.name.trim() || form.name.trim().length < 3) err.name = "Enter a real product name";
+    if (!form.price || +form.price <= 0) err.price = "Enter a valid price";
+    setErrors(err);
+    if (Object.keys(err).length) return;
+
     setSaving(true);
+    const data = {
+      name: form.name.trim(), category: form.category || "General", brand: form.brand.trim(),
+      sku: form.sku.trim(), barcode: form.barcode.trim(),
+      price: +form.price || 0, cost: +form.cost || 0, taxable: form.taxable,
+      stock: form.stock !== "" ? +form.stock : null, unit: form.unit || "Piece",
+      lowStockThreshold: +form.lowStockThreshold || 5, expiry: form.expiry.trim(),
+      notes: form.notes.trim(), image: form.image, isActive: true,
+    };
     setTimeout(() => {
-      addProduct({
-        name: form.name.trim(), sku: form.sku.trim(), barcode: form.barcode.trim(),
-        category: form.category || "General", price: +form.price || 0, cost: +form.cost || 0,
-        stock: form.stock !== "" ? +form.stock : null, lowStockThreshold: +form.lowStockThreshold || 5,
-        taxable: form.taxable, unit: form.unit || "Piece", notes: form.notes.trim(),
-      });
-      showToast("Product added", "success");
+      if (editing) {
+        updateProduct(editing.id, data as Partial<CommerceProduct>);
+        showToast("Product updated", "success");
+      } else {
+        addProduct(data as Parameters<typeof addProduct>[0]);
+        showToast("Product added — now available in POS", "success");
+      }
       router.push("/products");
-    }, 300);
+    }, 250);
   }
 
   return (
     <div className="nx-main-scroll">
-      <div style={{ padding: "24px 28px", maxWidth: 680, margin: "0 auto" }}>
-        <button
-          onClick={() => router.back()}
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--text-2)", background: "none", border: "none", cursor: "pointer", marginBottom: 20, padding: 0 }}
-        >
-          <ArrowLeft size={13} />Back to Products
-        </button>
+      <div className="nx-page" style={{ maxWidth: 920 }}>
+        <div className="nx-page-head">
+          <div>
+            <button className="nx-link" onClick={() => router.push("/products")} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+              <ArrowLeft size={13} />Back to products
+            </button>
+            <h1 className="nx-page-title">{editing ? "Edit product" : "Add a product"}</h1>
+          </div>
+        </div>
 
-        <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", marginBottom: 24 }}>Add Product</h1>
+        <div className="nx-detail">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="nx-card nx-card-pad">
+              <div className="nx-section-title" style={{ marginBottom: 14 }}>Details</div>
+              <div className="nx-form-grid">
+                <Field label="Product name" error={errors.name}>
+                  <input className="nx-input" autoFocus value={form.name} onChange={(e) => upd({ name: e.target.value })} placeholder="Product name" />
+                </Field>
+                <div className="nx-form-grid cols-2">
+                  <Field label="Category">
+                    <select className="nx-input" value={form.category} onChange={(e) => upd({ category: e.target.value })}>
+                      {categories.map((c) => <option key={c}>{c}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Brand" optional>
+                    <input className="nx-input" value={form.brand} onChange={(e) => upd({ brand: e.target.value })} placeholder="Brand" />
+                  </Field>
+                </div>
+                <div className="nx-form-grid cols-2">
+                  <Field label="SKU" optional>
+                    <input className="nx-input" value={form.sku} onChange={(e) => upd({ sku: e.target.value })} placeholder="SKU-001" />
+                  </Field>
+                  <Field label="Barcode" optional>
+                    <span className="nx-input-wrap">
+                      <ScanBarcode size={16} className="nx-input-icon" />
+                      <input className="nx-input" value={form.barcode} onChange={(e) => upd({ barcode: e.target.value })} placeholder="Scan or enter barcode" />
+                    </span>
+                  </Field>
+                </div>
+              </div>
+            </div>
 
-        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)", padding: "28px 28px" }}>
-          <div className="nx-form-grid">
-            <div className="nx-field" style={{ gridColumn: "1 / -1" }}>
-              <label className="nx-field-label">Product name *</label>
-              <input className="nx-input" autoFocus value={form.name} onChange={(e) => upd({ name: e.target.value })} placeholder="Product name" />
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <div className="nx-field">
-                <label className="nx-field-label">SKU</label>
-                <input className="nx-input" value={form.sku} onChange={(e) => upd({ sku: e.target.value })} placeholder="SKU-001" />
-              </div>
-              <div className="nx-field">
-                <label className="nx-field-label">Barcode</label>
-                <input className="nx-input" value={form.barcode} onChange={(e) => upd({ barcode: e.target.value })} placeholder="1234567890" />
-              </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <div className="nx-field">
-                <label className="nx-field-label">Category</label>
-                <select className="nx-input" value={form.category} onChange={(e) => upd({ category: e.target.value })}>
-                  {categories.map((c) => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-              <div className="nx-field">
-                <label className="nx-field-label">Unit</label>
-                <select className="nx-input" value={form.unit} onChange={(e) => upd({ unit: e.target.value })}>
-                  {units.map((u: string) => <option key={u}>{u}</option>)}
-                </select>
+            <div className="nx-card nx-card-pad">
+              <div className="nx-section-title" style={{ marginBottom: 14 }}>Pricing & tax</div>
+              <div className="nx-form-grid">
+                <div className="nx-form-grid cols-2">
+                  <Field label="Price (EGP)" error={errors.price}>
+                    <input className="nx-input" type="number" min="0" value={form.price} onChange={(e) => upd({ price: e.target.value })} placeholder="100" />
+                  </Field>
+                  <Field label="Cost (EGP)" optional>
+                    <input className="nx-input" type="number" min="0" value={form.cost} onChange={(e) => upd({ cost: e.target.value })} placeholder="0.00" />
+                  </Field>
+                </div>
+                <div className="nx-row" style={{ justifyContent: "space-between", padding: "4px 2px" }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 13.5 }}>Taxable</div>
+                    <div style={{ fontSize: 12, color: "var(--text-3)" }}>Apply 14% VAT to this product</div>
+                  </div>
+                  <button type="button" className={"nx-toggle" + (form.taxable ? " on" : "")} aria-pressed={form.taxable} onClick={() => upd({ taxable: !form.taxable })}>
+                    <span className="nx-toggle-knob" />
+                  </button>
+                </div>
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <div className="nx-field">
-                <label className="nx-field-label">Selling price (EGP) *</label>
-                <input className="nx-input" type="number" min="0" value={form.price} onChange={(e) => upd({ price: e.target.value })} placeholder="0.00" />
+
+            <div className="nx-card nx-card-pad">
+              <div className="nx-section-title" style={{ marginBottom: 14 }}>Inventory</div>
+              <div className="nx-form-grid">
+                <div className="nx-form-grid cols-2">
+                  <Field label="Stock quantity">
+                    <input className="nx-input" type="number" min="0" value={form.stock} onChange={(e) => upd({ stock: e.target.value })} placeholder="100" />
+                  </Field>
+                  <Field label="Unit">
+                    <select className="nx-input" value={form.unit} onChange={(e) => upd({ unit: e.target.value })}>
+                      {units.map((u: string) => <option key={u}>{u}</option>)}
+                    </select>
+                  </Field>
+                </div>
+                <div className="nx-form-grid cols-2">
+                  <Field label="Low stock threshold">
+                    <input className="nx-input" type="number" min="0" value={form.lowStockThreshold} onChange={(e) => upd({ lowStockThreshold: e.target.value })} placeholder="20" />
+                  </Field>
+                  <Field label="Expiry date" optional hint="Pharmacy preset">
+                    <input className="nx-input" type="month" value={form.expiry} onChange={(e) => upd({ expiry: e.target.value })} />
+                  </Field>
+                </div>
+                <div className="nx-row" style={{ justifyContent: "space-between", padding: "4px 2px", opacity: .6 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 13.5, display: "flex", alignItems: "center", gap: 8 }}>
+                      Batch number <span className="nx-badge tone-neutral"><Lock size={11} />Future</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--text-3)" }}>Available when batch tracking launches</div>
+                  </div>
+                  <button type="button" className="nx-toggle disabled" disabled aria-pressed={false}>
+                    <span className="nx-toggle-knob" />
+                  </button>
+                </div>
               </div>
-              <div className="nx-field">
-                <label className="nx-field-label">Cost price (EGP)</label>
-                <input className="nx-input" type="number" min="0" value={form.cost} onChange={(e) => upd({ cost: e.target.value })} placeholder="0.00" />
-              </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <div className="nx-field">
-                <label className="nx-field-label">Initial stock qty</label>
-                <input className="nx-input" type="number" min="0" value={form.stock} onChange={(e) => upd({ stock: e.target.value })} />
-              </div>
-              <div className="nx-field">
-                <label className="nx-field-label">Low stock alert at</label>
-                <input className="nx-input" type="number" min="0" value={form.lowStockThreshold} onChange={(e) => upd({ lowStockThreshold: e.target.value })} />
-              </div>
-            </div>
-            <div className="nx-field" style={{ gridColumn: "1 / -1" }}>
-              <label className="nx-field-label">Notes</label>
-              <textarea className="nx-input" rows={3} value={form.notes} onChange={(e) => upd({ notes: e.target.value })} placeholder="Internal notes…" style={{ resize: "vertical" }} />
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, gridColumn: "1 / -1" }}>
-              <input type="checkbox" id="taxable" checked={form.taxable} onChange={(e) => upd({ taxable: e.target.checked })} style={{ width: 16, height: 16 }} />
-              <label htmlFor="taxable" style={{ fontSize: 13, color: "var(--text)" }}>Apply VAT to this product</label>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, marginTop: 24, justifyContent: "flex-end" }}>
-            <button className="nx-btn" onClick={() => router.back()}>Cancel</button>
-            <button className="nx-btn-primary" onClick={handleSave} disabled={saving}>
-              {saving ? "Adding…" : "Add product"}
-            </button>
+          <div>
+            <div className="nx-card nx-card-pad" style={{ position: "sticky", top: 20 }}>
+              <div className="nx-section-title" style={{ marginBottom: 12 }}>Product image</div>
+              <input ref={imgRef} type="file" accept="image/*" hidden onChange={onImage} />
+              {form.image ? (
+                <div style={{ width: "100%", height: 150, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)", background: "var(--surface-2)" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={form.image} alt="Product" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                </div>
+              ) : (
+                <button type="button" onClick={() => imgRef.current?.click()} className="nx-thumb nx-thumb-stripe" style={{ width: "100%", height: 150, borderRadius: 12, flexDirection: "column", gap: 6, border: "none", cursor: "pointer" }}>
+                  <ImageUp size={22} />
+                  <span style={{ fontFamily: "var(--mono)", fontSize: 11 }}>product photo</span>
+                </button>
+              )}
+              <button type="button" className="nx-btn nx-btn-secondary nx-btn-sm nx-btn-full" style={{ marginTop: 12 }} onClick={() => imgRef.current?.click()}>
+                {form.image ? <RefreshCw size={14} /> : <Upload size={14} />}
+                {form.image ? "Replace image" : "Upload image"}
+              </button>
+              {form.image && (
+                <button type="button" className="nx-link" style={{ display: "block", margin: "10px auto 0", color: "var(--danger)" }} onClick={() => upd({ image: null })}>
+                  Remove image
+                </button>
+              )}
+              <hr className="nx-divider" style={{ margin: "18px 0" }} />
+              <button className="nx-btn nx-btn-primary nx-btn-full" onClick={handleSave} disabled={saving}>
+                <Check size={15} />{saving ? (editing ? "Saving…" : "Adding…") : (editing ? "Save changes" : "Add product")}
+              </button>
+              <button className="nx-btn nx-btn-ghost nx-btn-sm nx-btn-full" style={{ marginTop: 8 }} onClick={() => router.push("/products")}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewProductPage() {
+  return (
+    <Suspense>
+      <NewProductForm />
+    </Suspense>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronsUpDown, Check, Building2, Store, MapPin } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { BrandMark } from "@/components/ui/BrandMark";
 
@@ -15,57 +15,60 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function close(e: MouseEvent) {
+    function onClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
   const name = mode === "commerce" ? (currentBU?.name ?? "Commerce OS") : (currentWorkspace?.name ?? "Workspace");
-  const sub = mode === "commerce" ? (currentBranch?.name ?? "") : "";
+  const sub = mode === "commerce" ? `${currentBranch?.name ?? ""} · Commerce OS` : "Workspace";
 
   return (
     <div ref={ref} className="nx-sb-context">
       <button className="nx-sb-switch" onClick={() => setOpen((o) => !o)}>
-        <BrandMark name={name} size={32} radius={8} />
+        {mode === "core" ? (
+          <span className="nx-choice-ic" style={{ width: 34, height: 34, background: "#14161d", color: "#fff" }}>
+            <Building2 size={17} />
+          </span>
+        ) : (
+          <BrandMark name={name} size={34} radius={9} />
+        )}
         <span className="nx-sb-switch-txt">
           <span className="nx-sb-switch-name">{name}</span>
-          {sub && <span className="nx-sb-switch-sub">{sub}</span>}
+          <span className="nx-sb-switch-sub">{sub}</span>
         </span>
-        <ChevronDown size={14} style={{ color: "var(--text-3)", flexShrink: 0 }} />
+        <ChevronsUpDown size={15} style={{ color: "var(--text-3)", flexShrink: 0 }} />
       </button>
-
       {open && (
-        <div className="nx-dd left" style={{ top: "calc(100% + 4px)", width: "100%" }}>
-          {mode === "core" && currentWorkspace && (
-            <>
-              <div className="nx-dd-label">Workspace</div>
-              <button className="nx-dd-item" onClick={() => setOpen(false)}>
-                <BrandMark name={currentWorkspace.name} size={22} radius={6} />
-                <span style={{ flex: 1, textAlign: "start" }}>{currentWorkspace.name}</span>
-                <Check size={14} style={{ color: "var(--accent)" }} />
-              </button>
-            </>
-          )}
-
+        <div className="nx-dd left" style={{ top: "calc(100% + 4px)", width: "100%", minWidth: 256 }}>
+          <div className="nx-dd-label">Workspace</div>
+          <button className="nx-dd-item" onClick={() => setOpen(false)}>
+            <span className="nx-choice-ic" style={{ width: 28, height: 28, background: "#14161d", color: "#fff" }}>
+              <Building2 size={14} />
+            </span>
+            <span style={{ flex: 1, textAlign: "start" }}>{currentWorkspace?.name ?? "Workspace"}</span>
+            <Check size={15} style={{ color: "var(--accent)" }} />
+          </button>
           {mode === "commerce" && BUSINESS_UNITS.length > 0 && (
             <>
-              <div className="nx-dd-label">Business Unit</div>
+              <div className="nx-dd-label">Business unit</div>
               {BUSINESS_UNITS.map((bu) => (
                 <button
                   key={bu.id}
                   className="nx-dd-item"
                   onClick={() => { setCurrent({ currentBusinessUnitId: bu.id }); setOpen(false); }}
                 >
-                  <BrandMark name={bu.name} size={22} radius={6} />
+                  <span className="nx-choice-ic" style={{ width: 28, height: 28, background: "var(--accent-weak)", color: "var(--accent)" }}>
+                    <Store size={14} />
+                  </span>
                   <span style={{ flex: 1, textAlign: "start" }}>{bu.name}</span>
-                  {bu.id === currentBU?.id && <Check size={14} style={{ color: "var(--accent)" }} />}
+                  {bu.id === currentBU?.id && <Check size={15} style={{ color: "var(--accent)" }} />}
                 </button>
               ))}
             </>
           )}
-
           {mode === "commerce" && BRANCHES.length > 0 && (
             <>
               <div className="nx-dd-sep" />
@@ -76,8 +79,11 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
                   className="nx-dd-item"
                   onClick={() => { setCurrent({ currentBranchId: br.id }); setOpen(false); }}
                 >
+                  <span className="nx-choice-ic" style={{ width: 28, height: 28 }}>
+                    <MapPin size={14} />
+                  </span>
                   <span style={{ flex: 1, textAlign: "start" }}>{br.name}</span>
-                  {br.id === currentBranch?.id && <Check size={14} style={{ color: "var(--accent)" }} />}
+                  {br.id === currentBranch?.id && <Check size={15} style={{ color: "var(--accent)" }} />}
                 </button>
               ))}
             </>
