@@ -58,7 +58,7 @@
 - A healthcare app inside Commerce.
 - An HR system inside Commerce.
 - A CRM inside Commerce.
-- `shops-app` is a temporary code/UI label — the domain is **Commerce**, not Shops.
+- `apps/commerce` is the current Commerce OS frontend app. `shops-app` is a legacy/deprecated temporary code label and must not be reintroduced.
 - `restaurants-app` is a deprecated concept — restaurants are Commerce presets/modules, not a separate app.
 
 ---
@@ -82,7 +82,7 @@ NexoraXS Business Operating Platform
 │   ├── Localization (Arabic + English, RTL/LTR)
 │   └── Integrations Hub (future)
 │
-├── Commerce OS (shops.nexoraxs.com → future: commerce.nexoraxs.com)
+├── Commerce OS (commerce.nexoraxs.com)
 │   ├── Commerce Core
 │   ├── Business Presets: Retail, Restaurant/Cafe, Pharmacy, Supermarket, Electronics, Fashion, Cosmetics, Medical Supplies
 │   ├── POS Module
@@ -112,8 +112,8 @@ nexoraxs-v3/
 ├── apps/
 │   ├── landing/          → nexoraxs.com (Marketing site)
 │   ├── core-platform/    → app.nexoraxs.com (Auth, Workspace, Billing, Product Hub)
-│   ├── shops-app/        → shops.nexoraxs.com (Commerce OS — current code label)
-│   │                        ⚠ Domain = commerce. Rename deferred post UI-phase.
+│   ├── commerce/         → commerce.nexoraxs.com (Commerce OS frontend app)
+│   │                        Legacy: shops-app was the previous temporary code label; do not reintroduce it.
 │   ├── clinics-app/      → legacy placeholder; future product should be Healthcare OS, not Clinics-only
 │   └── restaurants-app/  → deprecated concept — absorbed into Commerce OS presets/modules
 │
@@ -847,8 +847,8 @@ POS is a Transaction Engine, not just a screen.
 | nexoraxs.com | landing | Marketing, pricing, docs |
 | app.nexoraxs.com | core-platform | Auth, workspace, billing, Product Hub |
 | api.nexoraxs.com | backend | Laravel REST API |
-| shops.nexoraxs.com | shops-app | Commerce OS current domain |
-| commerce.nexoraxs.com | shops-app | Commerce OS future domain |
+| commerce.nexoraxs.com | commerce | Commerce OS frontend app |
+| shops.nexoraxs.com | legacy/deprecated | Old Commerce OS preview domain; do not use for new code |
 | admin.nexoraxs.com | admin panel | Internal ops future |
 | healthcare.nexoraxs.com | healthcare-app | Future Healthcare OS |
 | hr.nexoraxs.com | hr-app | Future HR OS |
@@ -947,8 +947,8 @@ docs/*       → documentation-only alignment
 
 ```txt
 feat(core-platform): add product hub shell
-feat(shops-app): add commerce tax setup
-fix(shops-app): correct sidebar module filtering
+feat(commerce): add commerce tax setup
+fix(commerce): correct sidebar module filtering
 docs: align AGENTS.md with v5.3 architecture
 ```
 
@@ -961,7 +961,92 @@ docs: align AGENTS.md with v5.3 architecture
 
 ---
 
-## 26. Recommended Next Specs
+## 26. Current Implementation State (spec 042)
+
+The Claude AI Design prototype (`docs/claude.aidesign/`) has been ported into the live Next.js apps with shared packages.
+
+Current app ownership:
+- `apps/core-platform/` → Core Platform: auth, workspace, onboarding, Product Hub, billing, team, integrations, platform settings.
+- `apps/commerce/` → Commerce OS: commerce dashboard, setup, products, inventory, POS, orders, invoices, customers, reports, commerce settings.
+- `apps/shops-app/` → legacy/deprecated previous temporary code label. Do not recreate or import from it.
+
+All runtime data/types should come from shared packages, not from `docs/claude.aidesign/`.
+
+### Shared data/types packages
+
+| Package / File | Purpose |
+|------|---------|
+| `packages/types/` | Canonical shared TypeScript domain types only |
+| `packages/shared/src/mock-db/` | Mock local/session storage data layer, actions, selectors, seed data |
+| `packages/shared/src/commerce/documents.ts` | Commerce document/tax calculations such as `computeDoc` |
+| `packages/ui/src/styles/` | Shared scoped theme CSS: NexoraXS base, Core theme, Commerce theme |
+| `apps/*/lib/store/AppProvider.tsx` | App-specific React provider importing from `@nexoraxs/shared` and `@nexoraxs/types` |
+| `apps/*/lib/store/index.ts` | App store barrel export |
+
+Rules:
+- Pages/components must not read `localStorage` or `sessionStorage` directly.
+- Providers must initialize from an SSR-safe empty state and hydrate storage in `useEffect`.
+- `docs/claude.aidesign/` is reference only and must never be imported at runtime.
+
+### Shell components — `components/shell/`
+
+| Component | Purpose |
+|-----------|---------|
+| `Shell.tsx` | Generic shell (topbar + sidebar + content area) |
+| `ContextSwitcher.tsx` | Workspace/BU/Branch switcher dropdown |
+| `CoreShell.tsx` | Shell pre-configured for Core Platform nav |
+| `CommerceShell.tsx` | Shell pre-configured for Commerce OS nav |
+
+> Old `components/dashboard/Sidebar.tsx` and `components/dashboard/Topbar.tsx` are marked `@deprecated`.
+
+### Auth components — `components/auth/`
+
+`AuthShell.tsx`, `PasswordInput.tsx`, `PasswordStrength.tsx`, `SocialAuth.tsx`
+
+### Route tree — `app/`
+
+```txt
+app/
+├── (landing preserved) page.tsx         ← DO NOT TOUCH
+├── login/page.tsx
+├── register/page.tsx
+├── verify-email/page.tsx
+├── forgot-password/page.tsx
+├── reset-password/page.tsx
+├── welcome/page.tsx
+├── onboarding/page.tsx                  ← 6-step wizard
+├── dashboard/
+│   ├── layout.tsx                       ← CoreShell guard
+│   ├── page.tsx                         ← Core Platform home
+│   ├── apps/page.tsx                    ← Product Hub / OS Launcher
+│   ├── billing/page.tsx
+│   ├── team/page.tsx
+│   ├── integrations/page.tsx
+│   └── settings/page.tsx
+apps/commerce/
+
+    ├── layout.tsx                       ← CommerceShell + 3-level guard
+    ├── setup/
+    │   ├── layout.tsx                   ← minimal layout, no shell
+    │   └── page.tsx                     ← 8-step Commerce Setup wizard
+    ├── dashboard/page.tsx
+    ├── pos/page.tsx
+    ├── products/page.tsx
+    ├── inventory/page.tsx
+    ├── orders/page.tsx
+    ├── invoices/page.tsx
+    ├── customers/
+    │   ├── page.tsx
+    │   └── [id]/page.tsx
+    ├── reports/page.tsx
+    └── settings/page.tsx
+```
+
+### TypeScript — 0 errors. ESLint — 0 errors, 0 warnings.
+
+---
+
+## 27. Recommended Next Specs
 
 Start from architecture alignment, not backend.
 
@@ -980,7 +1065,7 @@ Backend starts only after UI flows and contracts are stable.
 
 ---
 
-## 27. Final Instruction for Agents
+## 28. Final Instruction for Agents
 
 Before writing code, answer these questions:
 
@@ -997,5 +1082,5 @@ If unsure, do not expand the architecture. Create a small spec and keep the MVP 
 ---
 
 <!-- SPECKIT START -->
-Active plan: specs/040-commerce-identity-tax-document-templates/plan.md
+Active plan: specs/042-claude-prototype-local-port/plan.md
 <!-- SPECKIT END -->

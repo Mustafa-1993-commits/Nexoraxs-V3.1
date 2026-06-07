@@ -1,85 +1,98 @@
-import { MetricCard } from "@/components/dashboard/MetricCard";
-import { mockMetrics } from "@/lib/mock-data/metrics";
-import { mockActivity } from "@/lib/mock-data/activity";
+"use client";
+
+import Link from "next/link";
+import { Store, Stethoscope, UsersRound, GitBranch, Dumbbell, Wrench, ArrowRight, ExternalLink } from "lucide-react";
+import { useApp } from "@/lib/store";
+import { OPERATING_SYSTEMS } from "@/lib/store";
+import { commerceDashboardUrl, commerceSetupUrl } from "@/lib/commerce-url";
+
+const OS_ICONS: Record<string, React.ReactNode> = {
+  store: <Store size={22} />,
+  stethoscope: <Stethoscope size={22} />,
+  "users-round": <UsersRound size={22} />,
+  "git-branch": <GitBranch size={22} />,
+  dumbbell: <Dumbbell size={22} />,
+  wrench: <Wrench size={22} />,
+};
 
 export default function DashboardPage() {
+  const {
+    currentUser,
+    currentWorkspace,
+    currentUserDisplayName,
+    currentBranch,
+    currentBU,
+    currentOSSubscription,
+    isCommerceOSActive,
+    isCommerceSetupComplete,
+  } = useApp();
+  const setupHref = commerceSetupUrl({
+    user: currentUser,
+    workspace: currentWorkspace,
+    businessUnit: currentBU,
+    branch: currentBranch,
+    subscription: currentOSSubscription,
+  });
+
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-8">
-        <p className="chip mb-2 text-white/30">{"// overview"}</p>
-        <h1 className="text-3xl font-bold tracking-tight text-white">
-          Welcome back, Mustafa.
-        </h1>
-        <p className="mt-2 text-sm text-white/50">
-          Here&apos;s what&apos;s happening across your workspaces today.
-        </p>
-      </div>
-
-      {/* Metric cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {mockMetrics.map((metric) => (
-          <MetricCard key={metric.label} {...metric} />
-        ))}
-      </div>
-
-      {/* Active OS */}
-      <div className="card mt-6 p-6">
-        <div className="mb-4 flex items-center justify-between">
+    <div className="nx-main-scroll">
+      <div style={{ padding: "24px 28px", maxWidth: 1100, margin: "0 auto" }}>
+        <div className="nx-page-head">
           <div>
-            <p className="chip mb-1 text-white/30">{"// active os"}</p>
-            <h2 className="text-lg font-semibold text-white">Operating systems active in this workspace</h2>
+            <h1 className="nx-page-title">
+              Welcome back{currentUserDisplayName ? `, ${currentUserDisplayName.split(" ")[0]}` : ""}
+            </h1>
+            <p className="nx-page-sub">{currentWorkspace?.name || "Your workspace"} · Product Hub</p>
           </div>
-        </div>
-        <div className="flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-400 text-sm font-bold">
-            C
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-white">Commerce OS</p>
-            <p className="text-xs text-white/40">Commerce &amp; POS · Sample data</p>
-          </div>
-          <span className="chip rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-emerald-400">
-            Active
-          </span>
-        </div>
-      </div>
-
-      {/* Activity feed */}
-      <div className="card mt-6 p-6">
-        <div className="mb-5 flex items-center justify-between">
-          <div>
-            <p className="chip mb-1 text-white/30">{"// recent activity"}</p>
-            <h2 className="text-lg font-semibold text-white">Latest events</h2>
-          </div>
-          <button className="text-xs text-white/40 hover:text-white transition-colors">
-            View all
-          </button>
+          <Link href="/dashboard/apps" className="nx-btn nx-btn-sm" style={{ textDecoration: "none" }}>
+            All systems <ExternalLink size={13} />
+          </Link>
         </div>
 
-        <div className="divide-y divide-white/5">
-          {mockActivity.map((event, i) => (
-            <div key={i} className="flex items-center gap-4 py-3">
-              <div
-                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 text-sm font-semibold"
-                style={{
-                  background: `${event.color}1a`,
-                  color: event.color,
-                }}
-              >
-                {event.who.slice(0, 2).toUpperCase()}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm text-white/70">
-                  <span className="font-medium text-white">{event.who}</span>{" "}
-                  {event.action}
-                </p>
-              </div>
-              <span className="chip flex-shrink-0 text-white/30">
-                {event.when}
-              </span>
-            </div>
-          ))}
+        {/* Operating Systems */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--text-3)", textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 12 }}>
+            Operating Systems
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+            {OPERATING_SYSTEMS.map((os) => {
+              const active = os.id === "commerce" && isCommerceOSActive;
+              const available = os.status === "available";
+              return (
+                <div key={os.id} style={{
+                  background: "var(--surface)", border: `1px solid ${active ? "var(--accent-weak-2)" : "var(--border)"}`,
+                  borderRadius: "var(--r-lg)", padding: "16px 18px", boxShadow: active ? `0 0 0 2px ${os.accent}30` : "var(--sh-sm)",
+                  opacity: available ? 1 : 0.65, display: "flex", flexDirection: "column", gap: 10,
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "var(--r)", background: os.accent + "18", color: os.accent, display: "grid", placeItems: "center" }}>
+                      {OS_ICONS[os.icon] ?? <Store size={22} />}
+                    </div>
+                    <span className={`nx-badge ${active ? "tone-pos" : available ? "tone-accent" : "tone-neutral"}`} style={{ fontSize: 11 }}>
+                      {active ? "Active" : available ? "Available" : "Soon"}
+                    </span>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--text)" }}>{os.name}</div>
+                    <div style={{ fontSize: 11.5, color: os.accent, fontWeight: 600, marginTop: 2 }}>{os.tagline}</div>
+                  </div>
+                  {active && isCommerceSetupComplete && (
+                    <Link href={commerceDashboardUrl()} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--accent)", textDecoration: "none", fontWeight: 600, marginTop: "auto" }}>
+                      Open Commerce OS <ArrowRight size={13} />
+                    </Link>
+                  )}
+                  {active && !isCommerceSetupComplete && (
+                    <Link href={setupHref} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--accent)", textDecoration: "none", fontWeight: 600, marginTop: "auto" }}>
+                      Complete setup <ArrowRight size={13} />
+                    </Link>
+                  )}
+                  {!available && (
+                    <div style={{ fontSize: 12, color: "var(--text-3)" }}>Coming soon — stay tuned.</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

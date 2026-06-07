@@ -3,104 +3,223 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button, Input } from "@nexoraxs/ui";
-import { initMockUserFallback, isWorkspaceOnboardingComplete } from "@/lib/session";
+import { CheckCircle } from "lucide-react";
+import { useApp } from "@/lib/store";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { PasswordInput } from "@/components/auth/PasswordInput";
+import { SocialAuth } from "@/components/auth/SocialAuth";
 
-function LoginContent() {
+function LoginForm() {
+  const { loginUser, isAuthenticated, isOnboardingComplete } = useApp();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const resetSuccess = searchParams.get("reset") === "success";
-  const [showBanner, setShowBanner] = useState(resetSuccess);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [allowCredentialInput, setAllowCredentialInput] = useState(false);
+  const [step, setStep] = useState<"email" | "password">("email");
+  const [resetBanner, setResetBanner] = useState(searchParams.get("reset") === "success");
 
   useEffect(() => {
-    if (!resetSuccess) return;
-    const t = setTimeout(() => setShowBanner(false), 4000);
-    return () => clearTimeout(t);
-  }, [resetSuccess]);
+    if (isAuthenticated) {
+      if (isOnboardingComplete) router.replace("/dashboard/apps");
+      else router.replace("/onboarding");
+    }
+  }, [isAuthenticated, isOnboardingComplete, router]);
 
-  const handleSignIn = () => {
-    initMockUserFallback();
-    router.push(isWorkspaceOnboardingComplete() ? "/workspaces" : "/onboarding");
-  };
+  useEffect(() => {
+    if (resetBanner) {
+      const t = setTimeout(() => setResetBanner(false), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [resetBanner]);
+
+  function handleEmailContinue(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    const normalizedEmail = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setEmail(normalizedEmail);
+    setStep("password");
+  }
+
+  function handleDifferentMethod() {
+    setError("");
+    setPassword("");
+    setStep("email");
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (!password) {
+      setError("Enter your password.");
+      return;
+    }
+    setLoading(true);
+    const result = loginUser(email, password);
+    setLoading(false);
+    if (result === "invalid_credentials") {
+      setError("Invalid email or password.");
+    }
+  }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f] px-4">
-      <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
-          {showBanner && (
-            <div className="mb-5 flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <p className="text-sm text-emerald-300">
-                Password reset successfully — you can now sign in.
-              </p>
-            </div>
-          )}
+    <AuthShell title="Log in" subtitle="Continue to your NexoraXS account">
+      {resetBanner && (
+        <div className="nx-auth-banner">
+          <CheckCircle size={16} />
+          Password reset successfully — you can now sign in.
+        </div>
+      )}
 
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold text-white">NexoraXS</h1>
-            <p className="mt-2 text-sm text-white/50">
-              Sign in to your account
-            </p>
-          </div>
+      {step === "email" ? (
+        <>
+          <form onSubmit={handleEmailContinue} className="nx-auth-form-fields" style={{ marginTop: 4 }}>
+            {error && (
+              <div className="nx-auth-banner" style={{ background: "var(--danger-weak)", borderColor: "var(--danger)", color: "var(--danger)" }}>
+                {error}
+              </div>
+            )}
 
-          <form className="space-y-4">
-            <Input
-              label="Email address"
-              id="email"
-              type="email"
-              placeholder="you@company.com"
-              autoComplete="email"
-            />
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="current-password"
-            />
-
-            <div className="flex items-center justify-end">
-              <a
-                href="/forgot-password"
-                className="text-sm text-white/40 hover:text-white transition-colors"
-              >
-                Forgot password?
-              </a>
+            <div className="nx-field">
+              <label className="nx-field-label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                className="nx-input"
+                type="email"
+                autoComplete="email"
+                name="email"
+                readOnly={!allowCredentialInput}
+                value={email}
+                onFocus={() => setAllowCredentialInput(true)}
+                onPointerDown={() => setAllowCredentialInput(true)}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
 
-            <div className="pt-2">
-              <Button
-                variant="primary"
-                type="button"
-                className="w-full"
-                onClick={handleSignIn}
-              >
-                Sign In
-              </Button>
-            </div>
+            <button type="submit" className="nx-auth-btn nx-auth-btn-has-icon" style={{ marginTop: 8 }}>
+              <span className="nx-auth-btn-content">
+                <span className="nx-auth-btn-text">Continue with email</span>
+                <span className="nx-auth-btn-hover-icon" aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    focusable="false"
+                  >
+                    <path
+                      d="M4.5 10h9.2m0 0-4.1-4.1M13.7 10l-4.1 4.1"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </span>
+            </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-white/40">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/register"
-              className="text-blue-400 hover:text-blue-300 transition-colors"
-            >
-              Create one
+          <SocialAuth />
+
+          <div className="nx-auth-below">
+            <span>New to NexoraXS?</span>{" "}
+            <Link href="/register" className="nx-auth-arrow-link">
+              <span>Get started</span>
+              <span className="nx-auth-arrow-link-icon" aria-hidden="true">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  focusable="false"
+                >
+                  <path
+                    d="M4.5 10h9.2m0 0-4.1-4.1M13.7 10l-4.1 4.1"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
             </Link>
-          </p>
+          </div>
+        </>
+      ) : (
+        <form onSubmit={handleSubmit} className="nx-auth-form-fields" style={{ marginTop: 4 }}>
+        {error && (
+          <div className="nx-auth-banner" style={{ background: "var(--danger-weak)", borderColor: "var(--danger)", color: "var(--danger)" }}>
+            {error}
+          </div>
+        )}
+
+        <div className="nx-auth-selected-email">
+          <span>{email}</span>
+          <button type="button" className="nx-link" onClick={() => { setError(""); setStep("email"); }}>
+            Change email
+          </button>
         </div>
-      </div>
-    </div>
+
+        <div className="nx-field">
+          <label className="nx-field-label" htmlFor="password">Password</label>
+          <PasswordInput
+            id="password"
+            autoComplete="current-password"
+            name="password"
+            readOnly={!allowCredentialInput}
+            value={password}
+            onFocus={() => setAllowCredentialInput(true)}
+            onPointerDown={() => setAllowCredentialInput(true)}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Link href="/forgot-password" className="nx-auth-under-link">Forgot password?</Link>
+        </div>
+
+        <button type="submit" className="nx-auth-btn nx-auth-btn-has-icon" disabled={loading} style={{ marginTop: 8 }}>
+          <span className="nx-auth-btn-content">
+            <span className="nx-auth-btn-text">{loading ? "Logging in…" : "Log in"}</span>
+            <span className="nx-auth-btn-hover-icon" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                focusable="false"
+              >
+                <path
+                  d="M4.5 10h9.2m0 0-4.1-4.1M13.7 10l-4.1 4.1"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </span>
+        </button>
+
+        <button type="button" className="nx-auth-method-btn" onClick={handleDifferentMethod}>
+          Log in using a different method
+        </button>
+        </form>
+      )}
+    </AuthShell>
   );
 }
 
 export default function LoginPage() {
   return (
     <Suspense>
-      <LoginContent />
+      <LoginForm />
     </Suspense>
   );
 }

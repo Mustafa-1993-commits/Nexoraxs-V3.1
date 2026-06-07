@@ -1,66 +1,138 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Logo } from "@nexoraxs/ui";
 
-function getStoredEmail(): string {
-  if (typeof window === "undefined") return "owner@nexoraxs.local";
-  return sessionStorage.getItem("core_mock_user_email") ?? "owner@nexoraxs.local";
-}
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { MailCheck } from "lucide-react";
+import { useApp } from "@/lib/store";
+import { AuthShell } from "@/components/auth/AuthShell";
+
+const CODE_LENGTH = 6;
+const AUTO_SUBMIT_DELAY_MS = 150;
 
 export default function VerifyEmailPage() {
+  const { isHydrated, isAuthenticated, currentUser, showToast } = useApp();
   const router = useRouter();
-  const [email] = useState<string>(getStoredEmail);
-  const [seconds, setSeconds] = useState(0);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const [code, setCode] = useState<string[]>(Array.from({ length: CODE_LENGTH }, () => ""));
+  const [error, setError] = useState("");
+  const [resent, setResent] = useState(false);
+
+  const email = currentUser?.email ?? "";
+  const codeValue = useMemo(() => code.join(""), [code]);
+  const isComplete = /^\d{6}$/.test(codeValue);
 
   useEffect(() => {
-    if (seconds <= 0) return;
-    const t = setTimeout(() => setSeconds(s => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [seconds]);
+    if (!isHydrated) return;
+    if (!isAuthenticated || !email) router.replace("/register");
+  }, [email, isAuthenticated, isHydrated, router]);
 
-  const canResend = seconds === 0;
+  useEffect(() => {
+    if (!isComplete) return;
+    const timer = window.setTimeout(() => router.push("/welcome"), AUTO_SUBMIT_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [isComplete, router]);
+
+  function focusInput(index: number) {
+    inputRefs.current[index]?.focus();
+    inputRefs.current[index]?.select();
+  }
+
+  function handleChange(index: number, value: string) {
+    setError("");
+    const digit = value.replace(/\D/g, "").slice(-1);
+    setCode((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < CODE_LENGTH - 1) focusInput(index + 1);
+  }
+
+  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Backspace") return;
+    if (code[index]) {
+      setCode((prev) => {
+        const next = [...prev];
+        next[index] = "";
+        return next;
+      });
+      return;
+    }
+    if (index > 0) focusInput(index - 1);
+  }
+
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    setError("");
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, CODE_LENGTH);
+    if (!pasted) return;
+    setCode(Array.from({ length: CODE_LENGTH }, (_, index) => pasted[index] ?? ""));
+    focusInput(Math.min(pasted.length, CODE_LENGTH) - 1);
+  }
+
+  function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isComplete) {
+      setError("Enter the 6-digit verification code.");
+      return;
+    }
+    router.push("/welcome");
+  }
+
+  function handleResend() {
+    setResent(true);
+    showToast("Verification email resent.", "success");
+  }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0f] px-4">
-      <div className="mb-8">
-        <Logo app="core" />
-      </div>
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
-        {/* Envelope icon */}
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-          </svg>
+    <AuthShell title="Verify your email" subtitle={email ? `We sent a 6-digit code to ${email}.` : "We sent a 6-digit code to your email."} narrow>
+      <form onSubmit={handleVerify} className="nx-auth-verify">
+        <div className="nx-auth-verify-icon" aria-hidden="true">
+          <MailCheck size={28} />
         </div>
 
-        <h1 className="text-2xl font-bold text-white">Check your inbox</h1>
-        <p className="mt-2 text-sm text-white/50">
-          We sent a verification link to
-        </p>
-        <p className="mt-1 text-sm font-medium text-blue-400">{email}</p>
+        {error && (
+          <div className="nx-auth-banner" style={{ background: "var(--danger-weak)", borderColor: "var(--danger)", color: "var(--danger)" }}>
+            {error}
+          </div>
+        )}
 
-        <button
-          type="button"
-          onClick={() => setSeconds(60)}
-          disabled={!canResend}
-          className={`mt-8 w-full rounded-xl py-3 text-sm font-semibold transition-colors ${
-            canResend
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "cursor-not-allowed bg-white/5 text-white/30"
-          }`}
-        >
-          {canResend ? "Resend email" : `Resend in ${seconds}s`}
+        <div className="nx-auth-otp" aria-label="Verification code">
+          {code.map((digit, index) => (
+            <input
+              key={index}
+              ref={(node) => {
+                inputRefs.current[index] = node;
+              }}
+              className="nx-auth-otp-input"
+              inputMode="numeric"
+              autoComplete={index === 0 ? "one-time-code" : "off"}
+              pattern="[0-9]*"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              onPaste={handlePaste}
+              aria-label={`Digit ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        <button type="submit" className="nx-auth-btn" disabled={!isComplete}>
+          Continue
         </button>
 
-        <button
-          type="button"
-          onClick={() => router.push("/login")}
-          className="mt-4 text-sm text-white/40 hover:text-white transition-colors"
-        >
-          ← Back to login
+        <div className="nx-auth-verify-actions">
+          <span>Didn&apos;t get the code?</span>
+          <button type="button" className="nx-link" onClick={handleResend} disabled={resent}>
+            {resent ? "Email resent" : "Resend email"}
+          </button>
+        </div>
+
+        <button type="button" className="nx-auth-under-link" onClick={() => router.push("/register")}>
+          Wrong address? Change email
         </button>
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   );
 }
