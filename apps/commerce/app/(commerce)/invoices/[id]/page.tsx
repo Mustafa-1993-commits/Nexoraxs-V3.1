@@ -7,7 +7,7 @@ import { useApp } from "@/lib/store";
 
 export default function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { invoices, orders, customers, money, getCommerceSetup, showToast } = useApp();
+  const { invoices, orders, customers, money, getCommerceSetup, showToast, t } = useApp();
 
   const invoice = invoices.find((inv) => inv.id === id);
   if (!invoice) {
@@ -39,6 +39,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)" }}>{invoice.invoiceNumber}</h1>
             <div style={{ fontSize: 13, color: "var(--text-2)", marginTop: 4 }}>
               {new Date(invoice.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+              {order?.cashierName && <> · {t("cashier")}: <span style={{ fontWeight: 600, color: "var(--text)" }}>{order.cashierName}</span></>}
             </div>
           </div>
           <div style={{ display: "flex", gap: 10 }}>

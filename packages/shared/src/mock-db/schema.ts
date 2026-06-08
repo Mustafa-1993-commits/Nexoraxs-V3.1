@@ -25,6 +25,8 @@ export const STORAGE_KEYS = {
   orders: "nexoraxs.db.commerceOrders",
   customers: "nexoraxs.db.commerceCustomers",
   invoices: "nexoraxs.db.commerceInvoices",
+  mediaAssets: "nexoraxs.db.mediaAssets",
+  workspaceStorageUsage: "nexoraxs.db.workspaceStorageUsage",
   // ui (localStorage)
   theme: "nexoraxs.ui.theme",
 } as const;
@@ -82,6 +84,10 @@ const DICT: Record<Lang, Record<string, string>> = {
     lifetime_spend: "Lifetime Spend", total_orders: "Total Orders",
     first_order: "First Order", last_order: "Last Order", purchase_history: "Purchase History",
     edit: "Edit", delete: "Delete", update: "Update",
+    storage_used: "Storage used", media_storage_used: "Media storage used",
+    image_too_large: "This image is too large to use — try a smaller photo.",
+    storage_limit_reached: "Storage limit reached — the item was saved without an image.",
+    cashier: "Cashier",
   },
   ar: {
     platform: "المنصة", operating_systems: "الأنظمة التشغيلية", pricing: "التسعير", faq: "الأسئلة الشائعة",
@@ -132,6 +138,10 @@ const DICT: Record<Lang, Record<string, string>> = {
     lifetime_spend: "إجمالي الإنفاق", total_orders: "إجمالي الطلبات",
     first_order: "أول طلب", last_order: "آخر طلب", purchase_history: "سجل المشتريات",
     edit: "تعديل", delete: "حذف", update: "تحديث",
+    storage_used: "التخزين المستخدم", media_storage_used: "تخزين الوسائط المستخدم",
+    image_too_large: "هذه الصورة كبيرة جداً — جرّب صورة أصغر.",
+    storage_limit_reached: "تم بلوغ حد التخزين — تم حفظ العنصر بدون صورة.",
+    cashier: "الكاشير",
   },
 };
 
@@ -186,15 +196,15 @@ export const OPERATING_SYSTEMS = [
 export const PLAN_CATALOG = [
   {
     id: "commerce_starter", osId: "commerce", tier: "Starter", price: 0, currency: "EGP",
-    limits: { businessUnits: 1, branches: 1, users: 3 },
+    limits: { businessUnits: 1, branches: 1, users: 3, storageLimitBytes: 500 * 1024 * 1024 },
   },
   {
     id: "commerce_pro", osId: "commerce", tier: "Pro", price: 1400, currency: "EGP",
-    limits: { businessUnits: 3, branches: 5, users: 10 },
+    limits: { businessUnits: 3, branches: 5, users: 10, storageLimitBytes: 5 * 1024 * 1024 * 1024 },
   },
   {
     id: "commerce_business", osId: "commerce", tier: "Business", price: null, currency: "EGP",
-    limits: { businessUnits: 99, branches: 99, users: 99 },
+    limits: { businessUnits: 99, branches: 99, users: 99, storageLimitBytes: 50 * 1024 * 1024 * 1024 },
   },
 ];
 

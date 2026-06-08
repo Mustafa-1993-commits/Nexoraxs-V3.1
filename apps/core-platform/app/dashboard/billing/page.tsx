@@ -22,6 +22,10 @@ export default function BillingPage() {
     showToast,
     getCommerceSetup,
     money,
+    workspaceStorageUsage,
+    storageUsagePercent,
+    storageUsageLabel,
+    t,
   } = useApp();
 
   const setup = getCommerceSetup();
@@ -155,6 +159,18 @@ export default function BillingPage() {
                 <ArrowUpCircle size={16} />Need more business units or branches? Upgrade to <b style={{ margin: "0 4px" }}>Commerce Business</b> for custom limits and advanced permissions.
               </div>
             </div>
+
+            {workspaceStorageUsage && (
+              <div className="nx-card nx-card-pad" style={{ marginBottom: 20 }}>
+                <div className="nx-row" style={{ justifyContent: "space-between", marginBottom: 12 }}>
+                  <div className="nx-section-title">{t("storage_used")}</div>
+                  <span style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--mono)" }}>{storageUsageLabel}</span>
+                </div>
+                <div className="nx-progress">
+                  <span style={{ width: `${storageUsagePercent}%`, background: storageUsagePercent > 85 ? "var(--warn)" : "var(--accent)" }} />
+                </div>
+              </div>
+            )}
 
             {/* Add more OS */}
             <div className="nx-section-title" style={{ marginBottom: 12 }}>Add more operating systems</div>

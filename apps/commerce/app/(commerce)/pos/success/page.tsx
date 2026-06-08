@@ -7,7 +7,7 @@ import { useApp, computeDoc, fmtDate, readPosLastOrderId, clearPosLastOrderId } 
 import type { CommerceOrder, CommerceInvoice } from "@/lib/store";
 
 export default function POSSuccessPage() {
-  const { orders, invoices, money, getCommerceSetup } = useApp();
+  const { orders, invoices, customers, money, getCommerceSetup, currentBranch, t } = useApp();
   const setup = getCommerceSetup();
   const businessName = setup.displayName || setup.legalName || "Commerce Business";
   const [order, setOrder] = useState<CommerceOrder | null>(null);
@@ -119,8 +119,14 @@ export default function POSSuccessPage() {
             </div>
             <div className="nx-receipt" style={{ margin: "0 auto" }}>
               <div className="nx-receipt-head">
-                <div className="nx-receipt-logo ph">{businessName.charAt(0)}</div>
+                {setup.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={setup.logo} alt={businessName} style={{ height: 40, maxWidth: 120, objectFit: "contain", margin: "0 auto 6px" }} />
+                ) : (
+                  <div className="nx-receipt-logo ph">{businessName.charAt(0)}</div>
+                )}
                 <div className="nx-receipt-biz">{businessName}</div>
+                {currentBranch?.name && <div className="nx-receipt-muted">{currentBranch.name}</div>}
                 {setup.address && <div className="nx-receipt-muted">{setup.address}</div>}
                 {setup.phone && <div className="nx-receipt-muted">Tel: {setup.phone}</div>}
                 {setup.vatRegistered && setup.taxNumber && (
@@ -133,6 +139,11 @@ export default function POSSuccessPage() {
                 <div><span>Order</span><b>{order.orderNumber}</b></div>
                 <div><span>Date</span><b>{fmtDate(order.createdAt)}</b></div>
                 <div><span>Payment</span><b style={{ textTransform: "capitalize" }}>{order.payment}</b></div>
+                {order.cashierName && <div><span>{t("cashier")}</span><b>{order.cashierName}</b></div>}
+                {order.customerId && (() => {
+                  const customer = customers.find((c) => c.id === order.customerId);
+                  return customer ? <div><span>{t("customer")}</span><b>{customer.name}</b></div> : null;
+                })()}
               </div>
               <div className="nx-receipt-rule dashed" />
               <table className="nx-receipt-items">

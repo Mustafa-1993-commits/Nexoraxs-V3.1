@@ -5,7 +5,7 @@ import { Settings, Building2, FileText, Tag, Ruler, Printer, ArrowRight } from "
 import { useApp } from "@/lib/store";
 
 export default function CommerceSettingsPage() {
-  const { getCommerceSetup, currentBU, currentWorkspace } = useApp();
+  const { getCommerceSetup, currentBU, currentWorkspace, workspaceStorageUsage, storageUsagePercent, storageUsageLabel, t } = useApp();
   const setup = getCommerceSetup();
   const presetLabel = setup.preset || setup.presetId || "retail";
 
@@ -45,7 +45,21 @@ export default function CommerceSettingsPage() {
           ))}
         </div>
 
-        <div style={{ marginTop: 28, background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: "16px 18px" }}>
+        {workspaceStorageUsage && (
+          <div style={{ marginTop: 16, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: "16px 18px", boxShadow: "var(--sh-sm)" }}>
+            <div style={{ fontWeight: 600, fontSize: 13.5, marginBottom: 8 }}>Media storage used by this business</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+              <span style={{ fontSize: 13, color: "var(--text-2)" }}>{t("media_storage_used")}</span>
+              <span style={{ fontWeight: 700, fontSize: 14, color: "var(--text)" }}>{storageUsageLabel}</span>
+            </div>
+            <div className="nx-progress">
+              <span style={{ width: `${storageUsagePercent}%`, background: storageUsagePercent > 85 ? "var(--warn)" : undefined }} />
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 6 }}>{Math.round(storageUsagePercent)}% used</div>
+          </div>
+        )}
+
+        <div style={{ marginTop: 16, background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: "var(--r)", padding: "16px 18px" }}>
           <div style={{ fontWeight: 600, fontSize: 13.5, marginBottom: 8 }}>Commerce OS Preset</div>
           <div style={{ fontSize: 13, color: "var(--text-2)" }}>
             Your Commerce OS is configured for <strong>{presetLabel}</strong>. To change the preset, re-run the setup wizard.

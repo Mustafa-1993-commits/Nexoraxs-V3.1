@@ -15,7 +15,7 @@ import { BranchPill } from "@/components/dashboard/BranchPill";
 
 export default function POSPage() {
   const router = useRouter();
-  const { products, customers, money, showToast, createOrder, createInvoice, updateProduct, createCustomer, getCommerceSetup, commerceIdentity } = useApp();
+  const { products, customers, money, showToast, createOrder, createInvoice, updateProduct, createCustomer, getCommerceSetup, commerceIdentity, currentUserDisplayName, t } = useApp();
   const setup = getCommerceSetup();
 
   const [cart, setCart] = useState<{ id: string; name: string; price: number; qty: number; sku: string; taxable: boolean; stock: number; category: string }[]>([]);
@@ -283,6 +283,10 @@ export default function POSPage() {
                 </div>
                 <span className="nx-link">{selectedCustomer ? "Change" : "Add"}</span>
               </button>
+
+              <div className="nx-cart-line" style={{ padding: "10px 2px 0", color: "var(--text-2)", fontSize: 13 }}>
+                <span>{t("cashier")}</span><span style={{ fontWeight: 700, color: "var(--text)" }}>{currentUserDisplayName || t("cashier")}</span>
+              </div>
               <hr className="nx-divider" style={{ margin: "16px 0" }} />
 
               {/* Payment method cards */}

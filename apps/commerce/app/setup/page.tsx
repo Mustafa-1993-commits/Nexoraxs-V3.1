@@ -147,18 +147,18 @@ function Stepper({ current }: { current: number }) {
 function LogoUpload({ value, onChange, businessName }: { value: string | null; onChange: (v: string | null) => void; businessName?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  const { attachMedia } = useApp();
 
-  function readFile(file: File) {
-    const reader = new FileReader();
-    reader.onload = (e) => onChange(e.target?.result as string);
-    reader.readAsDataURL(file);
+  async function handleFile(file: File) {
+    const result = await attachMedia({ file, ownerType: "business_logo", fileName: file.name });
+    if (result) onChange(result.reference.thumbnailUrl);
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) readFile(file);
+    if (file) void handleFile(file);
   }
 
   return (
@@ -188,7 +188,7 @@ function LogoUpload({ value, onChange, businessName }: { value: string | null; o
           )}
         </div>
       )}
-      <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) readFile(f); }} />
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f); }} />
     </div>
   );
 }
@@ -355,7 +355,7 @@ function SetupPreview({ setup, step, money }: { setup: SetupDraft; step: number;
 }
 
 export default function CommerceSetupPage() {
-  const { isHydrated, currentWorkspace, currentBU, getCommerceSetup, saveCommerceSetup, showToast, isAuthenticated, hasCommerceSetupContext, money } = useApp();
+  const { isHydrated, currentWorkspace, currentBU, getCommerceSetup, saveCommerceSetup, showToast, isAuthenticated, hasCommerceSetupContext, money, storageUsageLabel, t } = useApp();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -689,6 +689,7 @@ export default function CommerceSetupPage() {
                     ["Prices", draft.pricesIncludeTax ? "Tax inclusive" : "Tax exclusive"],
                     ["Templates", `${draft.receiptStyle?.charAt(0).toUpperCase()}${draft.receiptStyle?.slice(1)} ${draft.receiptSize} receipt · A4 tax invoice`],
                     ["Categories", `${draft.categories?.length || 0} categories · ${(draft.units?.length || 0)} units`],
+                    [t("storage_used"), storageUsageLabel || "—"],
                   ]).map(([k, v], i, arr) => (
                     <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "13px 18px", borderBottom: i < arr.length - 1 ? "1px solid var(--border)" : "none" }}>
                       <span style={{ color: "var(--text-2)", fontSize: 13.5 }}>{k}</span>
