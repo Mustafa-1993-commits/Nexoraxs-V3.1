@@ -7,7 +7,7 @@ import {
   readCollection, writeCollection, readSession, writeSession, clearAllStorage,
   seedDB, storageUsagePercent, formatBytes,
   compressImageToThumbnail, canAttachMedia, buildMediaAsset, applyUsageDelta,
-  effectiveStockFor, buildStockMovement,
+  effectiveStockFor, buildStockMovement, buildStockTransfer,
 } from "@nexoraxs/shared";
 import { t as tFn, type Lang } from "@nexoraxs/shared";
 import { money as moneyFn } from "@nexoraxs/shared";
@@ -121,6 +121,11 @@ interface AppContextType {
     qty: number;
     lowStockThreshold?: number;
   }) => { ok: true } | { ok: false; error: string };
+  transferStock: (data: {
+    toBranchId: string;
+    items: { productId: string; qty: number }[];
+    note?: string;
+  }) => { ok: true; transfer: StockTransfer } | { ok: false; error: string };
   createOrder: (data: {
     items: OrderItem[];
     customerId: string | null;
@@ -794,6 +799,109 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return { ok: true };
   }, [state.products, state.branchInventory, state.stockMovements, state.currentBranchId, state.currentWorkspaceId, state.currentBusinessUnitId, currentUser]);
 
+  // ---- stock transfers ----
+  const transferStock = useCallback((data: {
+    toBranchId: string; items: { productId: string; qty: number }[]; note?: string;
+  }): { ok: true; transfer: StockTransfer } | { ok: false; error: string } => {
+    const fromBranchId = state.currentBranchId;
+    if (!fromBranchId || !state.currentWorkspaceId || !state.currentBusinessUnitId) {
+      return { ok: false, error: "transfer_rejected" };
+    }
+    if (data.toBranchId === fromBranchId) {
+      return { ok: false, error: "transfer_rejected" };
+    }
+    const toBranch = state.branches.find((b) => b.id === data.toBranchId);
+    if (!toBranch || toBranch.businessUnitId !== state.currentBusinessUnitId) {
+      return { ok: false, error: "transfer_rejected" };
+    }
+    if (!data.items || data.items.length === 0) {
+      return { ok: false, error: "transfer_rejected" };
+    }
+
+    const resolvedItems: { product: CommerceProduct; qty: number }[] = [];
+    for (const item of data.items) {
+      const product = state.products.find((p) => p.id === item.productId);
+      if (!product) return { ok: false, error: "transfer_rejected" };
+      if (!Number.isInteger(item.qty) || item.qty <= 0) return { ok: false, error: "insufficient_stock" };
+      const eff = effectiveStockFor(product, fromBranchId, state.branchInventory);
+      if (eff.qty < item.qty) return { ok: false, error: "insufficient_stock" };
+      resolvedItems.push({ product, qty: item.qty });
+    }
+
+    const existingTransfers = state.stockTransfers.filter((tr) => tr.businessUnitId === state.currentBusinessUnitId);
+    const transferNumber = `TRF-${String(existingTransfers.length + 1).padStart(4, "0")}`;
+    const transfer = buildStockTransfer({
+      transferNumber,
+      workspaceId: state.currentWorkspaceId,
+      businessUnitId: state.currentBusinessUnitId,
+      fromBranchId,
+      toBranchId: data.toBranchId,
+      items: resolvedItems.map(({ product, qty }) => ({ productId: product.id, name: product.name, qty })),
+      performedBy: currentUser?.id ?? "",
+      performedByName: getUserDisplayName(currentUser) || "Unknown",
+      note: data.note,
+    });
+
+    let nextBranchInventory = state.branchInventory;
+    const newMovements: StockMovement[] = [];
+    for (const { product, qty } of resolvedItems) {
+      const sourceEff = effectiveStockFor(product, fromBranchId, nextBranchInventory);
+      const sourceExisting = nextBranchInventory.find((bi) => bi.productId === product.id && bi.branchId === fromBranchId);
+      const sourceNewQty = sourceEff.qty - qty;
+      if (sourceExisting) {
+        nextBranchInventory = nextBranchInventory.map((bi) =>
+          bi.id === sourceExisting.id ? { ...bi, qty: sourceNewQty, updatedAt: nowISO() } : bi
+        );
+      } else {
+        nextBranchInventory = [...nextBranchInventory, {
+          id: uid("bi"), workspaceId: state.currentWorkspaceId, businessUnitId: state.currentBusinessUnitId,
+          branchId: fromBranchId, productId: product.id, qty: sourceNewQty, lowStockThreshold: sourceEff.lowStockThreshold, updatedAt: nowISO(),
+        }];
+      }
+
+      const destEff = effectiveStockFor(product, data.toBranchId, nextBranchInventory);
+      const destExisting = nextBranchInventory.find((bi) => bi.productId === product.id && bi.branchId === data.toBranchId);
+      const destNewQty = destEff.qty + qty;
+      if (destExisting) {
+        nextBranchInventory = nextBranchInventory.map((bi) =>
+          bi.id === destExisting.id ? { ...bi, qty: destNewQty, updatedAt: nowISO() } : bi
+        );
+      } else {
+        nextBranchInventory = [...nextBranchInventory, {
+          id: uid("bi"), workspaceId: state.currentWorkspaceId, businessUnitId: state.currentBusinessUnitId,
+          branchId: data.toBranchId, productId: product.id, qty: destNewQty, lowStockThreshold: destEff.lowStockThreshold, updatedAt: nowISO(),
+        }];
+      }
+
+      newMovements.push(buildStockMovement({
+        workspaceId: state.currentWorkspaceId, businessUnitId: state.currentBusinessUnitId,
+        branchId: fromBranchId, productId: product.id, qtyChange: -qty, reason: "transfer_out",
+        reference: { type: "transfer", id: transfer.id },
+        performedBy: currentUser?.id ?? "", performedByName: getUserDisplayName(currentUser) || "Unknown",
+      }));
+      newMovements.push(buildStockMovement({
+        workspaceId: state.currentWorkspaceId, businessUnitId: state.currentBusinessUnitId,
+        branchId: data.toBranchId, productId: product.id, qtyChange: qty, reason: "transfer_in",
+        reference: { type: "transfer", id: transfer.id },
+        performedBy: currentUser?.id ?? "", performedByName: getUserDisplayName(currentUser) || "Unknown",
+      }));
+    }
+
+    writeCollection(STORAGE_KEYS.branchInventory, nextBranchInventory);
+    const newStockMovements = [...state.stockMovements, ...newMovements];
+    writeCollection(STORAGE_KEYS.stockMovements, newStockMovements);
+    const newStockTransfers = [...state.stockTransfers, transfer];
+    writeCollection(STORAGE_KEYS.stockTransfers, newStockTransfers);
+
+    setState((prev) => ({
+      ...prev,
+      branchInventory: nextBranchInventory,
+      stockMovements: newStockMovements,
+      stockTransfers: newStockTransfers,
+    }));
+    return { ok: true, transfer };
+  }, [state.currentBranchId, state.currentWorkspaceId, state.currentBusinessUnitId, state.branches, state.products, state.branchInventory, state.stockMovements, state.stockTransfers, currentUser]);
+
   // ---- orders ----
   const createOrder = useCallback((data: {
     items: OrderItem[]; customerId: string | null; payment: "cash" | "card" | "wallet";
@@ -929,7 +1037,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     branchInventory: state.branchInventory, stockMovements: state.stockMovements,
     stockTransfers: state.stockTransfers, commerceReturns: state.commerceReturns,
     mediaAssets: state.mediaAssets, workspaceStorageUsage, storageUsagePercent: storageUsagePct, storageUsageLabel,
-    addProduct, updateProduct, deleteProduct, adjustStock, createOrder, createInvoice, createCustomer, updateCustomer,
+    addProduct, updateProduct, deleteProduct, adjustStock, transferStock, createOrder, createInvoice, createCustomer, updateCustomer,
     attachMedia,
     setCurrent,
   };
