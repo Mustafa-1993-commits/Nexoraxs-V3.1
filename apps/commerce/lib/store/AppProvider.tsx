@@ -7,6 +7,7 @@ import {
   readCollection, writeCollection, readSession, writeSession, clearAllStorage,
   seedDB, storageUsagePercent, formatBytes,
   compressImageToThumbnail, canAttachMedia, buildMediaAsset, applyUsageDelta,
+  effectiveStockFor, buildStockMovement,
 } from "@nexoraxs/shared";
 import { t as tFn, type Lang } from "@nexoraxs/shared";
 import { money as moneyFn } from "@nexoraxs/shared";
@@ -114,6 +115,12 @@ interface AppContextType {
   addProduct: (data: Omit<CommerceProduct, "id" | "businessUnitId" | "workspaceId" | "branchId" | "osSubscriptionId" | "createdAt" | "updatedAt"> & { imageFile?: File | null }) => Promise<CommerceProduct>;
   updateProduct: (id: string, data: Partial<CommerceProduct> & { imageFile?: File | null }) => Promise<void>;
   deleteProduct: (id: string) => void;
+  adjustStock: (data: {
+    productId: string;
+    branchId?: string;
+    qty: number;
+    lowStockThreshold?: number;
+  }) => { ok: true } | { ok: false; error: string };
   createOrder: (data: {
     items: OrderItem[];
     customerId: string | null;
@@ -480,7 +487,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [currentOSSubscription]);
 
-  const products = useMemo(() => state.products.filter((p) => p.businessUnitId === state.currentBusinessUnitId), [state.products, state.currentBusinessUnitId]);
+  const products = useMemo(() => state.products
+    .filter((p) => p.businessUnitId === state.currentBusinessUnitId)
+    .map((p) => {
+      if (!state.currentBranchId) return p;
+      const eff = effectiveStockFor(p, state.currentBranchId, state.branchInventory);
+      return { ...p, stock: eff.qty, lowStockThreshold: eff.lowStockThreshold };
+    }), [state.products, state.currentBusinessUnitId, state.currentBranchId, state.branchInventory]);
   const allOrders = useMemo(() => state.orders.filter((o) => o.businessUnitId === state.currentBusinessUnitId), [state.orders, state.currentBusinessUnitId]);
   const allInvoices = useMemo(() => state.invoices.filter((i) => i.businessUnitId === state.currentBusinessUnitId), [state.invoices, state.currentBusinessUnitId]);
   const orders = useMemo(() => allOrders.filter((o) => o.branchId === state.currentBranchId), [allOrders, state.currentBranchId]);
@@ -733,6 +746,54 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, products: newProducts }));
   }, [state.products]);
 
+  // ---- branch inventory ----
+  const adjustStock = useCallback((data: {
+    productId: string; branchId?: string; qty: number; lowStockThreshold?: number;
+  }): { ok: true } | { ok: false; error: string } => {
+    const branchId = data.branchId ?? state.currentBranchId;
+    if (!branchId || !state.currentWorkspaceId || !state.currentBusinessUnitId) {
+      return { ok: false, error: "no_active_branch" };
+    }
+    const product = state.products.find((p) => p.id === data.productId);
+    if (!product) return { ok: false, error: "product_not_found" };
+
+    const current = effectiveStockFor(product, branchId, state.branchInventory);
+    const qtyChange = data.qty - current.qty;
+    const lowStockThreshold = data.lowStockThreshold ?? current.lowStockThreshold;
+    const existing = state.branchInventory.find((bi) => bi.productId === product.id && bi.branchId === branchId);
+
+    let recordId: string;
+    let newBranchInventory: BranchInventory[];
+    if (existing) {
+      recordId = existing.id;
+      newBranchInventory = state.branchInventory.map((bi) =>
+        bi.id === existing.id ? { ...bi, qty: data.qty, lowStockThreshold, updatedAt: nowISO() } : bi
+      );
+    } else {
+      recordId = uid("bi");
+      newBranchInventory = [...state.branchInventory, {
+        id: recordId, workspaceId: state.currentWorkspaceId, businessUnitId: state.currentBusinessUnitId,
+        branchId, productId: product.id, qty: data.qty, lowStockThreshold, updatedAt: nowISO(),
+      }];
+    }
+    writeCollection(STORAGE_KEYS.branchInventory, newBranchInventory);
+
+    let newStockMovements = state.stockMovements;
+    if (qtyChange !== 0) {
+      const movement = buildStockMovement({
+        workspaceId: state.currentWorkspaceId, businessUnitId: state.currentBusinessUnitId,
+        branchId, productId: product.id, qtyChange, reason: "adjustment",
+        reference: { type: "adjustment", id: recordId },
+        performedBy: currentUser?.id ?? "", performedByName: getUserDisplayName(currentUser) || "Unknown",
+      });
+      newStockMovements = [...state.stockMovements, movement];
+      writeCollection(STORAGE_KEYS.stockMovements, newStockMovements);
+    }
+
+    setState((prev) => ({ ...prev, branchInventory: newBranchInventory, stockMovements: newStockMovements }));
+    return { ok: true };
+  }, [state.products, state.branchInventory, state.stockMovements, state.currentBranchId, state.currentWorkspaceId, state.currentBusinessUnitId, currentUser]);
+
   // ---- orders ----
   const createOrder = useCallback((data: {
     items: OrderItem[]; customerId: string | null; payment: "cash" | "card" | "wallet";
@@ -749,9 +810,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
     const newOrders = [...existingOrders, order];
     writeCollection(STORAGE_KEYS.orders, newOrders);
-    setState((prev) => ({ ...prev, orders: newOrders }));
+
+    // deduct branch inventory and record a "sale" stock movement per item
+    let nextBranchInventory = state.branchInventory;
+    const newMovements: StockMovement[] = [];
+    for (const item of order.items) {
+      if (!item.productId) continue;
+      const product = state.products.find((p) => p.id === item.productId);
+      if (!product) continue;
+      const eff = effectiveStockFor(product, order.branchId, nextBranchInventory);
+      const existing = nextBranchInventory.find((bi) => bi.productId === product.id && bi.branchId === order.branchId);
+      const newQty = eff.qty - item.qty;
+      if (existing) {
+        nextBranchInventory = nextBranchInventory.map((bi) =>
+          bi.id === existing.id ? { ...bi, qty: newQty, updatedAt: nowISO() } : bi
+        );
+      } else {
+        nextBranchInventory = [...nextBranchInventory, {
+          id: uid("bi"), workspaceId: order.workspaceId, businessUnitId: order.businessUnitId,
+          branchId: order.branchId, productId: product.id, qty: newQty, lowStockThreshold: eff.lowStockThreshold, updatedAt: nowISO(),
+        }];
+      }
+      newMovements.push(buildStockMovement({
+        workspaceId: order.workspaceId, businessUnitId: order.businessUnitId, branchId: order.branchId,
+        productId: product.id, qtyChange: -item.qty, reason: "sale",
+        reference: { type: "order", id: order.id },
+        performedBy: order.cashierId, performedByName: order.cashierName,
+      }));
+    }
+
+    let newStockMovements = state.stockMovements;
+    if (newMovements.length > 0) {
+      newStockMovements = [...state.stockMovements, ...newMovements];
+      writeCollection(STORAGE_KEYS.branchInventory, nextBranchInventory);
+      writeCollection(STORAGE_KEYS.stockMovements, newStockMovements);
+    }
+
+    setState((prev) => ({ ...prev, orders: newOrders, branchInventory: nextBranchInventory, stockMovements: newStockMovements }));
     return order;
-  }, [state.currentWorkspaceId, state.currentBusinessUnitId, state.currentBranchId, currentUser]);
+  }, [state.currentWorkspaceId, state.currentBusinessUnitId, state.currentBranchId, state.products, state.branchInventory, state.stockMovements, currentUser]);
 
   // ---- invoices ----
   const createInvoice = useCallback((orderId: string): CommerceInvoice => {
@@ -832,7 +929,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     branchInventory: state.branchInventory, stockMovements: state.stockMovements,
     stockTransfers: state.stockTransfers, commerceReturns: state.commerceReturns,
     mediaAssets: state.mediaAssets, workspaceStorageUsage, storageUsagePercent: storageUsagePct, storageUsageLabel,
-    addProduct, updateProduct, deleteProduct, createOrder, createInvoice, createCustomer, updateCustomer,
+    addProduct, updateProduct, deleteProduct, adjustStock, createOrder, createInvoice, createCustomer, updateCustomer,
     attachMedia,
     setCurrent,
   };

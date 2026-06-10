@@ -6,7 +6,7 @@ import { useApp } from "@/lib/store";
 import { type CommerceProduct } from "@/lib/store";
 
 export default function InventoryPage() {
-  const { products, updateProduct, money, showToast } = useApp();
+  const { products, adjustStock, money, showToast } = useApp();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "low" | "out">("all");
   const [editing, setEditing] = useState<CommerceProduct | null>(null);
@@ -22,7 +22,11 @@ export default function InventoryPage() {
 
   function handleUpdateStock() {
     if (!editing) return;
-    updateProduct(editing.id, { stock: +newStock });
+    const result = adjustStock({ productId: editing.id, qty: +newStock });
+    if (!result.ok) {
+      showToast("Could not update stock", "error");
+      return;
+    }
     showToast("Stock updated", "success");
     setEditing(null);
   }

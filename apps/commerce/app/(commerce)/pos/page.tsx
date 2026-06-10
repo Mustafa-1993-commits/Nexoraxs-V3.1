@@ -15,7 +15,7 @@ import { BranchPill } from "@/components/dashboard/BranchPill";
 
 export default function POSPage() {
   const router = useRouter();
-  const { products, customers, money, showToast, createOrder, createInvoice, updateProduct, createCustomer, getCommerceSetup, commerceIdentity, currentUserDisplayName, t } = useApp();
+  const { products, customers, money, showToast, createOrder, createInvoice, createCustomer, getCommerceSetup, commerceIdentity, currentUserDisplayName, t } = useApp();
   const setup = getCommerceSetup();
 
   const [cart, setCart] = useState<{ id: string; name: string; price: number; qty: number; sku: string; taxable: boolean; stock: number; category: string }[]>([]);
@@ -74,12 +74,6 @@ export default function POSPage() {
       net: doc.net,
     });
     createInvoice(order.id);
-    cart.forEach((ci) => {
-      const prod = products.find((p) => p.id === ci.id);
-      if (prod && prod.stock != null) {
-        updateProduct(ci.id, { stock: Math.max(0, prod.stock - ci.qty) });
-      }
-    });
     writePosLastOrderId(order.id);
     setCart([]); setDiscount(0); setSelectedCustomer(null); setShowPayment(false);
     setPayMethod("cash"); setTendered("");
