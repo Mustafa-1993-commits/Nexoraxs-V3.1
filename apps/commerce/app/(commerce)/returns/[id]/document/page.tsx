@@ -15,9 +15,9 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
       <div style={{ minHeight: "100vh", background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", color: "#999" }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
-          <div style={{ fontWeight: 600 }}>Return not found.</div>
+          <div style={{ fontWeight: 600 }}>{t("return_not_found")}</div>
           <Link href="/orders" style={{ display: "inline-flex", marginTop: 16, color: "#4f46e5", fontSize: 13, textDecoration: "none", alignItems: "center", gap: 6 }}>
-            <ArrowLeft size={14} /> Back to Orders
+            <ArrowLeft size={14} /> {t("back_to_orders")}
           </Link>
         </div>
       </div>
@@ -37,7 +37,7 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
       <div className="nx-doc-topbar" style={{ background: "#111", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 24px", position: "sticky", top: 0, zIndex: 10, gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Link href={order ? `/orders/${order.id}` : "/orders"} style={{ color: "#aaa", display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, textDecoration: "none" }}>
-            <ArrowLeft size={14} /> {order ? order.orderNumber : "Orders"}
+            <ArrowLeft size={14} /> {order ? order.orderNumber : t("orders")}
           </Link>
           <span style={{ color: "#555" }}>›</span>
           <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{ret.returnNumber}</span>
@@ -46,7 +46,7 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
           onClick={() => window.print()}
           style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "var(--accent, #4f46e5)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
         >
-          <Printer size={14} />Print
+          <Printer size={14} />{t("print")}
         </button>
       </div>
 
@@ -73,13 +73,13 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
             <div className="nx-invoice-titleblock">
               <div className="nx-invoice-doctype">{t("return_receipt")}</div>
               <div className="nx-invoice-meta-grid">
-                <span>{t("return")} #</span><b>{ret.returnNumber}</b>
-                {order && <><span>Order #</span><b>{order.orderNumber}</b></>}
-                {invoice && <><span>Invoice #</span><b>{invoice.invoiceNumber}</b></>}
-                <span>Date</span><b>{fmtDate(ret.createdAt)}</b>
+                <span>{t("return_number")}</span><b>{ret.returnNumber}</b>
+                {order && <><span>{t("order_number")}</span><b>{order.orderNumber}</b></>}
+                {invoice && <><span>{t("invoice_number")}</span><b>{invoice.invoiceNumber}</b></>}
+                <span>{t("date")}</span><b>{fmtDate(ret.createdAt)}</b>
                 <span>{t("cashier")}</span><b>{ret.cashierName}</b>
                 {setup.vatRegistered && setup.taxNumber && (
-                  <><span>{setup.taxLabel || "VAT"} No.</span><b>{setup.taxNumber}</b></>
+                  <><span>{setup.taxLabel || t("vat")} No.</span><b>{setup.taxNumber}</b></>
                 )}
               </div>
             </div>
@@ -88,11 +88,11 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
           {/* Parties */}
           <div className="nx-invoice-parties">
             <div>
-              <div className="nx-invoice-plabel">Customer</div>
-              <div className="nx-invoice-pname">{customer ? customer.name : "Walk-in customer"}</div>
+              <div className="nx-invoice-plabel">{t("customer")}</div>
+              <div className="nx-invoice-pname">{customer ? customer.name : t("walk_in")}</div>
               {customer?.phone && <div className="nx-invoice-muted">{customer.phone}</div>}
               {customer?.email && <div className="nx-invoice-muted">{customer.email}</div>}
-              {!customer && <div className="nx-invoice-muted">In-store · Point of Sale</div>}
+              {!customer && <div className="nx-invoice-muted">{t("in_store")} · {t("point_of_sale")}</div>}
             </div>
             <div className="r">
               <div className="nx-invoice-plabel">{t("refund_method")}</div>
@@ -105,10 +105,10 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
           <table className="nx-invoice-table">
             <thead>
               <tr>
-                <th>Description</th>
-                <th className="c">Qty</th>
-                <th className="r">Unit</th>
-                <th className="r">Amount</th>
+                <th>{t("description")}</th>
+                <th className="c">{t("qty")}</th>
+                <th className="r">{t("unit")}</th>
+                <th className="r">{t("amount")}</th>
               </tr>
             </thead>
             <tbody>
@@ -129,18 +129,18 @@ export default function ReturnDocumentPage({ params }: { params: Promise<{ id: s
           {/* Summary */}
           <div className="nx-invoice-summary">
             <div className="nx-invoice-future">
-              <div className="nx-invoice-plabel">Reason</div>
+              <div className="nx-invoice-plabel">{t("reason")}</div>
               <p className="nx-invoice-muted">{ret.reason || "—"}</p>
             </div>
             <div className="nx-invoice-totals">
-              <div><span>Subtotal</span><b>{money(ret.subtotal)}</b></div>
+              <div><span>{t("subtotal")}</span><b>{money(ret.subtotal)}</b></div>
               {setup.vatRegistered && (
                 <div>
-                  <span>{setup.taxLabel || "VAT"}</span>
+                  <span>{setup.taxLabel || t("vat")}</span>
                   <b>{money(ret.vat)}</b>
                 </div>
               )}
-              <div className="grand"><span>Total refunded</span><b>{money(ret.total)}</b></div>
+              <div className="grand"><span>{t("total_refunded")}</span><b>{money(ret.total)}</b></div>
             </div>
           </div>
         </div>

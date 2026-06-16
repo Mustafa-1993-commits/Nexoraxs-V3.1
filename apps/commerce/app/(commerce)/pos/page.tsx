@@ -63,21 +63,28 @@ export default function POSPage() {
   }, [cart, showPayment]);
 
   function completeSale(method: "cash" | "card" | "wallet") {
-    const order = createOrder({
-      items: cart.map((i) => ({ productId: i.id, id: i.id, name: i.name, qty: i.qty, price: i.price, sku: i.sku, taxable: i.taxable })),
-      customerId: selectedCustomer?.id || null,
-      payment: method,
-      discount,
-      vat: doc.vat,
-      subtotal: doc.net,
-      total: doc.total,
-      net: doc.net,
-    });
-    createInvoice(order.id);
-    writePosLastOrderId(order.id);
-    setCart([]); setDiscount(0); setSelectedCustomer(null); setShowPayment(false);
-    setPayMethod("cash"); setTendered("");
-    router.push("/pos/success");
+    try {
+      const order = createOrder({
+        items: cart.map((i) => ({ productId: i.id, id: i.id, name: i.name, qty: i.qty, price: i.price, sku: i.sku, taxable: i.taxable })),
+        customerId: selectedCustomer?.id || null,
+        payment: method,
+        discount,
+        vat: doc.vat,
+        subtotal: doc.net,
+        total: doc.total,
+        net: doc.net,
+      });
+      createInvoice(order.id);
+      writePosLastOrderId(order.id);
+      setCart([]); setDiscount(0); setSelectedCustomer(null); setShowPayment(false);
+      setPayMethod("cash"); setTendered("");
+      router.push("/pos/success");
+    } catch (error) {
+      const message = error instanceof Error && error.message === "insufficient_stock"
+        ? t("insufficient_stock")
+        : t("sale_rejected");
+      showToast(message, "error");
+    }
   }
 
   const change = payMethod === "cash" && tendered ? +tendered - doc.total : 0;

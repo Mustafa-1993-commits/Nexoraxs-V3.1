@@ -8,9 +8,9 @@ import { computeDoc, fmtDate } from "@/lib/store";
 
 export default function InvoiceDocumentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { invoices, orders, customers, allCommerceReturns, money, getCommerceSetup, currentBU, t } = useApp();
+  const { allInvoices, allOrders, customers, allCommerceReturns, money, getCommerceSetup, currentBU, t } = useApp();
 
-  const invoice = invoices.find((inv) => inv.id === id);
+  const invoice = allInvoices.find((inv) => inv.id === id);
   if (!invoice) {
     return (
       <div style={{ minHeight: "100vh", background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -27,7 +27,7 @@ export default function InvoiceDocumentPage({ params }: { params: Promise<{ id: 
 
   const setup = getCommerceSetup();
   const businessName = setup.displayName || setup.legalName || currentBU?.name || "Commerce Business";
-  const order = orders.find((o) => o.id === invoice.orderId);
+  const order = allOrders.find((o) => o.id === invoice.orderId);
   const customer = invoice.customerId ? customers.find((c) => c.id === invoice.customerId) : null;
   const payment = order?.payment || "Cash";
   const isPaid = order ? (order as { paid?: boolean }).paid !== false : true;

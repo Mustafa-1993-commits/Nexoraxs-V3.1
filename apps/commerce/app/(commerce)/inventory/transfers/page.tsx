@@ -40,7 +40,7 @@ export default function StockTransfersPage() {
       showToast(t(result.error), "error");
       return;
     }
-    showToast("Transfer completed", "success");
+    showToast(t("transfer_completed"), "success");
     setItems([]);
     setNote("");
   }
@@ -58,10 +58,11 @@ export default function StockTransfersPage() {
       <div style={{ padding: "24px 28px", maxWidth: 920, margin: "0 auto" }}>
         {/* Breadcrumb */}
         <Link href="/inventory" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--text-2)", textDecoration: "none", marginBottom: 20 }}>
-          <ArrowLeft size={13} />Inventory
+          <ArrowLeft size={13} />{t("inventory")}
         </Link>
 
-        <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", marginBottom: 16 }}>{t("stock_transfer")}</h1>
+        <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", marginBottom: 4 }}>{t("stock_transfer")}</h1>
+        <p style={{ fontSize: 13, color: "var(--text-3)", marginBottom: 16 }}>{t("review_transfer_stock")}</p>
 
         {/* New transfer */}
         <div className="nx-card" style={{ padding: "20px 22px", marginBottom: 24 }}>
@@ -71,7 +72,7 @@ export default function StockTransfersPage() {
 
           {destinations.length === 0 ? (
             <p style={{ fontSize: 13, color: "var(--text-3)" }}>
-              Add another branch in Settings to enable stock transfers.
+              {t("add_branch_for_transfers")}
             </p>
           ) : (
             <>
@@ -93,9 +94,9 @@ export default function StockTransfersPage() {
               </div>
 
               <div style={{ marginBottom: 18 }}>
-                <span className="nx-field-label" style={{ display: "block", marginBottom: 10 }}>Items</span>
+                <span className="nx-field-label" style={{ display: "block", marginBottom: 10 }}>{t("items")}</span>
                 {items.length === 0 && (
-                  <p style={{ fontSize: 13, color: "var(--text-3)", marginBottom: 10 }}>No items added yet.</p>
+                  <p style={{ fontSize: 13, color: "var(--text-3)", marginBottom: 10 }}>{t("no_items_added")}</p>
                 )}
                 {items.map((row, i) => (
                   <div key={i} className="nx-row" style={{ gap: 10, marginBottom: 10 }}>
@@ -105,9 +106,9 @@ export default function StockTransfersPage() {
                       value={row.productId}
                       onChange={(e) => updateItem(i, { productId: e.target.value })}
                     >
-                      <option value="">Select product…</option>
+                      <option value="">{t("select_product")}...</option>
                       {products.map((p) => (
-                        <option key={p.id} value={p.id}>{p.name} ({p.stock ?? 0} in stock)</option>
+                        <option key={p.id} value={p.id}>{p.name} ({p.stock ?? 0} {t("in_stock")})</option>
                       ))}
                     </select>
                     <input
@@ -118,19 +119,19 @@ export default function StockTransfersPage() {
                       style={{ width: 100 }}
                       value={row.qty}
                       onChange={(e) => updateItem(i, { qty: e.target.value })}
-                      placeholder="Qty"
+                      placeholder={t("qty")}
                     />
-                    <button className="nx-icon-btn" onClick={() => removeItem(i)} aria-label="Remove item"><Trash2 size={15} /></button>
+                    <button className="nx-icon-btn" onClick={() => removeItem(i)} aria-label={t("remove_item")}><Trash2 size={15} /></button>
                   </div>
                 ))}
                 <button className="nx-btn nx-btn-secondary nx-btn-sm" onClick={addItemRow} disabled={products.length === 0}>
-                  <Plus size={14} />Add item
+                  <Plus size={14} />{t("add_item")}
                 </button>
               </div>
 
               <label className="nx-field" style={{ marginBottom: 18 }}>
-                <span className="nx-field-label">Note<span className="nx-field-optional">Optional</span></span>
-                <input className="nx-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Restock for weekend" />
+                <span className="nx-field-label">{t("note")}<span className="nx-field-optional">{t("optional")}</span></span>
+                <input className="nx-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("example_transfer_note")} />
               </label>
 
               <button className="nx-btn nx-btn-primary nx-btn-md" onClick={handleSubmit} disabled={items.length === 0}>
@@ -145,20 +146,21 @@ export default function StockTransfersPage() {
         {history.length === 0 ? (
           <div className="nx-empty">
             <div className="nx-empty-ic"><ArrowRightLeft size={22} /></div>
-            <div className="nx-empty-title">No transfers yet</div>
-            <div className="nx-empty-desc">Stock transfers between branches will appear here.</div>
+            <div className="nx-empty-title">{t("no_transfers_yet")}</div>
+            <div className="nx-empty-desc">{t("transfers_empty")}</div>
           </div>
         ) : (
           <div className="nx-table-wrap">
             <table className="nx-table">
               <thead>
                 <tr>
-                  <th>Transfer</th>
+                  <th>{t("transfer")}</th>
                   <th>{t("from_branch")}</th>
                   <th>{t("to_branch")}</th>
-                  <th>Items</th>
+                  <th>{t("items")}</th>
+                  <th>{t("status")}</th>
                   <th>{t("cashier")}</th>
-                  <th>Date</th>
+                  <th>{t("created")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -168,6 +170,7 @@ export default function StockTransfersPage() {
                     <td>{branchName(tr.fromBranchId)}</td>
                     <td>{branchName(tr.toBranchId)}</td>
                     <td style={{ color: "var(--text-2)", fontSize: 12.5 }}>{tr.items.map((it) => `${it.name} ×${it.qty}`).join(", ")}</td>
+                    <td>{t(tr.status)}</td>
                     <td>{tr.performedByName}</td>
                     <td style={{ color: "var(--text-3)", fontSize: 12 }}>{fmtDate(tr.createdAt)}</td>
                   </tr>

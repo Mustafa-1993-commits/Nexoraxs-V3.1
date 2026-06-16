@@ -1035,12 +1035,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
     items: OrderItem[]; customerId: string | null; payment: "cash" | "card" | "wallet";
     discount: number; vat: number; subtotal: number; total: number; net: number;
   }): CommerceOrder => {
+    const branchId = state.currentBranchId!;
+    const stockItems: { item: OrderItem; product: CommerceProduct }[] = [];
+    const requestedByProduct: Record<string, number> = {};
+    for (const item of data.items) {
+      if (!item.productId) continue;
+      const product = state.products.find((p) => p.id === item.productId);
+      if (!product) continue;
+      const existing = state.branchInventory.find((bi) => bi.productId === product.id && bi.branchId === branchId);
+      const isTracked = product.stock !== null || !!existing;
+      if (!isTracked) continue;
+      const eff = effectiveStockFor(product, branchId, state.branchInventory);
+      const requestedQty = (requestedByProduct[product.id] ?? 0) + item.qty;
+      requestedByProduct[product.id] = requestedQty;
+      if (requestedQty > eff.qty) {
+        throw new Error("insufficient_stock");
+      }
+      stockItems.push({ item, product });
+    }
+
     const existingOrders = readCollection<CommerceOrder>(STORAGE_KEYS.orders);
     const buOrders = existingOrders.filter((o) => o.businessUnitId === state.currentBusinessUnitId);
     const orderNum = `ORD-${String(buOrders.length + 1).padStart(4, "0")}`;
     const order: CommerceOrder = {
       id: uid("ord"), orderNumber: orderNum, workspaceId: state.currentWorkspaceId!,
-      businessUnitId: state.currentBusinessUnitId!, branchId: state.currentBranchId!,
+      businessUnitId: state.currentBusinessUnitId!, branchId,
       cashierId: currentUser?.id ?? "", cashierName: getUserDisplayName(currentUser) || "Cashier",
       createdAt: nowISO(), ...data,
     };
@@ -1050,10 +1069,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // deduct branch inventory and record a "sale" stock movement per item
     let nextBranchInventory = state.branchInventory;
     const newMovements: StockMovement[] = [];
-    for (const item of order.items) {
-      if (!item.productId) continue;
-      const product = state.products.find((p) => p.id === item.productId);
-      if (!product) continue;
+    for (const { item, product } of stockItems) {
       const eff = effectiveStockFor(product, order.branchId, nextBranchInventory);
       const existing = nextBranchInventory.find((bi) => bi.productId === product.id && bi.branchId === order.branchId);
       const newQty = eff.qty - item.qty;
