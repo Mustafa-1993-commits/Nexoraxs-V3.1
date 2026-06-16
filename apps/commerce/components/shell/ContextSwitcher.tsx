@@ -5,6 +5,10 @@ import { ChevronsUpDown, Check, Building2, Store, MapPin } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { BrandMark } from "@/components/ui/BrandMark";
 
+function branchSlug(name: string) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "branch";
+}
+
 interface ContextSwitcherProps {
   mode: "core" | "commerce";
 }
@@ -27,7 +31,7 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
 
   return (
     <div ref={ref} className="nx-sb-context">
-      <button className="nx-sb-switch" onClick={() => setOpen((o) => !o)}>
+      <button className="nx-sb-switch" onClick={() => setOpen((o) => !o)} data-testid="context-switcher">
         {mode === "core" ? (
           <span className="nx-choice-ic" style={{ width: 34, height: 34, background: "#14161d", color: "#fff" }}>
             <Building2 size={17} />
@@ -42,7 +46,7 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
         <ChevronsUpDown size={15} style={{ color: "var(--text-3)", flexShrink: 0 }} />
       </button>
       {open && (
-        <div className="nx-dd left" style={{ top: "calc(100% + 4px)", width: "100%", minWidth: 256 }}>
+        <div className="nx-dd left" style={{ top: "calc(100% + 4px)", width: "100%", minWidth: 256 }} data-testid="context-menu">
           <div className="nx-dd-label">Workspace</div>
           <button className="nx-dd-item" onClick={() => setOpen(false)}>
             <span className="nx-choice-ic" style={{ width: 28, height: 28, background: "#14161d", color: "#fff" }}>
@@ -91,11 +95,12 @@ export function ContextSwitcher({ mode }: ContextSwitcherProps) {
                   key={br.id}
                   className="nx-dd-item"
                   onClick={() => { setCurrent({ currentBranchId: br.id }); setOpen(false); }}
+                  data-testid={`branch-option-${branchSlug(br.name)}`}
                 >
                   <span className="nx-choice-ic" style={{ width: 28, height: 28 }}>
                     <MapPin size={14} />
                   </span>
-                  <span style={{ flex: 1, textAlign: "start" }}>{br.name}</span>
+                  <span style={{ flex: 1, textAlign: "start" }} data-testid="branch-option-name">{br.name}</span>
                   {br.id === currentBranch?.id && <Check size={15} style={{ color: "var(--accent)" }} />}
                 </button>
               ))}

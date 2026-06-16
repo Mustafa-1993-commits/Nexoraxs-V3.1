@@ -5,6 +5,10 @@ import Link from "next/link";
 import { Settings, Building2, FileText, Tag, Ruler, Printer, ArrowRight, MapPin, Plus, Check, X, CircleAlert } from "lucide-react";
 import { useApp } from "@/lib/store";
 
+function branchSlug(name: string) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "branch";
+}
+
 export default function CommerceSettingsPage() {
   const { getCommerceSetup, currentBU, currentWorkspace, currentBranch, BRANCHES, addBranch, setCurrent, workspaceStorageUsage, storageUsagePercent, storageUsageLabel, showToast, t } = useApp();
   const setup = getCommerceSetup();
@@ -86,24 +90,27 @@ export default function CommerceSettingsPage() {
               className="nx-btn nx-btn-secondary nx-btn-sm"
               style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
               onClick={() => { setBranchName(""); setBranchCity(""); setBranchErr(""); setShowAddBranch(true); }}
+              data-testid="add-branch-button"
             >
               <Plus size={14} />Add Branch
             </button>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }} data-testid="branch-list">
             {BRANCHES.map((br) => (
-              <button
-                key={br.id}
-                className={"nx-cust-row" + (br.id === currentBranch?.id ? " on" : "")}
-                onClick={() => setCurrent({ currentBranchId: br.id })}
-              >
-                <span className="nx-choice-ic" style={{ width: 32, height: 32 }}><MapPin size={15} /></span>
-                <span style={{ flex: 1, textAlign: "left" }}>
-                  <span style={{ display: "block", fontWeight: 700, fontSize: 13.5 }}>{br.name}{br.isMain ? " · Main" : ""}</span>
-                  {br.city && <span style={{ display: "block", fontSize: 12, color: "var(--text-3)" }}>{br.city}</span>}
-                </span>
-                {br.id === currentBranch?.id && <Check size={16} style={{ color: "var(--accent)" }} />}
-              </button>
+              <div key={br.id} data-testid="branch-card">
+                <button
+                  className={"nx-cust-row" + (br.id === currentBranch?.id ? " on" : "")}
+                  onClick={() => setCurrent({ currentBranchId: br.id })}
+                  data-testid={`branch-card-${branchSlug(br.name)}`}
+                >
+                  <span className="nx-choice-ic" style={{ width: 32, height: 32 }}><MapPin size={15} /></span>
+                  <span style={{ flex: 1, textAlign: "left" }}>
+                    <span style={{ display: "block", fontWeight: 700, fontSize: 13.5 }} data-testid="branch-card-name">{br.name}{br.isMain ? " · Main" : ""}</span>
+                    {br.city && <span style={{ display: "block", fontSize: 12, color: "var(--text-3)" }} data-testid="branch-card-city">{br.city}</span>}
+                  </span>
+                  {br.id === currentBranch?.id && <Check size={16} style={{ color: "var(--accent)" }} />}
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -124,20 +131,20 @@ export default function CommerceSettingsPage() {
                     <span className="nx-field-label">Branch name</span>
                     <span className="nx-input-wrap">
                       <MapPin size={16} className="nx-input-icon" />
-                      <input className="nx-input" placeholder="e.g. Nasr City" value={branchName} onChange={(e) => { setBranchName(e.target.value); setBranchErr(""); }} autoFocus />
+                      <input className="nx-input" placeholder="e.g. Nasr City" value={branchName} onChange={(e) => { setBranchName(e.target.value); setBranchErr(""); }} autoFocus data-testid="branch-name-input" />
                     </span>
                     {branchErr && <span className="nx-field-error"><CircleAlert size={13} />{branchErr}</span>}
                   </label>
                   <label className="nx-field">
                     <span className="nx-field-label">City<span className="nx-field-optional">Optional</span></span>
                     <span className="nx-input-wrap">
-                      <input className="nx-input" placeholder="e.g. Cairo" value={branchCity} onChange={(e) => setBranchCity(e.target.value)} />
+                      <input className="nx-input" placeholder="e.g. Cairo" value={branchCity} onChange={(e) => setBranchCity(e.target.value)} data-testid="branch-city-input" />
                     </span>
                   </label>
                   <div className="nx-row" style={{ gap: 10, marginTop: 4 }}>
                     <button type="button" className="nx-btn nx-btn-ghost nx-btn-md" onClick={() => setShowAddBranch(false)}>Cancel</button>
                     <span className="nx-spacer" />
-                    <button type="button" className="nx-btn nx-btn-primary nx-btn-md" onClick={saveBranch}><Check size={15} />Save branch</button>
+                    <button type="button" className="nx-btn nx-btn-primary nx-btn-md" onClick={saveBranch} data-testid="save-branch-button"><Check size={15} />Save branch</button>
                   </div>
                 </div>
               </div>
