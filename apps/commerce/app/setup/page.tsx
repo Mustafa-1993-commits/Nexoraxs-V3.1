@@ -147,18 +147,18 @@ function Stepper({ current }: { current: number }) {
 function LogoUpload({ value, onChange, businessName }: { value: string | null; onChange: (v: string | null) => void; businessName?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  const { attachMedia } = useApp();
 
-  function readFile(file: File) {
-    const reader = new FileReader();
-    reader.onload = (e) => onChange(e.target?.result as string);
-    reader.readAsDataURL(file);
+  async function handleFile(file: File) {
+    const result = await attachMedia({ file, ownerType: "business_logo", fileName: file.name });
+    if (result) onChange(result.reference.thumbnailUrl);
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) readFile(file);
+    if (file) void handleFile(file);
   }
 
   return (
@@ -188,17 +188,33 @@ function LogoUpload({ value, onChange, businessName }: { value: string | null; o
           )}
         </div>
       )}
-      <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) readFile(f); }} />
+      <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f); }} />
     </div>
   );
 }
 
 /* ---- Receipt preview (real nx-receipt-* markup) ---- */
 function SetupReceiptPreview({ setup, items, money }: { setup: SetupDraft; items: OrderItem[]; money: (n: number) => string }) {
+  const [previewDate, setPreviewDate] = useState("Preview date");
   const businessName = setup.displayName || "Commerce Business";
   const d = computeDoc(items, setup, 0);
   const width = setup.receiptSize === "58mm" ? 230 : 300;
-  const nowStr = new Date().toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setPreviewDate(new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(new Date()));
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
   return (
     <div className="nx-receipt" style={{ width, margin: "0 auto" }}>
       <div className="nx-receipt-head">
@@ -216,7 +232,7 @@ function SetupReceiptPreview({ setup, items, money }: { setup: SetupDraft; items
       <div className="nx-receipt-rule" />
       <div className="nx-receipt-meta">
         <div><span>Receipt</span><b>{setup.receiptPrefix || "RCPT"}-{setup.receiptStart || 1001}</b></div>
-        <div><span>Date</span><b>{nowStr}</b></div>
+        <div><span>Date</span><b>{previewDate}</b></div>
         <div><span>Cashier</span><b>Preview</b></div>
       </div>
       <div className="nx-receipt-rule dashed" />
@@ -355,7 +371,7 @@ function SetupPreview({ setup, step, money }: { setup: SetupDraft; step: number;
 }
 
 export default function CommerceSetupPage() {
-  const { isHydrated, currentWorkspace, currentBU, getCommerceSetup, saveCommerceSetup, showToast, isAuthenticated, hasCommerceSetupContext, money } = useApp();
+  const { isHydrated, currentWorkspace, currentBU, getCommerceSetup, saveCommerceSetup, showToast, isAuthenticated, hasCommerceSetupContext, money, storageUsageLabel, t } = useApp();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -689,6 +705,7 @@ export default function CommerceSetupPage() {
                     ["Prices", draft.pricesIncludeTax ? "Tax inclusive" : "Tax exclusive"],
                     ["Templates", `${draft.receiptStyle?.charAt(0).toUpperCase()}${draft.receiptStyle?.slice(1)} ${draft.receiptSize} receipt · A4 tax invoice`],
                     ["Categories", `${draft.categories?.length || 0} categories · ${(draft.units?.length || 0)} units`],
+                    [t("storage_used"), storageUsageLabel || "—"],
                   ]).map(([k, v], i, arr) => (
                     <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "13px 18px", borderBottom: i < arr.length - 1 ? "1px solid var(--border)" : "none" }}>
                       <span style={{ color: "var(--text-2)", fontSize: 13.5 }}>{k}</span>
@@ -758,7 +775,7 @@ function PresetStep({
     <div>
       <h2 className="nx-onb-h">Confirm your Commerce OS preset</h2>
       <p className="nx-onb-sub">
-        We pre-selected <strong style={{ color: "var(--text)" }}>{presetLabel}</strong> from your business unit.
+        We pre-selected <strong style={{ color: "var(--text)" }}>{presetLabel}</strong> for your business.
         This applies smart defaults for categories, products, taxes, receipts and reports.
         You can change it before continuing.
       </p>
@@ -772,10 +789,10 @@ function PresetStep({
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="nx-row" style={{ gap: 8, flexWrap: "wrap" }}>
               <span style={{ fontWeight: 800, fontSize: 16 }}>{currentPreset.label}</span>
-              <span className="nx-badge tone-accent">From business unit</span>
+              <span className="nx-badge tone-accent">From your business</span>
             </div>
             <div style={{ fontSize: 12.5, color: "var(--text-2)", marginTop: 3 }}>
-              {currentPreset.desc ?? "Synced with your business unit type · one shared value"}
+              {currentPreset.desc ?? "Synced with your business type · one shared value"}
             </div>
           </div>
           <button
@@ -818,7 +835,7 @@ function PresetStep({
           </div>
           <div className="nx-note" style={{ marginTop: 12 }}>
             <Info size={14} />
-            Changing this also updates your business unit type — there is only ever one value.
+            Changing this also updates your business type — there is only ever one value.
           </div>
         </div>
       )}

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Package, AlertTriangle, X } from "lucide-react";
+import Link from "next/link";
+import { Search, Package, AlertTriangle, X, ArrowRightLeft } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { type CommerceProduct } from "@/lib/store";
 
 export default function InventoryPage() {
-  const { products, updateProduct, money, showToast } = useApp();
+  const { products, adjustStock, money, showToast, t } = useApp();
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | "low" | "out">("all");
   const [editing, setEditing] = useState<CommerceProduct | null>(null);
@@ -22,7 +23,11 @@ export default function InventoryPage() {
 
   function handleUpdateStock() {
     if (!editing) return;
-    updateProduct(editing.id, { stock: +newStock });
+    const result = adjustStock({ productId: editing.id, qty: +newStock });
+    if (!result.ok) {
+      showToast("Could not update stock", "error");
+      return;
+    }
     showToast("Stock updated", "success");
     setEditing(null);
   }
@@ -33,7 +38,12 @@ export default function InventoryPage() {
   return (
     <div className="nx-main-scroll">
       <div style={{ padding: "24px 28px", maxWidth: 1200, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", marginBottom: 16 }}>Inventory</h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)" }}>Inventory</h1>
+          <Link href="/inventory/transfers" className="nx-btn nx-btn-secondary nx-btn-sm">
+            <ArrowRightLeft size={14} />{t("stock_transfer")}
+          </Link>
+        </div>
 
         {(outCount > 0 || lowCount > 0) && (
           <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
@@ -92,14 +102,24 @@ export default function InventoryPage() {
                   const oos = stock === 0;
                   const low = stock != null && stock > 0 && stock <= (p.lowStockThreshold || 5);
                   return (
-                    <tr key={p.id}>
-                      <td style={{ fontWeight: 600 }}>{p.name}</td>
+                    <tr key={p.id} data-testid={`inventory-row-${p.id}`}>
+                      <td>
+                        <div className="nx-row" style={{ gap: 11 }}>
+                          {p.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={p.image} alt="" style={{ width: 38, height: 38, borderRadius: 9, objectFit: "cover", border: "1px solid var(--border)", flexShrink: 0 }} />
+                          ) : (
+                            <span className="nx-thumb nx-thumb-stripe" style={{ width: 38, height: 38 }} />
+                          )}
+                          <span style={{ fontWeight: 600 }}>{p.name}</span>
+                        </div>
+                      </td>
                       <td className="num" style={{ color: "var(--text-3)" }}>{p.sku || "—"}</td>
                       <td style={{ color: "var(--text-2)", fontSize: 13 }}>{p.category || "General"}</td>
                       <td style={{ fontWeight: 600 }}>{money(p.price)}</td>
-                      <td>
+                      <td data-testid={`inventory-stock-cell-${p.id}`}>
                         {stock == null ? <span style={{ color: "var(--text-3)", fontSize: 12 }}>Not tracked</span> : (
-                          <span className={`nx-badge ${oos ? "tone-danger" : low ? "tone-warn" : "tone-neutral"}`} style={{ fontSize: 11 }}>
+                          <span className={`nx-badge ${oos ? "tone-danger" : low ? "tone-warn" : "tone-neutral"}`} style={{ fontSize: 11 }} data-testid={`inventory-stock-${p.id}`}>
                             {oos ? "Out of stock" : `${stock} ${p.unit || "pcs"}`}
                           </span>
                         )}
@@ -110,6 +130,7 @@ export default function InventoryPage() {
                           onClick={() => { setEditing(p); setNewStock(String(stock ?? "")); }}
                           className="nx-btn nx-btn-sm"
                           style={{ fontSize: 12, padding: "5px 10px" }}
+                          data-testid={`inventory-update-${p.id}`}
                         >
                           Update stock
                         </button>
@@ -133,11 +154,11 @@ export default function InventoryPage() {
             <div style={{ fontWeight: 600, marginBottom: 14 }}>{editing.name}</div>
             <div className="nx-field">
               <label className="nx-field-label">New stock quantity</label>
-              <input className="nx-input" type="number" min={0} value={newStock} onChange={(e) => setNewStock(e.target.value)} autoFocus />
+              <input className="nx-input" type="number" min={0} value={newStock} onChange={(e) => setNewStock(e.target.value)} autoFocus data-testid="stock-quantity-input" />
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }}>
               <button className="nx-btn" onClick={() => setEditing(null)}>Cancel</button>
-              <button className="nx-btn-primary" onClick={handleUpdateStock}>Save</button>
+              <button className="nx-btn-primary" onClick={handleUpdateStock} data-testid="save-stock-button">Save</button>
             </div>
           </div>
         </div>

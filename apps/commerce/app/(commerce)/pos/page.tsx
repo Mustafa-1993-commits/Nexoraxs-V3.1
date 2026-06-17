@@ -15,7 +15,7 @@ import { BranchPill } from "@/components/dashboard/BranchPill";
 
 export default function POSPage() {
   const router = useRouter();
-  const { products, customers, money, showToast, createOrder, createInvoice, updateProduct, createCustomer, getCommerceSetup, commerceIdentity } = useApp();
+  const { products, customers, money, showToast, createOrder, createInvoice, createCustomer, getCommerceSetup, commerceIdentity, currentUserDisplayName, t } = useApp();
   const setup = getCommerceSetup();
 
   const [cart, setCart] = useState<{ id: string; name: string; price: number; qty: number; sku: string; taxable: boolean; stock: number; category: string }[]>([]);
@@ -63,27 +63,28 @@ export default function POSPage() {
   }, [cart, showPayment]);
 
   function completeSale(method: "cash" | "card" | "wallet") {
-    const order = createOrder({
-      items: cart.map((i) => ({ productId: i.id, id: i.id, name: i.name, qty: i.qty, price: i.price, sku: i.sku, taxable: i.taxable })),
-      customerId: selectedCustomer?.id || null,
-      payment: method,
-      discount,
-      vat: doc.vat,
-      subtotal: doc.net,
-      total: doc.total,
-      net: doc.net,
-    });
-    createInvoice(order.id);
-    cart.forEach((ci) => {
-      const prod = products.find((p) => p.id === ci.id);
-      if (prod && prod.stock != null) {
-        updateProduct(ci.id, { stock: Math.max(0, prod.stock - ci.qty) });
-      }
-    });
-    writePosLastOrderId(order.id);
-    setCart([]); setDiscount(0); setSelectedCustomer(null); setShowPayment(false);
-    setPayMethod("cash"); setTendered("");
-    router.push("/pos/success");
+    try {
+      const order = createOrder({
+        items: cart.map((i) => ({ productId: i.id, id: i.id, name: i.name, qty: i.qty, price: i.price, sku: i.sku, taxable: i.taxable })),
+        customerId: selectedCustomer?.id || null,
+        payment: method,
+        discount,
+        vat: doc.vat,
+        subtotal: doc.net,
+        total: doc.total,
+        net: doc.net,
+      });
+      createInvoice(order.id);
+      writePosLastOrderId(order.id);
+      setCart([]); setDiscount(0); setSelectedCustomer(null); setShowPayment(false);
+      setPayMethod("cash"); setTendered("");
+      router.push("/pos/success");
+    } catch (error) {
+      const message = error instanceof Error && error.message === "insufficient_stock"
+        ? t("insufficient_stock")
+        : t("sale_rejected");
+      showToast(message, "error");
+    }
   }
 
   const change = payMethod === "cash" && tendered ? +tendered - doc.total : 0;
@@ -147,7 +148,7 @@ export default function POSPage() {
             const oos = (p.stock ?? 99) === 0;
             const low = oos ? false : (p.stock ?? 99) <= (p.lowStockThreshold || 5);
             return (
-              <button key={p.id} className={"nx-pcard" + (oos ? " oos" : "")} onClick={() => addToCart(p)} disabled={oos}>
+              <button key={p.id} className={"nx-pcard" + (oos ? " oos" : "")} onClick={() => addToCart(p)} disabled={oos} data-testid={`pos-product-${p.id}`}>
                 <div className="nx-pcard-img nx-thumb-stripe">
                   {p.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -214,7 +215,7 @@ export default function POSPage() {
             </div>
           ) : (
             cart.map((item) => (
-              <div className="nx-citem" key={item.id}>
+              <div className="nx-citem" key={item.id} data-testid={`cart-item-${item.id}`}>
                 <span className="nx-thumb nx-thumb-stripe" style={{ width: 42, height: 42 }}><Pill size={16} /></span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{item.name}</div>
@@ -254,6 +255,7 @@ export default function POSPage() {
             disabled={cart.length === 0}
             style={{ marginTop: 14, padding: "12px", fontSize: 15 }}
             onClick={() => { setPayMethod("cash"); setTendered(""); setShowPayment(true); }}
+            data-testid="checkout-button"
           >
             <CreditCard size={16} />
             Checkout · <span className="nx-kbd" style={{ background: "rgba(255,255,255,.2)", color: "#fff", borderColor: "transparent" }}>F2</span>
@@ -283,6 +285,10 @@ export default function POSPage() {
                 </div>
                 <span className="nx-link">{selectedCustomer ? "Change" : "Add"}</span>
               </button>
+
+              <div className="nx-cart-line" style={{ padding: "10px 2px 0", color: "var(--text-2)", fontSize: 13 }}>
+                <span>{t("cashier")}</span><span style={{ fontWeight: 700, color: "var(--text)" }}>{currentUserDisplayName || t("cashier")}</span>
+              </div>
               <hr className="nx-divider" style={{ margin: "16px 0" }} />
 
               {/* Payment method cards */}
@@ -324,7 +330,7 @@ export default function POSPage() {
               <p className="nx-note" style={{ marginTop: 14, justifyContent: "center" }}><Lock size={13} />One payment method per sale in this MVP.</p>
             </div>
             <div className="nx-modal-foot">
-              <button className="nx-btn nx-btn-primary nx-btn-lg nx-btn-full" onClick={() => completeSale(payMethod)}>
+              <button className="nx-btn nx-btn-primary nx-btn-lg nx-btn-full" onClick={() => completeSale(payMethod)} data-testid="complete-sale-button">
                 Complete Sale · {money(doc.total)}
               </button>
             </div>
@@ -340,7 +346,7 @@ export default function POSPage() {
               <div>
                 <h3 className="nx-modal-title">{custMode === "new" ? "Add new customer" : "Customer"}</h3>
                 <p style={{ fontSize: 12.5, color: "var(--text-3)", marginTop: 2 }}>
-                  {custMode === "new" ? "Saved to this business unit and linked to the sale." : "Attach a customer or continue as guest."}
+                  {custMode === "new" ? "Saved to this business and linked to the sale." : "Attach a customer or continue as guest."}
                 </p>
               </div>
               <button className="nx-icon-btn" onClick={() => setShowCustPicker(false)}><X size={16} /></button>

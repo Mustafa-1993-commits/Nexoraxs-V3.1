@@ -3,13 +3,13 @@
 import { use } from "react";
 import Link from "next/link";
 import { ArrowLeft, Printer, FileText } from "lucide-react";
-import { useApp } from "@/lib/store";
+import { useApp, computeDoc } from "@/lib/store";
 
 export default function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { invoices, orders, customers, money, getCommerceSetup, showToast } = useApp();
+  const { allInvoices, allOrders, allCommerceReturns, customers, currentBranch, BRANCHES, money, getCommerceSetup, showToast, t } = useApp();
 
-  const invoice = invoices.find((inv) => inv.id === id);
+  const invoice = allInvoices.find((inv) => inv.id === id);
   if (!invoice) {
     return (
       <div className="nx-main-scroll">
@@ -21,9 +21,15 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  const order = orders.find((o) => o.id === invoice.orderId);
+  const order = allOrders.find((o) => o.id === invoice.orderId);
   const customer = order?.customerId ? customers.find((c) => c.id === order.customerId) : null;
   const setup = getCommerceSetup();
+  const d = computeDoc(order?.items ?? invoice.items, setup, invoice.discount);
+  const isOtherBranch = invoice.branchId !== currentBranch?.id;
+  const invoiceBranchName = BRANCHES.find((b) => b.id === invoice.branchId)?.name || invoice.branchId;
+  const returns = (invoice.returnIds || [])
+    .map((rid) => allCommerceReturns.find((r) => r.id === rid))
+    .filter((r): r is NonNullable<typeof r> => !!r);
 
   return (
     <div className="nx-main-scroll">
@@ -36,9 +42,15 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)" }}>{invoice.invoiceNumber}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--text)" }}>{invoice.invoiceNumber}</h1>
+              {isOtherBranch && (
+                <span className="nx-badge tone-neutral">{t("branch")}: {invoiceBranchName}</span>
+              )}
+            </div>
             <div style={{ fontSize: 13, color: "var(--text-2)", marginTop: 4 }}>
               {new Date(invoice.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+              {order?.cashierName && <> · {t("cashier")}: <span style={{ fontWeight: 600, color: "var(--text)" }}>{order.cashierName}</span></>}
             </div>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
@@ -58,6 +70,21 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
             </button>
           </div>
         </div>
+
+        {returns.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+            {returns.map((r) => (
+              <Link
+                key={r.id}
+                href={`/returns/${r.id}/document`}
+                className="nx-badge tone-warn"
+                style={{ textDecoration: "none" }}
+              >
+                {t("return")} issued — {r.returnNumber}
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Business + customer info */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
@@ -94,20 +121,15 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
                 </tr>
               </thead>
               <tbody>
-                {order.items.map((item, i) => {
-                  const lineTotal = item.price * item.qty;
-                  const vatRate = setup.vatRate || 14;
-                  const vatAmt = item.taxable !== false ? +(lineTotal * vatRate / (100 + vatRate)).toFixed(2) : 0;
-                  return (
-                    <tr key={i} style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "11px 16px", fontSize: 13, fontWeight: 600 }}>{item.name}</td>
-                      <td style={{ padding: "11px 16px", fontSize: 13, color: "var(--text-2)" }}>{item.qty}</td>
-                      <td style={{ padding: "11px 16px", fontSize: 13 }}>{money(item.price)}</td>
-                      <td style={{ padding: "11px 16px", fontSize: 13, color: "var(--text-2)" }}>{money(vatAmt)}</td>
-                      <td style={{ padding: "11px 16px", fontSize: 13, fontWeight: 700 }}>{money(lineTotal)}</td>
-                    </tr>
-                  );
-                })}
+                {d.lines.map((item, i) => (
+                  <tr key={i} style={{ borderBottom: "1px solid var(--border)" }} data-testid={`invoice-item-${i}`}>
+                    <td style={{ padding: "11px 16px", fontSize: 13, fontWeight: 600 }}>{item.name}</td>
+                    <td style={{ padding: "11px 16px", fontSize: 13, color: "var(--text-2)" }} data-testid={`invoice-item-qty-${i}`}>{item.qty}</td>
+                    <td style={{ padding: "11px 16px", fontSize: 13 }}>{money(item.price)}</td>
+                    <td style={{ padding: "11px 16px", fontSize: 13, color: "var(--text-2)" }}>{money(item.vat)}</td>
+                    <td style={{ padding: "11px 16px", fontSize: 13, fontWeight: 700 }}>{money(item.total)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -128,7 +150,7 @@ export default function InvoiceDetailPage({ params }: { params: Promise<{ id: st
               <span>VAT ({setup.vatRate || 14}%)</span><span>{money(invoice.vat)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 16, fontWeight: 800, borderTop: "1px solid var(--border)", paddingTop: 10, marginTop: 4 }}>
-              <span>Total</span><span style={{ color: "var(--pos)" }}>{money(invoice.total)}</span>
+              <span>Total</span><span style={{ color: "var(--pos)" }} data-testid="invoice-total">{money(invoice.total)}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-3)" }}>
               <span>Net</span><span>{money(invoice.net)}</span>

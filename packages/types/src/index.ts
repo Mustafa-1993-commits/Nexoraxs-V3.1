@@ -6,6 +6,9 @@ export type {
   OSSubscription,
   WorkspaceMember,
   TeamMember,
+  WorkspaceStorageUsage,
+  MediaAsset,
+  MediaOwnerType,
 } from "./core";
 
 export type {
@@ -16,4 +19,11 @@ export type {
   CommerceOrder,
   CommerceInvoice,
   CommerceCustomer,
+  BranchInventory,
+  StockMovement,
+  StockMovementReason,
+  StockTransfer,
+  CommerceReturn,
+  CommerceReturnItem,
+  RefundMethod,
 } from "./commerce";
