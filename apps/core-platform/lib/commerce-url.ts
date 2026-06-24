@@ -1,4 +1,4 @@
-import type { Branch, BusinessUnit, OSSubscription, User, Workspace } from "@/lib/store";
+import type { Branch, BusinessUnit, OSEnablement, OSSubscription, User, Workspace } from "@/lib/store";
 
 const COMMERCE_APP_URL = "http://localhost:3002";
 
@@ -8,6 +8,7 @@ interface CommerceSetupUrlInput {
   businessUnit: BusinessUnit | null;
   branch: Branch | null;
   subscription: OSSubscription | null;
+  osEnablement?: OSEnablement | null;
 }
 
 export function commerceSetupUrl({
@@ -16,8 +17,9 @@ export function commerceSetupUrl({
   businessUnit,
   branch,
   subscription,
+  osEnablement,
 }: CommerceSetupUrlInput): string {
-  if (!user || !workspace || !businessUnit || !subscription || subscription.osId !== "commerce") {
+  if (!user || !workspace || !subscription || subscription.osId !== "commerce") {
     return "/dashboard/apps";
   }
 
@@ -25,7 +27,6 @@ export function commerceSetupUrl({
     nx_handoff: "commerce",
     currentUserId: user.id,
     currentWorkspaceId: workspace.id,
-    currentBusinessUnitId: businessUnit.id,
     currentOSId: "commerce",
     currentOSSubscriptionId: subscription.id,
     workspaceName: workspace.name,
@@ -34,15 +35,22 @@ export function commerceSetupUrl({
     workspaceTimezone: workspace.timezone,
     userName: user.fullName || user.name || "",
     userEmail: user.email,
-    businessUnitName: businessUnit.name,
-    businessPreset: businessUnit.presetId || businessUnit.preset || "retail",
     plan: subscription.plan,
     planId: subscription.planId,
   });
 
+  if (businessUnit) {
+    params.set("currentBusinessUnitId", businessUnit.id);
+    params.set("businessUnitName", businessUnit.name);
+    params.set("businessPreset", businessUnit.presetId || businessUnit.preset || "retail");
+  }
   if (branch) {
     params.set("currentBranchId", branch.id);
     params.set("branchName", branch.name);
+  }
+  if (osEnablement) {
+    params.set("currentOSEnablementId", osEnablement.id);
+    params.set("enablementScope", osEnablement.scope);
   }
   if (subscription.trialEndsAt) params.set("trialEndsAt", subscription.trialEndsAt);
   if (subscription.renewsAt) params.set("renewsAt", subscription.renewsAt);

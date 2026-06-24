@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
   workspaces: "nexoraxs.db.workspaces",
   branches: "nexoraxs.db.branches",
   osSubscriptions: "nexoraxs.db.osSubscriptions",
+  osEnablements: "nexoraxs.db.osEnablements",
   businessUnits: "nexoraxs.db.businessUnits",
   commerceSetups: "nexoraxs.db.commerceSetups",
   teamMembers: "nexoraxs.db.teamMembers",
@@ -61,7 +62,8 @@ const DICT: Record<Lang, Record<string, string>> = {
     choose_os: "Choose an operating system", available: "Available", coming_soon: "Coming Soon",
     setup_required: "Setup required", set_up: "Set up Commerce OS",
     language: "Language", english: "English", arabic: "العربية",
-    product_hub: "Product Hub", branch: "Branch", business_unit: "Business",
+    product_hub: "Product Hub", business: "Business", branch: "Branch",
+    business_unit: "Business", industry_type: "Industry Type", os_enablement: "OS Enablement",
     walk_in: "Walk-in", no_customer: "No customer", add_customer: "Add / select customer",
     name: "Name", email: "Email", phone: "Phone", address: "Address", city: "City", country: "Country",
     tax_number: "Tax Number", registration_number: "Registration Number", logo: "Logo",
@@ -138,7 +140,8 @@ const DICT: Record<Lang, Record<string, string>> = {
     choose_os: "اختر نظاماً تشغيلياً", available: "متاح", coming_soon: "قريباً",
     setup_required: "الإعداد مطلوب", set_up: "إعداد Commerce OS",
     language: "اللغة", english: "English", arabic: "العربية",
-    product_hub: "مركز المنتجات", branch: "الفرع", business_unit: "النشاط التجاري",
+    product_hub: "مركز المنتجات", business: "النشاط التجاري", branch: "الفرع",
+    business_unit: "النشاط التجاري", industry_type: "نوع النشاط", os_enablement: "تفعيل النظام",
     walk_in: "عميل عابر", no_customer: "بدون عميل", add_customer: "إضافة / اختيار عميل",
     name: "الاسم", email: "البريد الإلكتروني", phone: "الهاتف", address: "العنوان",
     city: "المدينة", country: "الدولة",
@@ -334,7 +337,7 @@ export function planIdFor(osId: string, key: string | null): string {
 export function prettyPreset(id: string | null | undefined): string {
   if (!id) return "—";
   const known: Record<string, string> = {
-    retail: "Retail Store", pharmacy: "Pharmacy", restaurant_cafe: "Restaurant / Cafe",
+    retail: "Retail Store", retail_store: "Retail Store", pharmacy: "Pharmacy", restaurant_cafe: "Restaurant / Cafe",
     supermarket: "Supermarket", electronics_mobile: "Electronics / Mobile Store",
     clothing_fashion: "Clothing / Fashion", cosmetics: "Cosmetics",
     medical_supplies: "Medical Supplies", other: "Other",

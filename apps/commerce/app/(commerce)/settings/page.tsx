@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Settings, Building2, FileText, Tag, Ruler, Printer, ArrowRight, MapPin, Plus, Check, X, CircleAlert } from "lucide-react";
-import { useApp } from "@/lib/store";
+import { prettyPreset, useApp } from "@/lib/store";
 
 function branchSlug(name: string) {
   return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "branch";
@@ -12,7 +12,7 @@ function branchSlug(name: string) {
 export default function CommerceSettingsPage() {
   const { getCommerceSetup, currentBU, currentWorkspace, currentBranch, BRANCHES, addBranch, setCurrent, workspaceStorageUsage, storageUsagePercent, storageUsageLabel, showToast, t } = useApp();
   const setup = getCommerceSetup();
-  const presetLabel = setup.preset || setup.presetId || "retail";
+  const presetLabel = prettyPreset(setup.preset || setup.presetId || "retail");
 
   const [showAddBranch, setShowAddBranch] = useState(false);
   const [branchName, setBranchName] = useState("");
@@ -25,7 +25,15 @@ export default function CommerceSettingsPage() {
       setBranchErr("Branch name is required.");
       return;
     }
-    addBranch({ name, city: branchCity.trim() || undefined });
+    try {
+      addBranch({ name, city: branchCity.trim() || undefined });
+    } catch (error) {
+      if (error instanceof Error && error.message === "branch_name_exists") {
+        setBranchErr("A branch with this name already exists for this business.");
+        return;
+      }
+      throw error;
+    }
     showToast(`Branch "${name}" added.`, "success");
     setBranchName("");
     setBranchCity("");

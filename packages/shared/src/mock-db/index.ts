@@ -62,5 +62,15 @@ export {
   storageUsagePercent,
   formatBytes,
   remainingBytes,
+  normalizeBranchIds,
+  normalizeOSEnablement,
+  getWorkspaceOSEnablements,
+  getBusinessOSEnablements,
+  getCurrentOSEnablement,
+  isOSEnabledForBusiness,
+  industryTypeFromPreset,
+  getBusinessIndustryType,
+  ensureCommerceBusinessEnablement,
+  isBranchNameAvailableForBusiness,
 } from "./selectors";
 export type { SalesBucket, SalesGroup } from "./selectors";

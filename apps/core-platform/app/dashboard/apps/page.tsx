@@ -22,6 +22,7 @@ export default function ProductHubPage() {
     currentBU,
     currentBranch,
     currentOSSubscription,
+    currentOSEnablement,
     BUSINESS_UNITS,
     BRANCHES,
     COMMERCE_PLAN,
@@ -37,6 +38,7 @@ export default function ProductHubPage() {
   const others = OPERATING_SYSTEMS.slice(1);
   const commerceSub = subscriptions.find((s) => s.osId === "commerce");
   const commerceActive = isCommerceSetupComplete && !!commerceSub;
+  const commerceSetupRequired = !!commerceSub && !commerceActive;
 
   const setupHref = commerceSetupUrl({
     user: currentUser,
@@ -44,6 +46,7 @@ export default function ProductHubPage() {
     businessUnit: currentBU,
     branch: currentBranch,
     subscription: currentOSSubscription,
+    osEnablement: currentOSEnablement,
   });
 
   const lim = COMMERCE_PLAN?.limits;
@@ -92,7 +95,9 @@ export default function ProductHubPage() {
           <div>
             <h1 className="nx-page-title">Welcome back, {currentUserDisplayName || "User"}</h1>
             <p className="nx-page-sub">
-              {currentWorkspace?.name} · {BUSINESS_UNITS.length} business{BUSINESS_UNITS.length !== 1 ? "es" : ""} · {BRANCHES.length} branch{BRANCHES.length !== 1 ? "es" : ""} · {currentWorkspace?.timezone ?? "UTC"}
+              {commerceSetupRequired
+                ? `${currentWorkspace?.name} · Commerce OS setup required · ${currentWorkspace?.timezone ?? "UTC"}`
+                : `${currentWorkspace?.name} · ${BUSINESS_UNITS.length} business${BUSINESS_UNITS.length !== 1 ? "es" : ""} · ${BRANCHES.length} branch${BRANCHES.length !== 1 ? "es" : ""} · ${currentWorkspace?.timezone ?? "UTC"}`}
             </p>
           </div>
           <div className="nx-row" style={{ gap: 10 }}>
@@ -121,24 +126,38 @@ export default function ProductHubPage() {
                   </span>
                 </div>
                 <div style={{ fontSize: 12.5, color: "var(--text-3)", marginTop: 2 }}>
-                  Workspace subscription · renews {COMMERCE_PLAN.renew}
+                  {commerceSetupRequired
+                    ? "Workspace subscription active · setup required"
+                    : `Workspace subscription · renews ${COMMERCE_PLAN.renew}`}
                 </div>
               </div>
-              {[
-                { label: "Businesses", used: buUsed, max: lim.businessUnits },
-                { label: "Branches", used: brUsed, max: lim.branches },
-                { label: "Users", used: usersUsed, max: lim.users },
-              ].map(({ label, used, max }) => (
-                <div key={label} style={{ minWidth: 116 }}>
-                  <div className="nx-row" style={{ justifyContent: "space-between", marginBottom: 5 }}>
-                    <span style={{ fontSize: 11.5, color: "var(--text-3)", fontWeight: 600 }}>{label}</span>
-                    <span style={{ fontSize: 11.5, fontWeight: 700, fontFamily: "var(--mono)" }}>{used}/{max === 99 ? "∞" : max}</span>
+              {commerceSetupRequired ? (
+                <div style={{ minWidth: 220, flex: "1 1 260px" }}>
+                  <div className="nx-row" style={{ gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+                    <span className="nx-badge tone-neutral" style={{ fontSize: 11 }}>Setup required</span>
+                    <span style={{ fontSize: 12.5, color: "var(--text-2)", fontWeight: 700 }}>No businesses yet</span>
                   </div>
-                  <div className="nx-progress" style={{ height: 5 }}>
-                    <span style={{ width: max === 99 ? "10%" : `${Math.min(100, (used / max) * 100)}%` }} />
+                  <div style={{ fontSize: 12.5, color: "var(--text-3)" }}>
+                    Create your first business to start using Commerce OS.
                   </div>
                 </div>
-              ))}
+              ) : (
+                [
+                  { label: "Businesses", used: buUsed, max: lim.businessUnits },
+                  { label: "Branches", used: brUsed, max: lim.branches },
+                  { label: "Users", used: usersUsed, max: lim.users },
+                ].map(({ label, used, max }) => (
+                  <div key={label} style={{ minWidth: 116 }}>
+                    <div className="nx-row" style={{ justifyContent: "space-between", marginBottom: 5 }}>
+                      <span style={{ fontSize: 11.5, color: "var(--text-3)", fontWeight: 600 }}>{label}</span>
+                      <span style={{ fontSize: 11.5, fontWeight: 700, fontFamily: "var(--mono)" }}>{used}/{max === 99 ? "∞" : max}</span>
+                    </div>
+                    <div className="nx-progress" style={{ height: 5 }}>
+                      <span style={{ width: max === 99 ? "10%" : `${Math.min(100, (used / max) * 100)}%` }} />
+                    </div>
+                  </div>
+                ))
+              )}
               <Link href="/dashboard/billing" className="nx-btn nx-btn-secondary nx-btn-sm" style={{ textDecoration: "none", display: "inline-flex" }}>
                 Manage plan
               </Link>
@@ -177,6 +196,12 @@ export default function ProductHubPage() {
                     </div>
                     <p style={{ fontSize: 13, color: "var(--text-2)", marginTop: 6, fontWeight: 600 }}>{commerce.tagline}</p>
                     <p style={{ fontSize: 13.5, color: "var(--text-2)", marginTop: 8, lineHeight: 1.55, maxWidth: 440 }}>{commerce.desc}</p>
+                    {commerceSetupRequired && (
+                      <div className="nx-note" style={{ marginTop: 12, maxWidth: 460 }}>
+                        <Info size={14} />
+                        <span>Create your first business to start using Commerce OS.</span>
+                      </div>
+                    )}
                     {currentBU && (
                       <div className="nx-row" style={{ gap: 7, marginTop: 12, flexWrap: "wrap" }}>
                         <span className="nx-badge tone-accent" style={{ fontSize: 11 }}>{currentBU.name}</span>

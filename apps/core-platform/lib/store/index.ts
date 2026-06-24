@@ -1,6 +1,6 @@
 export { AppProvider, useApp } from "./AppProvider";
 export type {
-  User, Workspace, Branch, OSSubscription, BusinessUnit, WorkspaceMember, TeamMember,
+  User, Workspace, Branch, OSSubscription, OSEnablement, BusinessUnit, WorkspaceMember, TeamMember,
   CommerceSetup, CommerceProduct, CommerceOrder, CommerceInvoice, CommerceCustomer,
   OrderItem, Toast, CommercePlanInfo, OnboardingState,
 } from "./AppProvider";

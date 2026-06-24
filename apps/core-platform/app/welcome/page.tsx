@@ -63,7 +63,7 @@ export default function WelcomePage() {
           <div className="nx-welcome-copyblock">
             <h1 className="nx-welcome-title">Create your workspace</h1>
             <p className="nx-welcome-copy">
-              Set up your workspace, branch, and Commerce OS in a few guided steps.
+              Set up your workspace, choose your first operating system, and pick a plan.
             </p>
           </div>
 

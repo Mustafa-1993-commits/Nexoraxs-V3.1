@@ -131,7 +131,7 @@ export function InviteUserModal({ open, onClose, onInvite }: Props) {
               </div>
             </div>
 
-            {/* BU + Branch row */}
+            {/* Business + Branch row */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="nx-field">
                 <label className="nx-field-label">Business</label>
