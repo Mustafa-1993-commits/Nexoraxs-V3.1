@@ -167,10 +167,15 @@ Operational activation of an Operating System.
 - `osId`
 - `osSubscriptionId`
 - `scope`
-- `businessUnitId`
-- `branchIds`
 - `status`
 - `setupVersion`
+
+**Scope-dependent fields**
+- `businessUnitId` is required for `business` and `branch` scopes.
+- `branchIds` is required for `branch` scope.
+- `branchIds` is optional for business-scoped enablements when an OS needs to record Branch availability.
+
+**Completion fields**
 - `setupCompletedAt`
 - `setupCompletedBy`
 
@@ -190,8 +195,8 @@ Operational activation of an Operating System.
 - Created when OS setup or activation is launched.
 - One OSSubscription can have many OSEnablements.
 - `setupVersion` records the setup contract/version used for activation.
-- `setupCompletedAt` records when setup reaches active/completed status.
-- `setupCompletedBy` records the user who completed setup.
+- `setupCompletedAt` records when setup reaches active/completed status and remains unset while setup is incomplete.
+- `setupCompletedBy` records the user who completed setup and remains unset while setup is incomplete.
 - Commerce MVP uses Business scope by default.
 - Branch-scoped enablement is architecture-ready for future plans or features.
 - HR may use Workspace scope.
@@ -207,6 +212,7 @@ Business-owned Commerce OS configuration.
 - `workspaceId`
 - `businessUnitId`
 - `osSubscriptionId`
+- `osEnablementId`
 - `displayName`
 - `legalName`
 - `logo`
@@ -234,6 +240,7 @@ Business-owned Commerce OS configuration.
 **Relationships**
 - Belongs to one BusinessUnit.
 - References the Workspace and OSSubscription.
+- References the OSEnablement that owns the operational activation through `osEnablementId`.
 - Applies across Branches within that Business unless future branch-level overrides are explicitly introduced.
 - Is unique per Business for Commerce OS.
 

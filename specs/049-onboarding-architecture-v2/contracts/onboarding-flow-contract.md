@@ -125,10 +125,19 @@ User launches setup or activation for an OS in a selected scope.
 - `osId`
 - `osSubscriptionId`
 - `scope`
-- `businessUnitId`
-- `branchIds`
 - `status`
 - `setupVersion`
+
+### Scope-dependent fields
+
+- `businessUnitId` is required when `scope` is `business` or `branch`.
+- `branchIds` is required when `scope` is `branch`.
+- `branchIds` is optional for business-scoped enablements when an OS needs to record allowed Branch availability.
+
+### Completion fields
+
+These fields are required only after setup reaches `active` or equivalent completed status:
+
 - `setupCompletedAt`
 - `setupCompletedBy`
 
@@ -142,17 +151,18 @@ User launches setup or activation for an OS in a selected scope.
 - Commerce MVP uses Business scope by default.
 - Branch-scoped enablement is architecture-ready for future plans or features.
 - `setupVersion` records the setup contract/version used.
-- `setupCompletedAt` records setup completion time when status becomes active.
-- `setupCompletedBy` records the user who completed setup.
+- `setupCompletedAt` records setup completion time when status becomes active and remains unset while setup is incomplete.
+- `setupCompletedBy` records the user who completed setup and remains unset while setup is incomplete.
 
 ### Relationship
 
 ```text
 Workspace
--> Business
--> OSSubscription
--> OSEnablement
--> Status
+|-- OSSubscription (Workspace-level license)
+`-- Business (BusinessUnit internally)
+    `-- OSEnablement (operational activation)
+        |-- references OSSubscription
+        `-- status
 ```
 
 ## 5. Commerce OS Setup Contract
@@ -240,6 +250,7 @@ Creates or confirms:
 
 - CommerceSetup is unique per Business for Commerce OS.
 - Business has exactly one CommerceSetup for Commerce OS once Commerce setup exists.
+- CommerceSetup references the OSEnablement through `osEnablementId`.
 - Branch never owns CommerceSetup.
 - Branch owns operational records only.
 
@@ -300,7 +311,7 @@ Owns:
 - Record counts remain stable unless new records are intentionally created.
 - Every Branch belongs to one BusinessUnit.
 - Every CommerceSetup belongs to one BusinessUnit.
-- Every OSEnablement references a Workspace, OS, subscription, scope, status, `setupVersion`, `setupCompletedAt`, and `setupCompletedBy`.
+- Every OSEnablement references a Workspace, OS, subscription, scope, status, and `setupVersion`; completed or active OSEnablements also record `setupCompletedAt` and `setupCompletedBy`.
 - Existing Branch operational data remains untouched.
 - No data loss is allowed.
 
