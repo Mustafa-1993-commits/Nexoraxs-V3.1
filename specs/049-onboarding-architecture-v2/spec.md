@@ -10,6 +10,44 @@
 - **Multi-Business**: One Workspace supports multiple Businesses, internally represented by BusinessUnit.
 - **Multi-Branch**: Every Business supports multiple Branches, with exactly one Main Branch required.
 - **Multi-OS**: One Workspace can subscribe to and enable multiple independent Operating Systems.
+- **Product Hub**: Product Hub is the Operating System entry point and always operates with an active Business context for OS launch.
+- **OSSubscription / OSEnablement**: OSSubscription is the Workspace-level license and billing record; OSEnablement is the operational activation record.
+
+## Architecture Diagrams
+
+### Workspace ownership
+
+```text
+Workspace
+|-- Businesses
+|   |-- CommerceSetup
+|   |-- Branches
+|   |-- Warehouses (future)
+|   `-- Employees (future)
+|-- OSSubscriptions
+`-- OSEnablements
+```
+
+### Subscription to enablements
+
+```text
+Workspace
+`-- Commerce OSSubscription
+    |-- OSEnablement -> Business A
+    |-- OSEnablement -> Business B
+    `-- OSEnablement -> Business C
+```
+
+### Product Hub flow
+
+```text
+Workspace
+-> Business
+-> Product Hub
+-> Operating System
+-> Launch
+-> OS Setup
+```
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -97,8 +135,8 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - **FR-005**: Core Workspace creation MUST NOT require Business, Branch, Commerce, preset, tax, products, inventory, POS, order, invoice, or report information.
 - **FR-006**: The Create Business step MUST collect Business Name and `businessActivity`.
 - **FR-007**: The platform MUST display Business to users while preserving BusinessUnit as the internal entity concept.
-- **FR-008**: `businessActivity` MUST be used only for recommendation, OS suggestion, and preset suggestion purposes.
-- **FR-009**: `businessActivity` MUST NOT force, auto-enable, or restrict an Operating System.
+- **FR-008**: `businessActivity` MUST be used only as recommendation metadata for OS product suggestions, preset suggestions, and sample default suggestions.
+- **FR-009**: `businessActivity` MUST NOT force, auto-enable, or restrict an Operating System, and MUST NOT change ownership, permissions, plan limits, or operational behavior.
 - **FR-010**: Product Hub MUST be the single Core entry point for launching Operating Systems.
 - **FR-011**: Product Hub MUST display Workspace, Businesses, Operating Systems, status, and quick actions for Add Business, Add Branch, Enable OS, Invite Members, and Launch Operating System.
 - **FR-012**: Selecting an Operating System from Product Hub MUST launch that Operating System's independent onboarding or setup experience.
@@ -115,18 +153,19 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - **FR-023**: Confirmed Commerce Preset MUST generate Categories, Units, Templates, Numbering, Default Reports, and Barcode Rules.
 - **FR-024**: Commerce setup MUST allow the user to create or select the Main Branch.
 - **FR-025**: Branch + Tax setup MUST collect Branch Name, City, Address, VAT Registered, VAT Number, VAT Rate, and Prices Include VAT.
-- **FR-026**: Every Business MUST have exactly one Main Branch before it becomes operationally active.
+- **FR-026**: Every Business MUST have exactly one Main Branch before it becomes operationally active; zero Main Branches is invalid for active operation and more than one Main Branch under the same Business is invalid.
 - **FR-027**: Branch MUST own only operational scope, including operational address, POS, inventory, orders, invoices, reports, transfers, and returns.
 - **FR-028**: Commerce Setup MUST belong to Business, not Branch.
-- **FR-029**: Commerce Setup MUST own Commerce Preset, Selling Mode, Tax, Templates, Numbering, Categories, Units, and Billing Identity.
-- **FR-030**: Review & Launch MUST display Workspace, Business, Branch, Plan, Preset, Selling Mode, Tax, Templates, and Numbering before launch.
-- **FR-031**: Launching Commerce MUST automatically create Categories, Units, Invoice Template, Receipt Template, Invoice Numbering, Barcode Rules, and optional sample products according to the confirmed preset.
-- **FR-032**: Users MUST be able to reach the Commerce Dashboard after launch without manual configuration of required defaults.
-- **FR-033**: Product Hub MUST show the status of OS Subscriptions and OS Enablements separately enough for users to understand whether a product is subscribed, enabled, setup-required, or unavailable.
-- **FR-034**: The platform MUST support adding more Businesses under one Workspace without re-entering Workspace data.
-- **FR-035**: When an OS Subscription already exists for a Workspace and OS, launching the same OS for another Business SHOULD reuse that subscription unless the user explicitly changes plan.
-- **FR-036**: The UI MUST NOT show "BusinessUnit", "Business Unit", "BU", or "Default Business Unit" as user-facing wording.
-- **FR-037**: Existing public domain routing expectations MUST remain unchanged: landing site, Core Platform/Product Hub, Commerce OS, storefronts, backend API, and media/CDN each keep their current domain role.
+- **FR-029**: Commerce Setup MUST be unique per Business for Commerce OS; a Business has exactly one CommerceSetup for Commerce OS once Commerce setup exists.
+- **FR-030**: Commerce Setup MUST own Commerce Preset, Selling Mode, Tax, Templates, Numbering, Categories, Units, and Billing Identity.
+- **FR-031**: Review & Launch MUST display Workspace, Business, Branch, Plan, Preset, Selling Mode, Tax, Templates, and Numbering before launch.
+- **FR-032**: Launching Commerce MUST automatically create Categories, Units, Invoice Template, Receipt Template, Invoice Numbering, Barcode Rules, and optional sample products according to the confirmed preset.
+- **FR-033**: Users MUST be able to reach the Commerce Dashboard after launch without manual configuration of required defaults.
+- **FR-034**: Product Hub MUST distinguish availability state (`available`, `coming soon`, `locked`), subscription state (`not subscribed`, `subscribed`, `trial`, `active`, `past due`, `cancelled`), and enablement state (`not enabled`, `setup required`, `active`, `disabled`).
+- **FR-035**: The platform MUST support adding more Businesses under one Workspace without re-entering Workspace data.
+- **FR-036**: When an OS Subscription already exists for a Workspace and OS, launching the same OS for another Business SHOULD reuse that subscription unless the user explicitly changes plan.
+- **FR-037**: The UI MUST NOT show "BusinessUnit", "Business Unit", "BU", or "Default Business Unit" as user-facing wording.
+- **FR-038**: Existing public domain routing expectations MUST remain unchanged: landing site, Core Platform/Product Hub, Commerce OS, storefronts, backend API, and media/CDN each keep their current domain role.
 
 ### Key Entities
 
@@ -147,6 +186,7 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - Existing BusinessUnit records remain the internal Business entity; user-facing screens and copy use Business.
 - Existing Branch records remain operational records under their Business and are not promoted to setup owners.
 - Existing Commerce setup data must be associated with the relevant Business rather than treated as Branch-owned.
+- Existing compatible CommerceSetup records should create or map to active OSEnablement records when a Workspace-level OSSubscription can be identified or created without data loss.
 - Existing Product Hub setup status should move from "Commerce setup exists" as the only signal to a combined view of OS Subscription, OS Enablement, and setup completion.
 - Existing billing and subscription records should be preserved and interpreted as Workspace-level OS Subscriptions.
 - Existing Branch operational data, including POS, inventory, orders, invoices, reports, transfers, and returns, must remain scoped to Branch and must not be lost during the onboarding transition.
@@ -166,6 +206,7 @@ After Spec 049 approval, the following concepts are frozen as platform architect
 - OSEnablement
 - CommerceSetup ownership
 - Commerce Preset
+- Billing Address vs Branch Address
 
 Future specs MUST extend these concepts, not redesign or replace them, unless an Architecture RFC is approved.
 

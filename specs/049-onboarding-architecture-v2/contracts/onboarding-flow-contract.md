@@ -42,7 +42,7 @@ Welcome + Language
 ### Rules
 
 - Core onboarding must not ask for Commerce Preset, tax configuration, templates, products, inventory, POS, orders, invoices, or reports.
-- `businessActivity` is recommendation input only.
+- `businessActivity` is recommendation metadata only. It may suggest OS products, presets, and sample defaults, but must not change ownership, permissions, plan limits, or operational behavior.
 - UI labels must use Business.
 
 ## 2. Product Hub Contract
@@ -66,20 +66,29 @@ Welcome + Language
   - Invite Members
   - Launch Operating System
 
-### Product Hub status meanings
+### Product Hub status model
 
-- `available`: OS can be selected but no subscription exists.
-- `subscribed`: Workspace has an OSSubscription.
-- `setup_required`: Business has or needs OSEnablement and OS setup is incomplete.
-- `active`: OS is enabled and setup is complete for the active scope.
-- `coming_soon`: OS is known but not launchable in the current MVP.
-- `locked`: OS is unavailable due to plan or permission limits.
+Product Hub must distinguish these dimensions rather than flattening them into one status:
+
+- Availability state: `available`, `coming soon`, `locked`
+- Subscription state: `not subscribed`, `subscribed`, `trial`, `active`, `past due`, `cancelled`
+- Enablement state: `not enabled`, `setup required`, `active`, `disabled`
 
 ### Rules
 
 - Product Hub may display recommendations and statuses.
+- Product Hub operates with an active Business context for OS launch.
 - Product Hub must not contain Commerce setup steps or Commerce business logic.
 - Launching an OS transfers context to that OS setup experience.
+
+```text
+Workspace
+-> Business
+-> Product Hub
+-> Operating System
+-> Launch
+-> OS Setup
+```
 
 ## 3. OS Subscription Contract
 
@@ -130,6 +139,8 @@ User launches setup or activation for an OS in a selected scope.
 - CRM OS may use Workspace or Business scope.
 - Future Operating Systems may define their own allowed scopes while preserving this relationship.
 - OSEnablement is operational scope-level and records where a subscribed OS is actually used.
+- Commerce MVP uses Business scope by default.
+- Branch-scoped enablement is architecture-ready for future plans or features.
 - `setupVersion` records the setup contract/version used.
 - `setupCompletedAt` records setup completion time when status becomes active.
 - `setupCompletedBy` records the user who completed setup.
@@ -225,6 +236,13 @@ Creates or confirms:
 - Barcode Rules
 - Optional Sample Products
 
+### CommerceSetup ownership rules
+
+- CommerceSetup is unique per Business for Commerce OS.
+- Business has exactly one CommerceSetup for Commerce OS once Commerce setup exists.
+- Branch never owns CommerceSetup.
+- Branch owns operational records only.
+
 ## 6. Address Ownership Contract
 
 ### Workspace
@@ -253,6 +271,9 @@ Owns:
 - Billing Address and Branch Address are distinct values.
 - Defaults may be copied from Workspace or Branch, but user edits must be preserved.
 - Every Business must have exactly one Main Branch before it becomes operationally active.
+- Zero Main Branches is invalid for active operation.
+- More than one Main Branch under the same Business is invalid.
+- Branch names may repeat across different Businesses, but may be blocked within the same Business if implementation enforces unique Business-scoped Branch names.
 
 ## 7. Migration Contract
 
@@ -272,6 +293,7 @@ Owns:
 - BusinessUnit is displayed as Business.
 - CommerceSetup is explicitly Business-owned.
 - Product Hub status combines OSSubscription, OSEnablement, and setup completion.
+- Existing compatible CommerceSetup records create or map to active OSEnablement records when the related Workspace-level OSSubscription can be identified or created safely.
 
 ### Validate
 
@@ -279,6 +301,8 @@ Owns:
 - Every Branch belongs to one BusinessUnit.
 - Every CommerceSetup belongs to one BusinessUnit.
 - Every OSEnablement references a Workspace, OS, subscription, scope, status, `setupVersion`, `setupCompletedAt`, and `setupCompletedBy`.
+- Existing Branch operational data remains untouched.
+- No data loss is allowed.
 
 ## 8. Architecture Freeze Contract
 
@@ -293,5 +317,6 @@ After Spec 049 approval, the following concepts are frozen:
 - OSEnablement
 - CommerceSetup ownership
 - Commerce Preset
+- Billing Address vs Branch Address
 
 Future specs must extend these concepts and relationships. They must not redesign or replace them unless an Architecture RFC is approved.

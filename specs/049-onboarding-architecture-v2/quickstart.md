@@ -36,11 +36,7 @@ Use this walkthrough to validate Spec 049 after implementation. It focuses on ar
 22. Enter or edit Display Name, Legal Name, contact, legal registration, and Billing Address fields.
 23. In Commerce Preset, verify the preset is suggested from `businessActivity`.
 24. Override the preset and verify the override is preserved.
-<<<<<<< HEAD
 25. Create or select Main Branch and verify the Business has exactly one Main Branch.
-=======
-25. Create or select exactly one Main Branch.
->>>>>>> d4d860d5 (docs(049): finalize onboarding architecture baseline)
 26. Enter Branch City and Branch Address.
 27. Enter tax fields.
 28. Review Workspace, Business, Branch, Plan, Preset, Selling Mode, Tax, Templates, and Numbering.
@@ -62,16 +58,10 @@ Use this walkthrough to validate Spec 049 after implementation. It focuses on ar
 2. Use a different `businessActivity` for the second Business.
 3. Launch Commerce OS for the second Business.
 4. Verify the existing Workspace-level Commerce OS Subscription is reused unless the tester explicitly changes plan.
-<<<<<<< HEAD
 5. Verify a separate OSEnablement is created for the second Business while reusing the same Workspace-level OSSubscription.
-6. Verify a separate CommerceSetup is created for the second Business.
-7. Verify Branches remain separate per Business.
-=======
-5. Verify a separate OSEnablement is created for the second Business.
 6. Verify the separate OSEnablement records setupVersion, setupCompletedAt, and setupCompletedBy when setup is completed.
 7. Verify a separate CommerceSetup is created for the second Business.
 8. Verify Branches remain separate per Business.
->>>>>>> d4d860d5 (docs(049): finalize onboarding architecture baseline)
 
 ## Walkthrough D: Branch Operational Scope
 
@@ -100,15 +90,11 @@ git diff --check
 - Product Hub is the only Core OS entry point.
 - `businessActivity` is collected once.
 - OSSubscription and OSEnablement are visible as separate concepts through status behavior.
-<<<<<<< HEAD
-- One OSSubscription can support multiple OSEnablements.
-- Every operational Business has exactly one Main Branch.
-=======
 - One Workspace-level OSSubscription can have many operational scope-level OSEnablements.
->>>>>>> d4d860d5 (docs(049): finalize onboarding architecture baseline)
+- Every operational Business has exactly one Main Branch.
 - CommerceSetup belongs to Business.
 - Branch owns operational scope only.
 - Every Business has exactly one Main Branch before operational activation.
 - Billing Address and Branch Address remain distinct.
 - No user-facing BusinessUnit, BU, or Default Business Unit wording appears.
-- Architecture Freeze is confirmed for Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, and Commerce Preset.
+- Architecture Freeze is confirmed for Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address.

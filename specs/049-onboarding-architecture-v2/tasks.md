@@ -39,6 +39,7 @@
 - [ ] T011 Export new selector and catalog helpers from packages/shared/src/mock-db/index.ts and apps/core-platform/lib/store/index.ts
 - [ ] T012 Align seed/mock defaults for Workspace, BusinessUnit, Branch, OSSubscription, OSEnablement, and CommerceSetup compatibility in packages/shared/src/mock-db/seed.ts
 - [ ] T013 Add migration-safe comments or helper behavior for preserving existing records and relationship counts in packages/shared/src/mock-db/selectors.ts
+- [ ] T014 Validate migration compatibility from existing CommerceSetup-only status to OSSubscription + OSEnablement + CommerceSetup in packages/shared/src/mock-db/selectors.ts, ensuring compatible CommerceSetup records create or map to active OSEnablement, existing Branch operational data remains untouched, and no data loss occurs
 
 **Checkpoint**: Shared model and mock-store foundation supports Multi-Business, Multi-Branch, Multi-OS, and Workspace -> Business -> OSSubscription -> OSEnablement -> Status without UI changes.
 
@@ -52,14 +53,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Replace OS-first onboarding steps with Welcome + Language, Create Workspace, and Create Business flow in apps/core-platform/app/onboarding/page.tsx
-- [ ] T015 [US1] Implement country-driven Currency and Timezone defaults with user override in apps/core-platform/app/onboarding/page.tsx
-- [ ] T016 [US1] Implement Business Name and `businessActivity` collection without selecting or forcing an Operating System in apps/core-platform/app/onboarding/page.tsx
-- [ ] T017 [US1] Update Core createWorkspace, createBusinessUnit, and completeOnboarding behavior for OS-neutral onboarding in apps/core-platform/lib/store/AppProvider.tsx
-- [ ] T018 [US1] Ensure Core onboarding routes to Product Hub after Business creation in apps/core-platform/app/onboarding/page.tsx
-- [ ] T019 [US1] Remove or bypass Commerce plan and OS selection requirements from Core onboarding state checks in apps/core-platform/lib/store/AppProvider.tsx
-- [ ] T020 [P] [US1] Remove user-facing BusinessUnit, BU, and Default Business Unit copy from onboarding components in apps/core-platform/components/onboarding/
-- [ ] T021 [US1] Verify onboarding resume behavior for missing Workspace or Business state in apps/core-platform/app/onboarding/page.tsx
+- [ ] T015 [US1] Replace OS-first onboarding steps with Welcome + Language, Create Workspace, and Create Business flow in apps/core-platform/app/onboarding/page.tsx
+- [ ] T016 [US1] Implement country-driven Currency and Timezone defaults with user override in apps/core-platform/app/onboarding/page.tsx
+- [ ] T017 [US1] Implement Business Name and `businessActivity` collection without selecting or forcing an Operating System in apps/core-platform/app/onboarding/page.tsx
+- [ ] T018 [US1] Update Core createWorkspace, createBusinessUnit, and completeOnboarding behavior for OS-neutral onboarding in apps/core-platform/lib/store/AppProvider.tsx
+- [ ] T019 [US1] Ensure Core onboarding routes to Product Hub after Business creation in apps/core-platform/app/onboarding/page.tsx
+- [ ] T020 [US1] Remove or bypass Commerce plan and OS selection requirements from Core onboarding state checks in apps/core-platform/lib/store/AppProvider.tsx
+- [ ] T021 [P] [US1] Remove user-facing BusinessUnit, BU, and Default Business Unit copy from onboarding components in apps/core-platform/components/onboarding/
+- [ ] T022 [US1] Verify onboarding resume behavior for missing Workspace or Business state in apps/core-platform/app/onboarding/page.tsx
 
 **Checkpoint**: User Story 1 is functional and testable independently through Product Hub entry.
 
@@ -73,16 +74,16 @@
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Redesign Product Hub around Workspace, active Business context, Operating Systems, statuses, and quick actions in apps/core-platform/app/dashboard/apps/page.tsx
-- [ ] T023 [US2] Add Product Hub active Business selection and required-state messaging before OS launch in apps/core-platform/app/dashboard/apps/page.tsx
-- [ ] T024 [US2] Add Add Business and Add Branch quick action behavior within current mock architecture in apps/core-platform/app/dashboard/apps/page.tsx
-- [ ] T025 [US2] Implement OS card status mapping for available, subscribed, setup required, active, coming soon, and locked states in apps/core-platform/app/dashboard/apps/page.tsx
-- [ ] T026 [US2] Add Core store action to prepare OS launch by creating or reusing Workspace-level OSSubscription and creating operational scope-level Business-scoped OSEnablement in apps/core-platform/lib/store/AppProvider.tsx
-- [ ] T027 [US2] Ensure launching the same OS for another Business reuses the Workspace OSSubscription unless plan change is explicit in apps/core-platform/lib/store/AppProvider.tsx
-- [ ] T028 [US2] Update Core-to-Commerce setup and dashboard URL handoff to include workspaceId, osSubscriptionId, businessUnitId, currentBranchId, and osEnablementId in apps/core-platform/lib/commerce-url.ts
-- [ ] T029 [US2] Update Core sidebar navigation to separate Dashboard, Businesses, Products, Billing, Team, and Settings in apps/core-platform/components/shell/CoreShell.tsx
-- [ ] T030 [P] [US2] Add Businesses list route with Business cards, branch counts, enabled OS status, and actions in apps/core-platform/app/dashboard/businesses/page.tsx
-- [ ] T031 [P] [US2] Add Business detail route with Overview, Branches, Products, Resources, and Settings sections in apps/core-platform/app/dashboard/businesses/[businessUnitId]/page.tsx
+- [ ] T023 [US2] Redesign Product Hub around Workspace, active Business context, Operating Systems, statuses, and quick actions in apps/core-platform/app/dashboard/apps/page.tsx
+- [ ] T024 [US2] Add Product Hub active Business selection and required-state messaging before OS launch in apps/core-platform/app/dashboard/apps/page.tsx
+- [ ] T025 [US2] Add Add Business and Add Branch quick action behavior within current mock architecture in apps/core-platform/app/dashboard/apps/page.tsx
+- [ ] T026 [US2] Implement OS card status mapping for availability state, subscription state, and enablement state in apps/core-platform/app/dashboard/apps/page.tsx
+- [ ] T027 [US2] Add Core store action to prepare OS launch by creating or reusing Workspace-level OSSubscription and creating operational scope-level Business-scoped OSEnablement in apps/core-platform/lib/store/AppProvider.tsx
+- [ ] T028 [US2] Ensure launching the same OS for another Business reuses the Workspace OSSubscription unless plan change is explicit in apps/core-platform/lib/store/AppProvider.tsx
+- [ ] T029 [US2] Update Core-to-Commerce setup and dashboard URL handoff to include workspaceId, osSubscriptionId, businessUnitId, currentBranchId, and osEnablementId in apps/core-platform/lib/commerce-url.ts
+- [ ] T030 [US2] Update Core sidebar navigation to separate Dashboard, Businesses, Products, Billing, Team, and Settings in apps/core-platform/components/shell/CoreShell.tsx
+- [ ] T031 [P] [US2] Add Businesses list route with Business cards, branch counts, enabled OS status, and actions in apps/core-platform/app/dashboard/businesses/page.tsx
+- [ ] T032 [P] [US2] Add Business detail route with Overview, Branches, Products, Resources, and Settings sections in apps/core-platform/app/dashboard/businesses/[businessUnitId]/page.tsx
 
 **Checkpoint**: User Story 2 is functional and Product Hub can launch Commerce for a selected Business without owning Commerce setup.
 
@@ -96,18 +97,18 @@
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Ensure Commerce handoff hydration accepts workspaceId, osSubscriptionId, businessUnitId, currentBranchId, and osEnablementId in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T033 [US3] Ensure Commerce plan selection reuses existing Workspace Commerce OSSubscription unless user explicitly changes plan in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T034 [US3] Align Commerce setup steps to Choose Plan, Business Identity, Commerce Preset, Branch + Tax, and Review & Launch in apps/commerce/app/setup/page.tsx
-- [ ] T035 [US3] Ensure Business Identity inherits Business Name and `businessActivity` while allowing editable legal, contact, logo, billing, commercial registration, and tax registration fields in apps/commerce/app/setup/page.tsx
-- [ ] T036 [US3] Ensure Commerce Preset is suggested from `businessActivity` and user override is preserved in apps/commerce/app/setup/page.tsx
-- [ ] T037 [US3] Ensure Commerce setup creates or selects exactly one Main Branch before operational activation in apps/commerce/app/setup/page.tsx
-- [ ] T038 [US3] Ensure Branch + Tax captures Branch Name, City, Operational Address, VAT Registered, VAT Number, VAT Rate, and Prices Include VAT in apps/commerce/app/setup/page.tsx
-- [ ] T039 [US3] Ensure CommerceSetup is saved by workspaceId + businessUnitId and not as Branch-owned data in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T040 [US3] Ensure OSEnablement setup lifecycle fields setupVersion, setupCompletedAt, and setupCompletedBy are set when Commerce setup is completed in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T041 [US3] Ensure Auto Configuration creates categories, units, invoice template, receipt template, invoice numbering, barcode rules, and optional sample products in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T042 [US3] Show current Business and current Branch context clearly in Commerce shell or dashboard in apps/commerce/components/shell/ContextSwitcher.tsx and apps/commerce/app/dashboard/page.tsx
-- [ ] T043 [US3] Verify Billing Address and Branch Address are displayed and preserved as distinct concepts in apps/commerce/app/setup/page.tsx
+- [ ] T033 [US3] Ensure Commerce handoff hydration accepts workspaceId, osSubscriptionId, businessUnitId, currentBranchId, and osEnablementId in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T034 [US3] Ensure Commerce plan selection reuses existing Workspace Commerce OSSubscription unless user explicitly changes plan in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T035 [US3] Align Commerce setup steps to Choose Plan, Business Identity, Commerce Preset, Branch + Tax, and Review & Launch in apps/commerce/app/setup/page.tsx
+- [ ] T036 [US3] Ensure Business Identity inherits Business Name and `businessActivity` while allowing editable legal, contact, logo, billing, commercial registration, and tax registration fields in apps/commerce/app/setup/page.tsx
+- [ ] T037 [US3] Ensure Commerce Preset is suggested from `businessActivity` and user override is preserved in apps/commerce/app/setup/page.tsx
+- [ ] T038 [US3] Ensure Commerce setup creates or selects exactly one Main Branch before operational activation in apps/commerce/app/setup/page.tsx
+- [ ] T039 [US3] Ensure Branch + Tax captures Branch Name, City, Operational Address, VAT Registered, VAT Number, VAT Rate, and Prices Include VAT in apps/commerce/app/setup/page.tsx
+- [ ] T040 [US3] Ensure CommerceSetup is saved by workspaceId + businessUnitId and not as Branch-owned data in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T041 [US3] Ensure OSEnablement setup lifecycle fields setupVersion, setupCompletedAt, and setupCompletedBy are set when Commerce setup is completed in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T042 [US3] Ensure Auto Configuration creates categories, units, invoice template, receipt template, invoice numbering, barcode rules, and optional sample products in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T043 [US3] Show current Business and current Branch context clearly in Commerce shell or dashboard in apps/commerce/components/shell/ContextSwitcher.tsx and apps/commerce/app/dashboard/page.tsx
+- [ ] T044 [US3] Verify Billing Address and Branch Address are displayed and preserved as distinct concepts in apps/commerce/app/setup/page.tsx
 
 **Checkpoint**: User Story 3 is functional and Commerce setup can launch dashboard with Business-owned setup and Branch operational context.
 
@@ -121,14 +122,14 @@
 
 ### Implementation for User Story 4
 
-- [ ] T044 [US4] Ensure Product Hub can add and switch between multiple Businesses in the same Workspace in apps/core-platform/app/dashboard/apps/page.tsx
-- [ ] T045 [US4] Ensure same Branch name can exist under different Businesses while duplicate names remain blocked within one Business in packages/shared/src/mock-db/selectors.ts and apps/core-platform/lib/store/AppProvider.tsx
-- [ ] T046 [US4] Ensure Product Hub displays future OS products as independent available/coming-soon/locked cards without implementing HR, CRM, Healthcare, Gym, or Maintenance workflows in apps/core-platform/app/dashboard/apps/page.tsx
-- [ ] T047 [US4] Ensure OS enablement helper supports workspace, business, and branch scopes for future OS use in packages/shared/src/mock-db/selectors.ts
-- [ ] T048 [US4] Ensure Commerce setup for a second Business creates a separate CommerceSetup while reusing the existing Workspace OSSubscription in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T049 [US4] Ensure branch switching keeps POS, inventory, orders, invoices, reports, transfers, and returns scoped to the selected Branch in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T050 [US4] Ensure Product Hub and Businesses pages link operational management back to Businesses and OS launch, not Commerce branch management inside Product Hub, in apps/core-platform/app/dashboard/apps/page.tsx and apps/core-platform/app/dashboard/businesses/page.tsx
-- [ ] T051 [US4] Ensure Multi-Branch rules enforce exactly one Main Branch per Business while allowing multiple non-main Branches in packages/shared/src/mock-db/selectors.ts and apps/core-platform/lib/store/AppProvider.tsx
+- [ ] T045 [US4] Ensure Product Hub can add and switch between multiple Businesses in the same Workspace in apps/core-platform/app/dashboard/apps/page.tsx
+- [ ] T046 [US4] Ensure same Branch name can exist under different Businesses while duplicate names remain blocked within one Business in packages/shared/src/mock-db/selectors.ts and apps/core-platform/lib/store/AppProvider.tsx
+- [ ] T047 [US4] Ensure Product Hub displays future OS products as independent available/coming-soon/locked cards without implementing HR, CRM, Healthcare, Gym, or Maintenance workflows in apps/core-platform/app/dashboard/apps/page.tsx
+- [ ] T048 [US4] Ensure OS enablement helper supports workspace, business, and branch scopes for future OS use in packages/shared/src/mock-db/selectors.ts
+- [ ] T049 [US4] Ensure Commerce setup for a second Business creates a separate CommerceSetup while reusing the existing Workspace OSSubscription in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T050 [US4] Ensure branch switching keeps POS, inventory, orders, invoices, reports, transfers, and returns scoped to the selected Branch in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T051 [US4] Ensure Product Hub and Businesses pages link operational management back to Businesses and OS launch, not Commerce branch management inside Product Hub, in apps/core-platform/app/dashboard/apps/page.tsx and apps/core-platform/app/dashboard/businesses/page.tsx
+- [ ] T052 [US4] Ensure Multi-Branch rules enforce exactly one Main Branch per Business while allowing multiple non-main Branches in packages/shared/src/mock-db/selectors.ts and apps/core-platform/lib/store/AppProvider.tsx
 
 **Checkpoint**: User Story 4 validates multi-Business and future multi-OS readiness without building future OS products.
 
@@ -138,21 +139,21 @@
 
 **Purpose**: Final copy, safety checks, validation, and documentation alignment across all stories.
 
-- [ ] T052 [P] Audit Core and Commerce UI copy for forbidden BusinessUnit, Business Unit, BU, and Default Business Unit wording in apps/core-platform/ and apps/commerce/
-- [ ] T053 [P] Audit pages/components for direct localStorage or sessionStorage access and move any violations behind providers/shared helpers in apps/core-platform/ and apps/commerce/
-- [ ] T054 [P] Audit runtime imports from docs/claude.aidesign and remove any violations in apps/ and packages/
-- [ ] T055 Update quickstart results or implementation notes for Spec 049 in specs/049-onboarding-architecture-v2/quickstart.md
-- [ ] T056 Document Architecture Freeze confirmation for Workspace, Business/BusinessUnit, Branch, businessActivity, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, and Commerce Preset in specs/049-onboarding-architecture-v2/quickstart.md
-- [ ] T057 Run pnpm --filter core-platform exec tsc --noEmit
-- [ ] T058 Run pnpm --filter commerce exec tsc --noEmit
-- [ ] T059 Run pnpm --filter core-platform lint
-- [ ] T060 Run pnpm --filter commerce lint
-- [ ] T061 Run pnpm --filter core-platform build
-- [ ] T062 Run pnpm --filter commerce build
-- [ ] T063 Run pnpm build
-- [ ] T064 Run pnpm lint
-- [ ] T065 Run git diff --check
-- [ ] T066 Perform manual walkthroughs from specs/049-onboarding-architecture-v2/quickstart.md and document any skipped browser walkthrough in the final implementation summary
+- [ ] T053 [P] Audit Core and Commerce UI copy for forbidden BusinessUnit, Business Unit, BU, and Default Business Unit wording in apps/core-platform/ and apps/commerce/
+- [ ] T054 [P] Audit pages/components for direct localStorage or sessionStorage access and move any violations behind providers/shared helpers in apps/core-platform/ and apps/commerce/
+- [ ] T055 [P] Audit runtime imports from docs/claude.aidesign and remove any violations in apps/ and packages/
+- [ ] T056 Update quickstart results or implementation notes for Spec 049 in specs/049-onboarding-architecture-v2/quickstart.md
+- [ ] T057 Document Architecture Freeze confirmation for Workspace, Business/BusinessUnit, Branch, businessActivity, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address in specs/049-onboarding-architecture-v2/quickstart.md
+- [ ] T058 Run pnpm --filter core-platform exec tsc --noEmit
+- [ ] T059 Run pnpm --filter commerce exec tsc --noEmit
+- [ ] T060 Run pnpm --filter core-platform lint
+- [ ] T061 Run pnpm --filter commerce lint
+- [ ] T062 Run pnpm --filter core-platform build
+- [ ] T063 Run pnpm --filter commerce build
+- [ ] T064 Run pnpm build
+- [ ] T065 Run pnpm lint
+- [ ] T066 Run git diff --check
+- [ ] T067 Perform manual walkthroughs from specs/049-onboarding-architecture-v2/quickstart.md and document any skipped browser walkthrough in the final implementation summary
 
 ---
 
@@ -179,28 +180,28 @@
 
 - T003, T004, T005, and T006 can be inspected in parallel.
 - T008, T009, T010, and T012 can be implemented in parallel if file conflicts are coordinated.
-- T020 can run while T014-T019 are implemented because it audits separate onboarding component files.
-- T030 and T031 can run in parallel after Product Hub store APIs are defined.
-- T052, T053, and T054 can run in parallel during final polish.
+- T021 can run while T015-T020 are implemented because it audits separate onboarding component files.
+- T031 and T032 can run in parallel after Product Hub store APIs are defined.
+- T053, T054, and T055 can run in parallel during final polish.
 
 ---
 
 ## Parallel Example: User Story 2
 
 ```text
-Task: T022 [US2] Product Hub redesign in apps/core-platform/app/dashboard/apps/page.tsx
-Task: T026 [US2] Core launch action in apps/core-platform/lib/store/AppProvider.tsx
-Task: T028 [US2] Commerce URL handoff in apps/core-platform/lib/commerce-url.ts
-Task: T030 [P] [US2] Businesses list route in apps/core-platform/app/dashboard/businesses/page.tsx
-Task: T031 [P] [US2] Business detail route in apps/core-platform/app/dashboard/businesses/[businessUnitId]/page.tsx
+Task: T023 [US2] Product Hub redesign in apps/core-platform/app/dashboard/apps/page.tsx
+Task: T027 [US2] Core launch action in apps/core-platform/lib/store/AppProvider.tsx
+Task: T029 [US2] Commerce URL handoff in apps/core-platform/lib/commerce-url.ts
+Task: T031 [P] [US2] Businesses list route in apps/core-platform/app/dashboard/businesses/page.tsx
+Task: T032 [P] [US2] Business detail route in apps/core-platform/app/dashboard/businesses/[businessUnitId]/page.tsx
 ```
 
 ## Parallel Example: User Story 3
 
 ```text
-Task: T032 [US3] Commerce handoff hydration in apps/commerce/lib/store/AppProvider.tsx
-Task: T034 [US3] Commerce setup steps in apps/commerce/app/setup/page.tsx
-Task: T042 [US3] Commerce context display in apps/commerce/components/shell/ContextSwitcher.tsx and apps/commerce/app/dashboard/page.tsx
+Task: T033 [US3] Commerce handoff hydration in apps/commerce/lib/store/AppProvider.tsx
+Task: T035 [US3] Commerce setup steps in apps/commerce/app/setup/page.tsx
+Task: T043 [US3] Commerce context display in apps/commerce/components/shell/ContextSwitcher.tsx and apps/commerce/app/dashboard/page.tsx
 ```
 
 ---
