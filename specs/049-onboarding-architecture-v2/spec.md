@@ -8,14 +8,12 @@
 ## Architecture Goals
 
 - **Multi-Business**: One Workspace supports multiple Businesses, internally represented by BusinessUnit.
-- **Multi-Branch**: Every Business supports multiple Branches, with exactly one Main Branch required.
+- **Multi-Branch**: Every Business supports multiple Branches, with exactly one Main Branch required before active operation.
 - **Multi-OS**: One Workspace can subscribe to and enable multiple independent Operating Systems.
-- **Product Hub**: Product Hub is the Operating System entry point and always operates with an active Business context for OS launch.
+- **Product Hub**: Product Hub is the Operating System entry point and operates with an active Business context for OS launch.
 - **OSSubscription / OSEnablement**: OSSubscription is the Workspace-level license and billing record; OSEnablement is the operational activation record.
 
-## Architecture Diagrams
-
-### Workspace ownership
+## Ownership Diagram
 
 ```text
 Workspace
@@ -28,7 +26,7 @@ Workspace
 `-- OSEnablements
 ```
 
-### Subscription to enablements
+## Subscription to Enablement Diagram
 
 ```text
 Workspace
@@ -36,17 +34,6 @@ Workspace
     |-- OSEnablement -> Business A
     |-- OSEnablement -> Business B
     `-- OSEnablement -> Business C
-```
-
-### Product Hub flow
-
-```text
-Workspace
--> Business
--> Product Hub
--> Operating System
--> Launch
--> OS Setup
 ```
 
 ## User Scenarios & Testing *(mandatory)*
@@ -93,7 +80,7 @@ A Workspace owner configures Commerce OS for a Business by confirming business i
 
 **Acceptance Scenarios**:
 
-1. **Given** a Business has `businessActivity`, **When** Commerce setup begins, **Then** the Commerce Preset is suggested from that value and the user may override it.
+1. **Given** a Business has `businessActivity`, **When** Commerce setup begins, **Then** the Commerce Preset is suggested from `businessActivity` and the user may override it.
 2. **Given** a user enters billing identity and branch details, **When** setup is saved, **Then** Billing Address is treated as legal identity and Branch Address is treated as operational location.
 3. **Given** setup is reviewed and launched, **When** the Commerce Dashboard opens, **Then** it uses the selected Workspace, Business, Branch, plan, preset, tax, templates, and numbering context.
 
@@ -142,8 +129,8 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - **FR-012**: Selecting an Operating System from Product Hub MUST launch that Operating System's independent onboarding or setup experience.
 - **FR-013**: Each Operating System MUST own its subscription flow, setup experience, configuration, and dashboard.
 - **FR-014**: Choosing a Commerce plan MUST create an OS Subscription for license and billing purposes only.
-- **FR-015**: An OS Subscription MUST be Workspace-level and MUST NOT decide which Business or Branch uses the Operating System.
-- **FR-016**: One OS Subscription MUST be able to have many OS Enablements, because OSEnablement is operational scope-level.
+- **FR-015**: An OS Subscription MUST be owned by the Workspace and MUST NOT decide which Business or Branch uses the Operating System.
+- **FR-016**: One OS Subscription MUST be able to have many OS Enablements, because OSSubscription is Workspace-level and OSEnablement is operational scope-level.
 - **FR-017**: Launching an Operating System for a Business MUST create an OS Enablement that records scope, Business assignment, Branch assignment when applicable, activation status, `setupVersion`, `setupCompletedAt`, and `setupCompletedBy`.
 - **FR-018**: Commerce OS setup MUST include Choose Plan, Business Identity, Commerce Preset, Branch + Tax, and Review & Launch.
 - **FR-019**: Commerce plan choices MUST include Starter, Pro, Business, and Enterprise.
@@ -156,15 +143,15 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - **FR-026**: Every Business MUST have exactly one Main Branch before it becomes operationally active; zero Main Branches is invalid for active operation and more than one Main Branch under the same Business is invalid.
 - **FR-027**: Branch MUST own only operational scope, including operational address, POS, inventory, orders, invoices, reports, transfers, and returns.
 - **FR-028**: Commerce Setup MUST belong to Business, not Branch.
-- **FR-029**: Commerce Setup MUST be unique per Business for Commerce OS; a Business has exactly one CommerceSetup for Commerce OS once Commerce setup exists.
-- **FR-030**: Commerce Setup MUST own Commerce Preset, Selling Mode, Tax, Templates, Numbering, Categories, Units, and Billing Identity.
-- **FR-031**: Review & Launch MUST display Workspace, Business, Branch, Plan, Preset, Selling Mode, Tax, Templates, and Numbering before launch.
-- **FR-032**: Launching Commerce MUST automatically create Categories, Units, Invoice Template, Receipt Template, Invoice Numbering, Barcode Rules, and optional sample products according to the confirmed preset.
-- **FR-033**: Users MUST be able to reach the Commerce Dashboard after launch without manual configuration of required defaults.
-- **FR-034**: Product Hub MUST distinguish availability state (`available`, `coming soon`, `locked`), subscription state (`not subscribed`, `subscribed`, `trial`, `active`, `past due`, `cancelled`), and enablement state (`not enabled`, `setup required`, `active`, `disabled`).
-- **FR-035**: The platform MUST support adding more Businesses under one Workspace without re-entering Workspace data.
-- **FR-036**: When an OS Subscription already exists for a Workspace and OS, launching the same OS for another Business SHOULD reuse that subscription unless the user explicitly changes plan.
-- **FR-037**: The UI MUST NOT show "BusinessUnit", "Business Unit", "BU", or "Default Business Unit" as user-facing wording.
+- **FR-029**: Commerce Setup MUST own Commerce Preset, Selling Mode, Tax, Templates, Numbering, Categories, Units, and Billing Identity.
+- **FR-030**: Review & Launch MUST display Workspace, Business, Branch, Plan, Preset, Selling Mode, Tax, Templates, and Numbering before launch.
+- **FR-031**: Launching Commerce MUST automatically create Categories, Units, Invoice Template, Receipt Template, Invoice Numbering, Barcode Rules, and optional sample products according to the confirmed preset.
+- **FR-032**: Users MUST be able to reach the Commerce Dashboard after launch without manual configuration of required defaults.
+- **FR-033**: Product Hub MUST show the status of OS Subscriptions and OS Enablements separately enough for users to understand whether a product is subscribed, enabled, setup-required, or unavailable.
+- **FR-034**: The platform MUST support adding more Businesses under one Workspace without re-entering Workspace data.
+- **FR-035**: When an OS Subscription already exists for a Workspace and OS, launching the same OS for another Business SHOULD reuse that subscription unless the user explicitly changes plan.
+- **FR-036**: The UI MUST NOT show "BusinessUnit", "Business Unit", "BU", or "Default Business Unit" as user-facing wording.
+- **FR-037**: Existing compatible CommerceSetup records MUST create or map to an active OSEnablement when a matching OSEnablement is missing.
 - **FR-038**: Existing public domain routing expectations MUST remain unchanged: landing site, Core Platform/Product Hub, Commerce OS, storefronts, backend API, and media/CDN each keep their current domain role.
 
 ### Key Entities
@@ -172,7 +159,7 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - **User**: The person registering, logging in, and owning or operating a Workspace.
 - **Workspace**: The company or group container that owns members, billing, storage, Businesses, OS Subscriptions, and OS Enablements.
 - **Business**: The user-facing brand, activity, or business line inside a Workspace; internally represented by BusinessUnit and described by `businessActivity`.
-- **Branch**: A physical or operational location under exactly one Business; owns operational address and operational data scope. Each Business must have exactly one Main Branch.
+- **Branch**: A physical or operational location under exactly one Business; owns operational address and operational data scope. Each operational Business must have exactly one Main Branch.
 - **Operating System**: An independent software product such as Commerce OS, HR OS, CRM OS, Healthcare OS, Gym OS, or Maintenance OS.
 - **OS Subscription**: Workspace-level license and billing record for one Operating System, including plan, trial, renewal, and status. One OS Subscription can have many OS Enablements.
 - **OS Enablement**: Operational scope-level activation of an Operating System for a Workspace, Business, or Branch scope, including assignment, activation status, `setupVersion`, `setupCompletedAt`, and `setupCompletedBy`.
@@ -186,7 +173,7 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 - Existing BusinessUnit records remain the internal Business entity; user-facing screens and copy use Business.
 - Existing Branch records remain operational records under their Business and are not promoted to setup owners.
 - Existing Commerce setup data must be associated with the relevant Business rather than treated as Branch-owned.
-- Existing compatible CommerceSetup records should create or map to active OSEnablement records when a Workspace-level OSSubscription can be identified or created without data loss.
+- Existing compatible CommerceSetup records must create or map to active OSEnablement records when the matching OSEnablement is missing.
 - Existing Product Hub setup status should move from "Commerce setup exists" as the only signal to a combined view of OS Subscription, OS Enablement, and setup completion.
 - Existing billing and subscription records should be preserved and interpreted as Workspace-level OS Subscriptions.
 - Existing Branch operational data, including POS, inventory, orders, invoices, reports, transfers, and returns, must remain scoped to Branch and must not be lost during the onboarding transition.
@@ -195,7 +182,7 @@ A Workspace owner can add additional Businesses and later enable one or more Ope
 
 ## Architecture Freeze
 
-After Spec 049 approval, the following concepts are frozen as platform architecture primitives:
+Upon approval of Spec 049, the following concepts become stable:
 
 - Workspace
 - Business / BusinessUnit
@@ -208,7 +195,7 @@ After Spec 049 approval, the following concepts are frozen as platform architect
 - Commerce Preset
 - Billing Address vs Branch Address
 
-Future specs MUST extend these concepts, not redesign or replace them, unless an Architecture RFC is approved.
+Future specs must extend these concepts, not redesign them. Any future change to these concepts requires an Architecture RFC, not a normal feature spec.
 
 ## Success Criteria *(mandatory)*
 

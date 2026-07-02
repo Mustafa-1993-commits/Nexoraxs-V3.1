@@ -8,14 +8,6 @@
 - OS-first onboarding: rejected because `businessActivity` must not force an OS and Product Hub is the OS entry point.
 - Commerce-first onboarding: rejected because it couples Core Platform to Commerce OS.
 
-## Decision: Multi-Branch is an explicit architecture goal
-
-**Rationale**: Every Business must support Branches as operational scopes, and each Business must have exactly one Main Branch before becoming operationally active. Multi-Branch support is part of the target architecture, even when the first implementation keeps Commerce setup focused on the Main Branch path.
-
-**Alternatives considered**:
-- Defer Multi-Branch architecture: rejected because Branch ownership and Main Branch rules affect onboarding, Product Hub launch context, and Commerce operational scope.
-- Treat Branch as setup owner: rejected because CommerceSetup belongs to Business and Branch owns operational records only.
-
 ## Decision: Business is the user-facing label; BusinessUnit remains internal
 
 **Rationale**: The constitution and spec require no global BusinessUnit rename while allowing Business as product language. This avoids broad refactors and preserves current relationships.
@@ -32,6 +24,14 @@
 - Product Hub launches only at Workspace scope: rejected because Commerce normally runs at Business scope.
 - Business management inside Commerce only: rejected because Product Hub must show Businesses and be the OS launch point.
 
+## Decision: Multi-Branch is an explicit architecture goal
+
+**Rationale**: Every Business must support Branches as operational scopes, and each operational Business must have exactly one Main Branch. Zero Main Branches is invalid for active operation, and more than one Main Branch under the same Business is invalid.
+
+**Alternatives considered**:
+- Defer Multi-Branch architecture: rejected because Branch ownership and Main Branch rules affect onboarding, Product Hub launch context, and Commerce operational scope.
+- Treat Branch as setup owner: rejected because CommerceSetup belongs to Business and Branch owns operational records only.
+
 ## Decision: OSSubscription and OSEnablement remain separate first-class states
 
 **Rationale**: OSSubscription answers whether the Workspace licensed an OS. OSEnablement answers where that OS is operationally activated and whether setup is complete. Collapsing them would obscure multi-Business usage and setup-required states.
@@ -39,14 +39,6 @@
 **Alternatives considered**:
 - Use CommerceSetup existence as Product Hub status: rejected because it cannot distinguish subscribed, enabled, and setup-required states.
 - Create a subscription per Business by default: rejected because subscriptions are Workspace-level licenses.
-
-## Decision: Product Hub uses layered status, not a single status
-
-**Rationale**: Product Hub must separately communicate availability, subscription, and enablement state. This prevents "available", "subscribed", and "setup required" from being overloaded as a single product state.
-
-**Alternatives considered**:
-- Single product status: rejected because it hides whether the blocker is availability, billing, or setup.
-- Commerce-only setup status: rejected because Product Hub is OS-neutral and must work for future Operating Systems.
 
 ## Decision: Reuse an existing Workspace+OS subscription for another Business unless plan change is explicit
 
@@ -58,7 +50,7 @@
 
 ## Decision: CommerceSetup belongs to BusinessUnit and Branch remains operational scope
 
-**Rationale**: Commerce setup owns business identity, preset, tax, billing identity, templates, categories, units, and numbering. It is unique per Business for Commerce OS. Branch owns operational address and operational data such as POS, inventory, orders, invoices, reports, transfers, and returns.
+**Rationale**: Commerce setup owns business identity, preset, tax, billing identity, templates, categories, units, and numbering. Branch owns operational address and operational data such as POS, inventory, orders, invoices, reports, transfers, and returns.
 
 **Alternatives considered**:
 - Branch-owned CommerceSetup: rejected because it duplicates setup across branches and conflicts with Spec 048/constitution ownership.
@@ -66,7 +58,7 @@
 
 ## Decision: Migration is preservation-first
 
-**Rationale**: Existing Workspace, BusinessUnit, Branch, CommerceSetup, OSSubscription, OSEnablement, and operational records must remain intact. Migration should reinterpret and connect existing records rather than delete or rewrite unrelated data.
+**Rationale**: Existing Workspace, BusinessUnit, Branch, CommerceSetup, OSSubscription, OSEnablement, and operational records must remain intact. Migration should reinterpret and connect existing records rather than delete or rewrite unrelated data. Existing compatible CommerceSetup records should create or map to active OSEnablement records when the matching OSEnablement is missing.
 
 **Alternatives considered**:
 - Clear existing onboarding/mock data: rejected because it risks user data loss and invalidates current MVP flows.
@@ -74,7 +66,7 @@
 
 ## Decision: Spec 049 freezes onboarding architecture primitives
 
-**Rationale**: Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address need stable meanings before implementation begins. Future work should extend these concepts instead of redesigning them through ordinary feature specs.
+**Rationale**: Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address need stable meanings before implementation begins.
 
 **Alternatives considered**:
 - Leave architecture open-ended: rejected because it risks repeated onboarding and ownership redesign during implementation.
