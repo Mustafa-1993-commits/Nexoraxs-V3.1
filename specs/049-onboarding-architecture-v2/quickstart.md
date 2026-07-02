@@ -22,7 +22,7 @@ Use this walkthrough to validate Spec 049 after implementation. It focuses on ar
 8. Override Currency or Timezone and verify override is preserved.
 9. Continue to Create Business.
 10. Enter Business Name.
-11. Choose Business Activity, such as Pharmacy or Fashion.
+11. Choose `businessActivity`, such as Pharmacy or Fashion.
 12. Finish Core onboarding.
 13. Verify Product Hub opens.
 14. Verify Product Hub shows Workspace, Businesses, Operating Systems, statuses, and quick actions.
@@ -32,11 +32,11 @@ Use this walkthrough to validate Spec 049 after implementation. It focuses on ar
 18. Choose Commerce plan: Starter, Pro, Business, or Enterprise.
 19. Verify a Workspace-level Commerce OS Subscription exists or is reused.
 20. Verify Commerce setup starts with the selected Workspace and Business context.
-21. In Business Identity, verify Business Name and Business Activity are inherited.
+21. In Business Identity, verify Business Name and `businessActivity` are inherited.
 22. Enter or edit Display Name, Legal Name, contact, legal registration, and Billing Address fields.
-23. In Commerce Preset, verify the preset is suggested from Business Activity.
+23. In Commerce Preset, verify the preset is suggested from `businessActivity`.
 24. Override the preset and verify the override is preserved.
-25. Create or select Main Branch.
+25. Create or select exactly one Main Branch.
 26. Enter Branch City and Branch Address.
 27. Enter tax fields.
 28. Review Workspace, Business, Branch, Plan, Preset, Selling Mode, Tax, Templates, and Numbering.
@@ -55,12 +55,14 @@ Use this walkthrough to validate Spec 049 after implementation. It focuses on ar
 ## Walkthrough C: Multi-Business Subscription Reuse
 
 1. In the same Workspace, add a second Business from Product Hub.
-2. Use a different Business Activity for the second Business.
+2. Use a different `businessActivity` for the second Business.
 3. Launch Commerce OS for the second Business.
 4. Verify the existing Workspace-level Commerce OS Subscription is reused unless the tester explicitly changes plan.
 5. Verify a separate OSEnablement is created for the second Business.
-6. Verify a separate CommerceSetup is created for the second Business.
-7. Verify Branches remain separate per Business.
+6. Verify the OSEnablement records `setupVersion`, `setupCompletedAt`, and `setupCompletedBy` when setup is completed.
+7. Verify a separate CommerceSetup is created for the second Business.
+8. Verify Branches remain separate per Business.
+9. Verify existing compatible CommerceSetup records create or map to active OSEnablement records if a matching OSEnablement is missing.
 
 ## Walkthrough D: Branch Operational Scope
 
@@ -87,9 +89,12 @@ git diff --check
 
 - Core onboarding is OS-neutral.
 - Product Hub is the only Core OS entry point.
-- Business Activity is collected once.
+- `businessActivity` is collected once.
 - OSSubscription and OSEnablement are visible as separate concepts through status behavior.
+- One Workspace-level OSSubscription can have many operational scope-level OSEnablements.
 - CommerceSetup belongs to Business.
 - Branch owns operational scope only.
+- Every operational Business has exactly one Main Branch.
 - Billing Address and Branch Address remain distinct.
 - No user-facing BusinessUnit, BU, or Default Business Unit wording appears.
+- Architecture Freeze is confirmed for Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address.

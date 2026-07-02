@@ -32,15 +32,16 @@
 
 **CRITICAL**: No user story work should begin until these shared model, selector, and language foundations are complete.
 
-- [ ] T007 Add or verify OSSubscription, OSEnablement, BusinessUnit, Branch, and CommerceSetup fields needed by Spec 049 in packages/types/src/core.ts and packages/types/src/commerce.ts
+- [ ] T007 Add or verify OSSubscription, OSEnablement lifecycle fields (`setupVersion`, `setupCompletedAt`, `setupCompletedBy`), BusinessUnit `businessActivity`, Branch, and CommerceSetup fields needed by Spec 049 in packages/types/src/core.ts and packages/types/src/commerce.ts
 - [ ] T008 Add Enterprise Commerce plan metadata and Product Hub status labels in packages/shared/src/mock-db/schema.ts
 - [ ] T009 Add Arabic/English UI labels for Business, Businesses, Branch, Products, Operating Systems, Enabled Products, Resources, setup required, and active Business context in packages/shared/src/mock-db/schema.ts
 - [ ] T010 Add selectors for Workspace-level OS subscription lookup, Business main-branch lookup, Business operational activation, and Business-scoped OS enablement in packages/shared/src/mock-db/selectors.ts
 - [ ] T011 Export new selector and catalog helpers from packages/shared/src/mock-db/index.ts and apps/core-platform/lib/store/index.ts
 - [ ] T012 Align seed/mock defaults for Workspace, BusinessUnit, Branch, OSSubscription, OSEnablement, and CommerceSetup compatibility in packages/shared/src/mock-db/seed.ts
 - [ ] T013 Add migration-safe comments or helper behavior for preserving existing records and relationship counts in packages/shared/src/mock-db/selectors.ts
+- [ ] T064 Validate migration compatibility from existing CommerceSetup-only status to OSSubscription + OSEnablement + CommerceSetup in packages/shared/src/mock-db/selectors.ts, ensuring compatible CommerceSetup records create or map to active OSEnablement when missing, existing Branch operational data remains untouched, and no data loss occurs
 
-**Checkpoint**: Shared model and mock-store foundation supports Workspace -> Business -> OSSubscription -> OSEnablement -> Status without UI changes.
+**Checkpoint**: Shared model and mock-store foundation supports Multi-Branch and Workspace -> Business -> OSSubscription -> OSEnablement -> Status without UI changes.
 
 ---
 
@@ -54,7 +55,7 @@
 
 - [ ] T014 [US1] Replace OS-first onboarding steps with Welcome + Language, Create Workspace, and Create Business flow in apps/core-platform/app/onboarding/page.tsx
 - [ ] T015 [US1] Implement country-driven Currency and Timezone defaults with user override in apps/core-platform/app/onboarding/page.tsx
-- [ ] T016 [US1] Implement Business Name and Business Activity collection without selecting or forcing an Operating System in apps/core-platform/app/onboarding/page.tsx
+- [ ] T016 [US1] Implement Business Name and `businessActivity` collection without selecting or forcing an Operating System in apps/core-platform/app/onboarding/page.tsx
 - [ ] T017 [US1] Update Core createWorkspace, createBusinessUnit, and completeOnboarding behavior for OS-neutral onboarding in apps/core-platform/lib/store/AppProvider.tsx
 - [ ] T018 [US1] Ensure Core onboarding routes to Product Hub after Business creation in apps/core-platform/app/onboarding/page.tsx
 - [ ] T019 [US1] Remove or bypass Commerce plan and OS selection requirements from Core onboarding state checks in apps/core-platform/lib/store/AppProvider.tsx
@@ -99,14 +100,15 @@
 - [ ] T032 [US3] Ensure Commerce handoff hydration accepts workspaceId, osSubscriptionId, businessUnitId, currentBranchId, and osEnablementId in apps/commerce/lib/store/AppProvider.tsx
 - [ ] T033 [US3] Ensure Commerce plan selection reuses existing Workspace Commerce OSSubscription unless user explicitly changes plan in apps/commerce/lib/store/AppProvider.tsx
 - [ ] T034 [US3] Align Commerce setup steps to Choose Plan, Business Identity, Commerce Preset, Branch + Tax, and Review & Launch in apps/commerce/app/setup/page.tsx
-- [ ] T035 [US3] Ensure Business Identity inherits Business Name and Business Activity while allowing editable legal, contact, logo, billing, commercial registration, and tax registration fields in apps/commerce/app/setup/page.tsx
-- [ ] T036 [US3] Ensure Commerce Preset is suggested from Business Activity and user override is preserved in apps/commerce/app/setup/page.tsx
-- [ ] T037 [US3] Ensure Commerce setup creates or selects one Main Branch before operational activation in apps/commerce/app/setup/page.tsx
+- [ ] T035 [US3] Ensure Business Identity inherits Business Name and `businessActivity` while allowing editable legal, contact, logo, billing, commercial registration, and tax registration fields in apps/commerce/app/setup/page.tsx
+- [ ] T036 [US3] Ensure Commerce Preset is suggested from `businessActivity` and user override is preserved in apps/commerce/app/setup/page.tsx
+- [ ] T037 [US3] Ensure Commerce setup creates or selects exactly one Main Branch before operational activation in apps/commerce/app/setup/page.tsx
 - [ ] T038 [US3] Ensure Branch + Tax captures Branch Name, City, Operational Address, VAT Registered, VAT Number, VAT Rate, and Prices Include VAT in apps/commerce/app/setup/page.tsx
 - [ ] T039 [US3] Ensure CommerceSetup is saved by workspaceId + businessUnitId and not as Branch-owned data in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T040 [US3] Ensure Auto Configuration creates categories, units, invoice template, receipt template, invoice numbering, barcode rules, and optional sample products in apps/commerce/lib/store/AppProvider.tsx
-- [ ] T041 [US3] Show current Business and current Branch context clearly in Commerce shell or dashboard in apps/commerce/components/shell/ContextSwitcher.tsx and apps/commerce/app/dashboard/page.tsx
-- [ ] T042 [US3] Verify Billing Address and Branch Address are displayed and preserved as distinct concepts in apps/commerce/app/setup/page.tsx
+- [ ] T040 [US3] Ensure OSEnablement setup lifecycle fields `setupVersion`, `setupCompletedAt`, and `setupCompletedBy` are set when Commerce setup is completed in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T041 [US3] Ensure Auto Configuration creates categories, units, invoice template, receipt template, invoice numbering, barcode rules, and optional sample products in apps/commerce/lib/store/AppProvider.tsx
+- [ ] T042 [US3] Show current Business and current Branch context clearly in Commerce shell or dashboard in apps/commerce/components/shell/ContextSwitcher.tsx and apps/commerce/app/dashboard/page.tsx
+- [ ] T065 [US3] Verify Billing Address and Branch Address are displayed and preserved as distinct concepts in apps/commerce/app/setup/page.tsx
 
 **Checkpoint**: User Story 3 is functional and Commerce setup can launch dashboard with Business-owned setup and Branch operational context.
 

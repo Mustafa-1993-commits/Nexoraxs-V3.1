@@ -81,7 +81,7 @@ NexoraXS Business Operating Platform
 ├── Core Platform (app.nexoraxs.com)
 │   ├── Auth & Sessions
 │   ├── Workspaces
-│   ├── Business Units (architecture-ready; hidden behind default BU in MVP)
+│   ├── Businesses (UI label; BusinessUnit internally)
 │   ├── Branches
 │   ├── Product Hub / OS Launcher
 │   ├── Billing & OS Subscriptions
@@ -152,8 +152,8 @@ The full platform vision is defined now, but the build scope is intentionally na
 - Product Hub / OS Launcher alignment.
 - Arabic + English localization foundation.
 - Commerce OS MVP.
-- Business Unit-ready architecture hidden behind one default Business Unit.
-- One default branch unless a spec explicitly expands it.
+- Business visible from onboarding, stored internally as BusinessUnit.
+- Multi-Branch target architecture with exactly one Main Branch per operational Business.
 - Mock/sessionStorage UI flows before backend persistence.
 
 ### Do not build now
@@ -179,7 +179,7 @@ The current onboarding direction is business-first, not OS-first.
 Sign Up / Login
 → Welcome + Language
 → Create Workspace
-→ Create Business (UI label; includes Business Activity)
+→ Create Business (UI label; includes `businessActivity`)
 → Product Hub
 → Launch Commerce OS
 → Choose Commerce Plan
@@ -218,10 +218,10 @@ Do not create a separate duplicated `Business` model.
 
 ### Recommendation rule
 
-Business Activity recommends OS products. It does not force them.
+`businessActivity` recommends OS products, presets, and sample defaults. It does not force them.
 
 ```txt
-Business Activity
+businessActivity
 → Recommendation Engine
 → Suggested OS products
 → User chooses OS products
@@ -251,6 +251,9 @@ Rules:
   - `businessUnitId` optional depending on scope
   - `branchIds` optional depending on scope
   - `status: setup_required | active | disabled`
+  - `setupVersion`
+  - `setupCompletedAt`
+  - `setupCompletedBy`
 
 ```ts
 interface OSEnablement {
@@ -261,6 +264,9 @@ interface OSEnablement {
   businessUnitId?: string;
   branchIds?: string[];
   status: "setup_required" | "active" | "disabled";
+  setupVersion?: string;
+  setupCompletedAt?: string;
+  setupCompletedBy?: string;
 }
 ```
 
@@ -339,12 +345,12 @@ CommerceSetup owns:
 
 ### Preset ownership
 
-Business Activity may suggest a preset, but every OS owns its own preset.
+`businessActivity` may suggest a preset, but every OS owns its own preset.
 
 Correct:
 
 ```txt
-Business Activity: Pharmacy
+businessActivity: Pharmacy
 Selected OS: Commerce OS
 Loaded Preset: Commerce Pharmacy Preset
 ```
@@ -352,69 +358,70 @@ Loaded Preset: Commerce Pharmacy Preset
 Wrong:
 
 ```txt
-Business Activity directly owns Commerce modules or hardcoded workflows.
+businessActivity directly owns Commerce modules or hardcoded workflows.
 ```
 
-## 6. Workspace / Business Unit / Branch Model
+## 6. Workspace / Business / Branch Model
 
 | Level | Meaning | MVP Rule |
 |-------|---------|----------|
 | Workspace | Company / Group | Visible now |
-| Business Unit | Activity / business line inside workspace | Architecture-ready; hidden behind default BU in MVP |
-| Branch | Physical operating location | Main Branch visible; multi-branch later |
+| Business | Brand / activity / business line inside Workspace | Visible from onboarding; stored internally as BusinessUnit |
+| Branch | Physical operating location under one Business | Multi-Branch target architecture; exactly one Main Branch required for active operation |
 
 Example future structure:
 
 ```txt
 Workspace: Mustafa Group
-├── Business Unit: Mustafa Pharmacy → Commerce OS
+├── Business: Mustafa Pharmacy (BusinessUnit internally) → Commerce OS
 │   ├── Branch: Smouha
 │   └── Branch: Miami
-├── Business Unit: Mustafa Gym → Gym OS
-└── Business Unit: Mustafa Maintenance Center → Maintenance OS
+├── Business: Mustafa Gym (BusinessUnit internally) → Gym OS
+└── Business: Mustafa Maintenance Center (BusinessUnit internally) → Maintenance OS
 ```
 
-### Business Unit MVP decision
+### Business UI and internal model
 
-Business Units are part of the core data model from day one, but they are hidden in the MVP user interface behind a system-created Default Business Unit.
+Spec 049 makes Business visible from onboarding while keeping `BusinessUnit` as the internal model name.
 
-Every Workspace must create at least one Default Business Unit, and every Branch must belong to a Business Unit, even when the user does not see or manage Business Units directly.
+Rules:
 
-MVP internal structure:
+- UI must say Business, Businesses, Store, and Branch where user-facing.
+- UI must not show BusinessUnit, Business Unit, BU, or Default Business Unit wording.
+- Do not globally rename `BusinessUnit` in code unless a future Architecture RFC approves it.
+- Every Branch belongs to exactly one BusinessUnit.
+- Every operational Business must have exactly one Main Branch.
+- Zero Main Branches is invalid for active operation.
+- More than one Main Branch under the same Business is invalid.
 
 ```txt
 Workspace: Mustafa Group
-  → Business Unit: Default Business Unit
+  → Business: Mustafa Pharmacy (BusinessUnit internally)
     → Branch: Main Branch
+    → Branch: Smouha
 ```
 
-This prevents the platform from building directly on Workspace and avoids a major refactor when multi-business operations are introduced.
+This prevents the platform from building directly on Workspace and avoids a major refactor when multi-business and multi-branch operations expand.
 
-### Business Unit UI visibility triggers
+### Business and Branch visibility
 
-Business Unit management becomes visible in the UI when one or more of the following triggers exist:
+Business management is visible from onboarding. Branches are visible as operational locations under a Business. Multi-Branch is part of the target architecture, and implementation specs may choose how much branch management is exposed at each MVP stage.
 
-1. The workspace has multiple business lines, such as Pharmacy + Gym + Maintenance Center.
-2. The workspace subscribes to multiple Operating Systems, such as Commerce OS + Gym OS.
-3. The same OS is used for multiple distinct activities, such as Pharmacy + Supermarket + Restaurant inside Commerce OS.
-4. The active plan allows more than one Business Unit, such as Starter = 1 BU, Pro = 3 BUs, Business = Unlimited / Custom.
-
-Branches are visible from day one. Business Units are revealed progressively only when operational complexity requires them.
-
-MVP visible concepts:
+Visible concepts:
 
 ```txt
 Visible:
 - Workspace
+- Business / Businesses
 - Main Branch / Branches
 
-Hidden:
-- Default Business Unit
+Internal only:
+- BusinessUnit model name
 ```
 
 ### Required data model rule
 
-Even when Business Units are hidden in the MVP UI, every Branch must belong to a `businessUnitId`.
+Every Branch must belong to a `businessUnitId`.
 
 ```ts
 interface Workspace {
@@ -426,7 +433,7 @@ interface BusinessUnit {
   id: string;
   workspace_id: string;
   name: string;
-  type?: string;
+  businessActivity: string;
   status: "active" | "archived";
 }
 

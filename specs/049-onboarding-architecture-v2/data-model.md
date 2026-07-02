@@ -33,6 +33,19 @@ Represents a company or group.
 - OSSubscriptions
 - OSEnablements
 
+## Ownership Diagram
+
+```text
+Workspace
+|-- Businesses
+|   |-- CommerceSetup
+|   |-- Branches
+|   |-- Warehouses (future)
+|   `-- Employees (future)
+|-- OSSubscriptions
+`-- OSEnablements
+```
+
 **Validation rules**
 - Workspace Name is required.
 - Country is required.
@@ -47,7 +60,7 @@ Internal entity displayed to users as Business.
 - `id`
 - `workspaceId`
 - `name`
-- `industryType` or Business Activity
+- `businessActivity`
 - `status`
 
 **Relationships**
@@ -58,10 +71,12 @@ Internal entity displayed to users as Business.
 
 **Validation rules**
 - Business Name is required.
-- Business Activity is required for recommendations.
-- Business Activity must not force or auto-enable an OS.
+- `businessActivity` is required for recommendations.
+- `businessActivity` is recommendation metadata only and may suggest OS products, presets, and sample defaults.
+- `businessActivity` must not force or auto-enable an OS.
+- `businessActivity` must not change ownership, permissions, plan limits, or operational behavior.
 - UI must display Business, not BusinessUnit, Business Unit, BU, or Default Business Unit.
-- A Business is not operationally active until it has one Main Branch.
+- A Business is not operationally active until it has exactly one Main Branch.
 
 ## Branch
 
@@ -88,7 +103,9 @@ Represents an operational location under one Business.
 
 **Validation rules**
 - Branch belongs to exactly one BusinessUnit.
-- One Main Branch is required before the Business becomes operationally active.
+- Exactly one Main Branch is required before the Business becomes operationally active.
+- Zero Main Branches is invalid for active operation.
+- More than one Main Branch under the same Business is invalid.
 - Same Branch name may exist under different Businesses.
 - Branch Address is operational and distinct from Billing Address.
 
@@ -126,7 +143,17 @@ Workspace-level license and billing record for an Operating System.
 **Relationships**
 - Belongs to one Workspace.
 - References one Operating System.
-- May support multiple OSEnablements for different Businesses or scopes.
+- Has many OSEnablements for different Businesses or operational scopes.
+
+## Subscription to Enablement Diagram
+
+```text
+Workspace
+`-- Commerce OSSubscription
+    |-- OSEnablement -> Business A
+    |-- OSEnablement -> Business B
+    `-- OSEnablement -> Business C
+```
 
 **Validation rules**
 - Created when the user chooses a plan.
@@ -146,6 +173,9 @@ Operational activation of an Operating System.
 - `businessUnitId`
 - `branchIds`
 - `status`
+- `setupVersion`
+- `setupCompletedAt`
+- `setupCompletedBy`
 
 **Scopes**
 - `workspace`
@@ -155,12 +185,18 @@ Operational activation of an Operating System.
 **Relationships**
 - Belongs to one Workspace.
 - References one OSSubscription.
+- Is operational scope-level.
 - May reference a BusinessUnit when scope is Business or Branch.
 - May reference Branch IDs when scope is Branch or when a business-scoped OS needs branch availability.
 
 **Validation rules**
 - Created when OS setup or activation is launched.
-- Commerce normally uses Business scope.
+- One OSSubscription can have many OSEnablements.
+- `setupVersion` records the setup contract/version used for activation.
+- `setupCompletedAt` records when setup reaches active/completed status.
+- `setupCompletedBy` records the user who completed setup.
+- Commerce MVP uses Business scope by default.
+- Branch-scoped enablement is architecture-ready for future plans or features.
 - HR may use Workspace scope.
 - CRM may use Workspace or Business scope.
 - Status must distinguish setup required, active, disabled, and locked or unavailable states as applicable.
@@ -206,7 +242,7 @@ Business-owned Commerce OS configuration.
 **Validation rules**
 - Must not belong to Branch.
 - Billing Address is legal identity and remains distinct from Branch Address.
-- Commerce Preset is suggested from Business Activity and may be overridden.
+- Commerce Preset is suggested from `businessActivity` and may be overridden.
 - Confirmed preset generates defaults for categories, units, templates, numbering, reports, and barcode rules.
 
 ## State Transitions
@@ -239,6 +275,16 @@ OS available
 ```text
 Business created
 -> Main Branch missing
--> Main Branch created or selected
+-> exactly one Main Branch created or selected
 -> Business operationally active
 ```
+
+## Migration Compatibility
+
+- Existing compatible CommerceSetup records must create or map to active OSEnablement records when the matching OSEnablement is missing.
+- Existing Branch operational data remains untouched.
+- No data loss is allowed.
+
+## Architecture Freeze
+
+Upon approval of Spec 049, Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address are frozen architecture concepts. Future specs must extend these concepts rather than redesigning them unless an Architecture RFC is approved.

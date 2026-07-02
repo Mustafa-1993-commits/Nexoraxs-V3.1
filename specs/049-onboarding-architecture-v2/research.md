@@ -5,7 +5,7 @@
 **Rationale**: The constitution requires the onboarding direction to be Sign Up/Login -> Welcome + Language -> Workspace -> Business -> Product Hub. Core Platform should collect shared platform context only, so the first Business is created before the user chooses an Operating System.
 
 **Alternatives considered**:
-- OS-first onboarding: rejected because Business Activity must not force an OS and Product Hub is the OS entry point.
+- OS-first onboarding: rejected because `businessActivity` must not force an OS and Product Hub is the OS entry point.
 - Commerce-first onboarding: rejected because it couples Core Platform to Commerce OS.
 
 ## Decision: Business is the user-facing label; BusinessUnit remains internal
@@ -23,6 +23,14 @@
 **Alternatives considered**:
 - Product Hub launches only at Workspace scope: rejected because Commerce normally runs at Business scope.
 - Business management inside Commerce only: rejected because Product Hub must show Businesses and be the OS launch point.
+
+## Decision: Multi-Branch is an explicit architecture goal
+
+**Rationale**: Every Business must support Branches as operational scopes, and each operational Business must have exactly one Main Branch. Zero Main Branches is invalid for active operation, and more than one Main Branch under the same Business is invalid.
+
+**Alternatives considered**:
+- Defer Multi-Branch architecture: rejected because Branch ownership and Main Branch rules affect onboarding, Product Hub launch context, and Commerce operational scope.
+- Treat Branch as setup owner: rejected because CommerceSetup belongs to Business and Branch owns operational records only.
 
 ## Decision: OSSubscription and OSEnablement remain separate first-class states
 
@@ -50,8 +58,16 @@
 
 ## Decision: Migration is preservation-first
 
-**Rationale**: Existing Workspace, BusinessUnit, Branch, CommerceSetup, OSSubscription, OSEnablement, and operational records must remain intact. Migration should reinterpret and connect existing records rather than delete or rewrite unrelated data.
+**Rationale**: Existing Workspace, BusinessUnit, Branch, CommerceSetup, OSSubscription, OSEnablement, and operational records must remain intact. Migration should reinterpret and connect existing records rather than delete or rewrite unrelated data. Existing compatible CommerceSetup records should create or map to active OSEnablement records when the matching OSEnablement is missing.
 
 **Alternatives considered**:
 - Clear existing onboarding/mock data: rejected because it risks user data loss and invalidates current MVP flows.
 - Backend migration now: rejected because backend work is out of scope for this architecture/UX refactor.
+
+## Decision: Spec 049 freezes onboarding architecture primitives
+
+**Rationale**: Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, Commerce Preset, and Billing Address vs Branch Address need stable meanings before implementation begins.
+
+**Alternatives considered**:
+- Leave architecture open-ended: rejected because it risks repeated onboarding and ownership redesign during implementation.
+- Freeze implementation details: rejected because Spec 049 freezes architecture concepts, not specific UI component structure or backend APIs.
