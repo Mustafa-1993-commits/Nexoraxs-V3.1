@@ -1,11 +1,11 @@
 # Implementation Plan: Onboarding Architecture v2
 
-**Branch**: `051-onboarding-architecture-v2` | **Date**: 2026-07-02 | **Spec**: [spec.md](./spec.md)  
+**Branch**: `049-onboarding-architecture-v2` | **Date**: 2026-07-02 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `specs/049-onboarding-architecture-v2/spec.md`
 
 ## Summary
 
-Redesign onboarding so Core Platform collects only shared platform context, then Product Hub becomes the single Operating System entry point. The plan keeps `BusinessUnit` as the internal Business entity, separates workspace-level `OSSubscription` from operational `OSEnablement`, moves Commerce-specific setup into Commerce OS, and documents a migration-safe path from the current onboarding/Product Hub behavior to the new multi-Business, multi-Branch, multi-OS architecture. This is a UI/mock/data-contract planning scope only: no backend APIs, no microservices, no global BusinessUnit rename, and no Commerce workflow ownership in Core.
+Redesign onboarding so Core Platform collects only shared platform context, then Product Hub becomes the single Operating System entry point. The plan keeps `BusinessUnit` as the internal Business entity, separates Workspace-level `OSSubscription` from operational scope-level `OSEnablement`, moves Commerce-specific setup into Commerce OS, and documents a migration-safe path from the current onboarding/Product Hub behavior to the new Multi-Business, Multi-Branch, Multi-OS architecture. This is a UI/mock/data-contract planning scope only: no backend APIs, no microservices, no global BusinessUnit rename, and no Commerce workflow ownership in Core.
 
 ## Technical Context
 
@@ -17,7 +17,7 @@ Redesign onboarding so Core Platform collects only shared platform context, then
 **Project Type**: Modular monolith web application with shared packages  
 **Performance Goals**: Core onboarding remains completable in under 4 minutes; Product Hub and Commerce setup retain current MVP perceived responsiveness with no unnecessary blocking states  
 **Constraints**: No backend APIs; no billing provider changes; no microservices; no global `BusinessUnit` rename; no user-facing BusinessUnit/BU/Default Business Unit wording; no Commerce setup logic in Core; no direct localStorage/sessionStorage access in pages/components; no runtime imports from `docs/claude.aidesign`; preserve existing Workspace/BusinessUnit/Branch/Commerce data  
-**Scale/Scope**: Core onboarding, Product Hub OS launcher/status model, Commerce setup ownership, subscription/enablement handoff, migration-safe mock-store compatibility, documentation and validation
+**Scale/Scope**: Core onboarding, Product Hub OS launcher/status model, Commerce setup ownership, subscription/enablement handoff, Multi-Business, Multi-Branch, Multi-OS readiness, migration-safe mock-store compatibility, documentation and validation
 
 ## Constitution Check
 
@@ -29,6 +29,7 @@ Redesign onboarding so Core Platform collects only shared platform context, then
 - **Workspace / Business Unit / Branch Model**: PASS WITH SPEC EXPANSION. The constitution allows Business Unit UI exposure when a spec explicitly expands it. Spec 049 exposes "Business" as product language while preserving `BusinessUnit` internally.
 - **Multi-Tenant Scope**: PASS. All planned records remain Workspace-scoped, with BusinessUnit and Branch scope where the entity requires it.
 - **OSSubscription / OSEnablement Separation**: PASS. Workspace license state and operational activation state are explicitly separate.
+- **Multi-Branch Architecture**: PASS. Every Business must support Branches with exactly one Main Branch before operational activation.
 - **Commerce OS Boundary**: PASS. Commerce setup owns preset, billing identity, tax, templates, numbering, categories, and units.
 - **CommerceSetup and Address Ownership**: PASS. CommerceSetup belongs to BusinessUnit, Branch owns operational address/scope, Billing Address remains distinct from Branch Address.
 - **Localization First**: PASS. Welcome language must configure RTL/LTR and date/number formats; touched labels must remain Arabic/English ready.
@@ -106,7 +107,8 @@ See [data-model.md](./data-model.md), [contracts/onboarding-flow-contract.md](./
 
 - **Core/OS ownership**: PASS. Core remains generic and Product Hub only launches OS-specific setup.
 - **Business language**: PASS. The plan exposes Business in UI and retains BusinessUnit internally.
-- **Subscription/Enablement separation**: PASS. Contracts document Workspace-level OSSubscription and operational OSEnablement as separate states.
+- **Subscription/Enablement separation**: PASS. Contracts document Workspace-level OSSubscription and operational scope-level OSEnablement as separate states, with one OSSubscription supporting many OSEnablements.
+- **Architecture freeze**: PASS. Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, and Commerce Preset are frozen after Spec 049 approval; future specs extend them unless an Architecture RFC is approved.
 - **Commerce setup ownership**: PASS. CommerceSetup belongs to BusinessUnit, not Branch.
 - **Branch operational scope**: PASS. Branch owns operational address and operations context only.
 - **Migration safety**: PASS. Existing records are preserved and reinterpreted with explicit relationship validation rather than destructive migration.

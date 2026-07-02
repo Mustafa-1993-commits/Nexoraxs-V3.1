@@ -47,7 +47,7 @@ Internal entity displayed to users as Business.
 - `id`
 - `workspaceId`
 - `name`
-- `industryType` or Business Activity
+- `businessActivity`
 - `status`
 
 **Relationships**
@@ -58,10 +58,10 @@ Internal entity displayed to users as Business.
 
 **Validation rules**
 - Business Name is required.
-- Business Activity is required for recommendations.
-- Business Activity must not force or auto-enable an OS.
+- `businessActivity` is required for recommendations.
+- `businessActivity` must not force or auto-enable an OS.
 - UI must display Business, not BusinessUnit, Business Unit, BU, or Default Business Unit.
-- A Business is not operationally active until it has one Main Branch.
+- A Business is not operationally active until it has exactly one Main Branch.
 
 ## Branch
 
@@ -88,7 +88,7 @@ Represents an operational location under one Business.
 
 **Validation rules**
 - Branch belongs to exactly one BusinessUnit.
-- One Main Branch is required before the Business becomes operationally active.
+- Exactly one Main Branch is required before the Business becomes operationally active.
 - Same Branch name may exist under different Businesses.
 - Branch Address is operational and distinct from Billing Address.
 
@@ -126,11 +126,11 @@ Workspace-level license and billing record for an Operating System.
 **Relationships**
 - Belongs to one Workspace.
 - References one Operating System.
-- May support multiple OSEnablements for different Businesses or scopes.
+- Has many OSEnablements for different Businesses or operational scopes.
 
 **Validation rules**
 - Created when the user chooses a plan.
-- Does not decide where the OS runs.
+- Is Workspace-level and does not decide where the OS runs.
 - Existing Workspace + OS subscription is reused for another Business unless the user explicitly changes plan.
 
 ## OSEnablement
@@ -146,6 +146,9 @@ Operational activation of an Operating System.
 - `businessUnitId`
 - `branchIds`
 - `status`
+- `setupVersion`
+- `setupCompletedAt`
+- `setupCompletedBy`
 
 **Scopes**
 - `workspace`
@@ -155,11 +158,16 @@ Operational activation of an Operating System.
 **Relationships**
 - Belongs to one Workspace.
 - References one OSSubscription.
+- Is operational scope-level.
 - May reference a BusinessUnit when scope is Business or Branch.
 - May reference Branch IDs when scope is Branch or when a business-scoped OS needs branch availability.
 
 **Validation rules**
 - Created when OS setup or activation is launched.
+- One OSSubscription can have many OSEnablements.
+- `setupVersion` records the setup contract/version used for activation.
+- `setupCompletedAt` records when setup reaches active/completed status.
+- `setupCompletedBy` records the user who completed setup.
 - Commerce normally uses Business scope.
 - HR may use Workspace scope.
 - CRM may use Workspace or Business scope.
@@ -206,7 +214,7 @@ Business-owned Commerce OS configuration.
 **Validation rules**
 - Must not belong to Branch.
 - Billing Address is legal identity and remains distinct from Branch Address.
-- Commerce Preset is suggested from Business Activity and may be overridden.
+- Commerce Preset is suggested from `businessActivity` and may be overridden.
 - Confirmed preset generates defaults for categories, units, templates, numbering, reports, and barcode rules.
 
 ## State Transitions
@@ -239,6 +247,10 @@ OS available
 ```text
 Business created
 -> Main Branch missing
--> Main Branch created or selected
+-> exactly one Main Branch created or selected
 -> Business operationally active
 ```
+
+## Architecture Freeze
+
+After Spec 049 approval, Workspace, Business/BusinessUnit, Branch, `businessActivity`, Product Hub, OSSubscription, OSEnablement, CommerceSetup ownership, and Commerce Preset are frozen architecture concepts. Future specs must extend these entities and relationships rather than redesigning or replacing them unless an approved Architecture RFC explicitly allows the change.
