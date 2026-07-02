@@ -23,7 +23,7 @@ export function StepBusinessUnit({ onNext, onBack }: { onNext: () => void; onBac
 
   function validate(): boolean {
     const e: Errors = {};
-    if (!name.trim())     e.name     = "Business unit name is required";
+    if (!name.trim())     e.name     = "Business name is required";
     if (!industry.trim()) e.industry = "Industry is required";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -40,15 +40,15 @@ export function StepBusinessUnit({ onNext, onBack }: { onNext: () => void; onBac
     <div className="space-y-6">
       <div>
         <p className="chip mb-2 text-white/30">{"// step 3 of 4"}</p>
-        <h2 className="text-2xl font-bold tracking-tight text-white">Create your business unit</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-white">Create your business</h2>
         <p className="mt-2 text-sm leading-relaxed text-white/55">
-          A business unit represents one business line or activity in your workspace.
+          A business represents one brand, activity, or business line in your workspace.
         </p>
       </div>
 
       <div className="space-y-4">
         <label className="block">
-          <span className="mb-1.5 block text-xs font-medium text-white/45">Business unit name *</span>
+          <span className="mb-1.5 block text-xs font-medium text-white/45">Business name *</span>
           <input
             autoFocus
             value={name}

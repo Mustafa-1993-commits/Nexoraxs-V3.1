@@ -10,16 +10,26 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { useApp, type CommerceSetup, computeDoc } from "@/lib/store";
 import { OS_BU_PRESETS, DEFAULT_SETUP } from "@/lib/store";
+import { getBusinessBillingAddress, getBranchOperationalAddress, suggestCommercePresetForIndustry } from "@/lib/store";
 import type { OrderItem } from "@/lib/store";
 
 const SETUP_STEPS = ["Identity", "Preset", "Mode", "Tax", "Numbering", "Templates", "Categories", "Review"] as const;
 
 const COUNTRIES = ["Egypt", "Saudi Arabia", "United Arab Emirates", "Jordan", "Kuwait", "Qatar"];
+const CITY_OPTIONS_BY_COUNTRY: Record<string, string[]> = {
+  Egypt: ["Cairo", "Alexandria", "Giza", "Mansoura", "Tanta", "Nasr City", "New Cairo"],
+  "Saudi Arabia": ["Riyadh", "Jeddah", "Dammam", "Mecca", "Medina", "Khobar"],
+  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Al Ain"],
+  Jordan: ["Amman", "Irbid", "Zarqa", "Aqaba"],
+  Kuwait: ["Kuwait City", "Hawalli", "Salmiya", "Farwaniya"],
+  Qatar: ["Doha", "Al Wakrah", "Al Rayyan", "Lusail"],
+};
 
 const PRESET_CATEGORIES: Record<string, string[]> = {
+  retail_store: ["General", "Featured", "Accessories", "Clearance"],
   retail: ["General", "Featured", "Accessories", "Clearance"],
   restaurant_cafe: ["Food", "Beverages", "Add-ons", "Packages"],
-  pharmacy: ["Medicines", "Personal Care", "Medical Supplies", "Supplements", "Baby Care"],
+  pharmacy: ["Medicine", "Personal Care", "Supplements", "Medical Devices"],
   supermarket: ["Dairy", "Bakery", "Beverages", "Household", "Personal Care"],
   electronics_mobile: ["Phones", "Accessories", "Spare Parts", "Services"],
   clothing_fashion: ["Men", "Women", "Kids", "Accessories"],
@@ -61,11 +71,23 @@ const PRESET_PREVIEW_ITEMS: Record<string, OrderItem[]> = {
 };
 
 function previewItemsForPreset(presetId: string): OrderItem[] {
-  return PRESET_PREVIEW_ITEMS[presetId] ?? PRESET_PREVIEW_ITEMS.retail;
+  return PRESET_PREVIEW_ITEMS[resolvePresetId(presetId)] ?? PRESET_PREVIEW_ITEMS.retail;
 }
 
 const PRESETS = OS_BU_PRESETS.commerce;
 const CORE_APP_URL = "http://localhost:3001";
+
+const INDUSTRY_OPTIONS = [
+  { id: "retail", label: "Retail Store", icon: "shopping-bag", presetId: "retail_store" },
+  { id: "pharmacy", label: "Pharmacy", icon: "pill", presetId: "pharmacy" },
+  { id: "supermarket", label: "Supermarket", icon: "shopping-cart", presetId: "supermarket" },
+  { id: "restaurant", label: "Restaurant / Cafe", icon: "utensils", presetId: "restaurant_cafe" },
+  { id: "electronics", label: "Electronics / Mobile", icon: "cpu", presetId: "electronics_mobile" },
+  { id: "fashion", label: "Clothing / Fashion", icon: "shirt", presetId: "clothing_fashion" },
+  { id: "cosmetics", label: "Cosmetics", icon: "sparkles", presetId: "cosmetics" },
+  { id: "medical_supplies", label: "Medical Supplies", icon: "heart-pulse", presetId: "medical_supplies" },
+  { id: "other", label: "Other", icon: "shapes", presetId: "retail_store" },
+] as const;
 
 const PRESET_ICON_MAP: Record<string, LucideIcon> = {
   "shopping-bag": ShoppingBag,
@@ -83,6 +105,51 @@ const PRESET_ICON_MAP: Record<string, LucideIcon> = {
 function PresetIcon({ icon, size = 19 }: { icon: string; size?: number }) {
   const Icon = PRESET_ICON_MAP[icon] ?? Box;
   return <Icon size={size} strokeWidth={1.75} />;
+}
+
+function resolvePresetId(presetId: string): string {
+  return presetId === "retail_store" ? "retail" : presetId;
+}
+
+function presetForIndustry(industryType: string): string {
+  return suggestCommercePresetForIndustry(industryType);
+}
+
+function industryLabelFor(industryType: string | null | undefined): string {
+  if (!industryType) return "—";
+  const normalized = industryType.trim().toLowerCase();
+  const option = INDUSTRY_OPTIONS.find((item) => item.id === normalized || item.presetId === normalized);
+  return option?.label ?? normalized.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function categoriesForPreset(presetId: string): string[] {
+  return PRESET_CATEGORIES[presetId] || PRESET_CATEGORIES[resolvePresetId(presetId)] || ["General"];
+}
+
+function presetMetaFor(presetId: string) {
+  const resolved = resolvePresetId(presetId);
+  return PRESETS.find((p) => p.id === presetId || p.id === resolved) ?? PRESETS[0];
+}
+
+function cityOptionsForCountry(country: string | null | undefined): string[] {
+  if (!country) return [];
+  return CITY_OPTIONS_BY_COUNTRY[country] || [];
+}
+
+function activityDefaults(industryType: string): Partial<SetupDraft> {
+  const presetId = presetForIndustry(industryType);
+  return {
+    presetId,
+    businessType: presetId,
+    preset: presetId,
+    categories: categoriesForPreset(presetId),
+    receiptStyle: "classic",
+    invoiceTemplate: "a4-simple",
+    vatRegistered: true,
+    vatRate: 14,
+    pricesIncludeTax: true,
+    taxLabel: "VAT",
+  };
 }
 
 const PRESET_RECOMMENDATION: Record<string, { features: [string, "ok" | "soon"][] }> = {
@@ -108,6 +175,8 @@ const PRESET_RECOMMENDATION: Record<string, { features: [string, "ok" | "soon"][
 };
 
 type SetupDraft = CommerceSetup & { units?: string[] };
+type GeneratedFieldKey = "displayName" | "legalName" | "preset" | "categories" | "templates" | "tax";
+type GeneratedFieldState = Record<GeneratedFieldKey, boolean>;
 
 function setupDraftFrom(existing: CommerceSetup): SetupDraft {
   const preset = existing.presetId || existing.businessType || existing.preset || "retail";
@@ -115,7 +184,7 @@ function setupDraftFrom(existing: CommerceSetup): SetupDraft {
     ...DEFAULT_SETUP,
     ...existing,
     presetId: preset, businessType: preset, preset,
-    categories: existing.categories?.length ? existing.categories : (PRESET_CATEGORIES[preset] || ["General"]),
+    categories: existing.categories?.length ? existing.categories : categoriesForPreset(preset),
     units: DEFAULT_UNITS.slice(0, 3),
   } as SetupDraft;
 }
@@ -197,6 +266,7 @@ function LogoUpload({ value, onChange, businessName }: { value: string | null; o
 function SetupReceiptPreview({ setup, items, money }: { setup: SetupDraft; items: OrderItem[]; money: (n: number) => string }) {
   const [previewDate, setPreviewDate] = useState("Preview date");
   const businessName = setup.displayName || "Commerce Business";
+  const billingAddress = getBusinessBillingAddress(setup);
   const d = computeDoc(items, setup, 0);
   const width = setup.receiptSize === "58mm" ? 230 : 300;
 
@@ -225,7 +295,7 @@ function SetupReceiptPreview({ setup, items, money }: { setup: SetupDraft; items
           <div className="nx-receipt-logo ph">{businessName.charAt(0)}</div>
         )}
         <div className="nx-receipt-biz">{businessName}</div>
-        {setup.address && <div className="nx-receipt-muted">{setup.address}</div>}
+        {billingAddress.singleLine && <div className="nx-receipt-muted">{billingAddress.singleLine}</div>}
         {setup.phone && <div className="nx-receipt-muted">Tel: {setup.phone}</div>}
         {setup.vatRegistered && <div className="nx-receipt-muted">{setup.taxLabel || "VAT"} Reg: {setup.taxNumber}</div>}
       </div>
@@ -275,6 +345,7 @@ function SetupReceiptPreview({ setup, items, money }: { setup: SetupDraft; items
 /* ---- Invoice preview (for tax/review steps) ---- */
 function SetupInvoicePreview({ setup, items, money }: { setup: SetupDraft; items: OrderItem[]; money: (n: number) => string }) {
   const businessName = setup.displayName || "Commerce Business";
+  const billingAddress = getBusinessBillingAddress(setup);
   const d = computeDoc(items, setup, 0);
   const dateStr = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
   return (
@@ -290,7 +361,7 @@ function SetupInvoicePreview({ setup, items, money }: { setup: SetupDraft; items
           <div>
             <div className="nx-invoice-biz">{businessName}</div>
             {setup.legalName && <div className="nx-invoice-muted">{setup.legalName}</div>}
-            {setup.address && <div className="nx-invoice-muted">{setup.address}</div>}
+            {billingAddress.singleLine && <div className="nx-invoice-muted">{billingAddress.singleLine}</div>}
             {setup.phone && <div className="nx-invoice-muted">{setup.phone}</div>}
           </div>
         </div>
@@ -371,13 +442,73 @@ function SetupPreview({ setup, step, money }: { setup: SetupDraft; step: number;
 }
 
 export default function CommerceSetupPage() {
-  const { isHydrated, currentWorkspace, currentBU, getCommerceSetup, saveCommerceSetup, showToast, isAuthenticated, hasCommerceSetupContext, money, storageUsageLabel, t } = useApp();
+  const {
+    isHydrated, currentWorkspace, currentBU, currentBranch,
+    getCommerceSetup, saveCommerceSetup, showToast, isAuthenticated, hasCommerceSetupContext,
+    createBusinessUnit, createBranch, money, storageUsageLabel, t,
+  } = useApp();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
+  const [businessName, setBusinessName] = useState("");
+  const [industryType, setIndustryType] = useState<string>("retail");
+  const [branchName, setBranchName] = useState("Main Branch");
+  const [branchCity, setBranchCity] = useState("");
+  const [branchAddress, setBranchAddress] = useState("");
+  const [manual, setManual] = useState<GeneratedFieldState>({
+    displayName: false,
+    legalName: false,
+    preset: false,
+    categories: false,
+    templates: false,
+    tax: false,
+  });
   const [draft, setDraft] = useState<SetupDraft>(() => setupDraftFrom({ ...DEFAULT_SETUP, id: "", workspaceId: "", businessUnitId: "", osSubscriptionId: "", createdAt: "", updatedAt: "" } as CommerceSetup));
 
   const upd = (patch: Partial<SetupDraft>) => setDraft((p) => ({ ...p, ...patch }));
+  const markManual = (keys: GeneratedFieldKey[]) => {
+    setManual((prev) => keys.reduce((next, key) => ({ ...next, [key]: true }), prev));
+  };
+  const updManual = (patch: Partial<SetupDraft>, keys: GeneratedFieldKey[]) => {
+    markManual(keys);
+    upd(patch);
+  };
+
+  function applyBusinessNameDefaults(name: string) {
+    setDraft((prev) => ({
+      ...prev,
+      displayName: !manual.displayName && !prev.displayName.trim() ? name : prev.displayName,
+      legalName: !manual.legalName && !prev.legalName.trim() ? name : prev.legalName,
+    }));
+  }
+
+  function applyActivityDefaults(industry: string) {
+    const defaults = activityDefaults(industry);
+    setDraft((prev) => ({
+      ...prev,
+      ...(!manual.preset ? {
+        presetId: defaults.presetId,
+        businessType: defaults.businessType,
+        preset: defaults.preset,
+      } : {}),
+      ...(!manual.categories ? { categories: defaults.categories } : {}),
+      ...(!manual.templates ? {
+        receiptStyle: defaults.receiptStyle,
+        invoiceTemplate: defaults.invoiceTemplate,
+      } : {}),
+      ...(!manual.tax ? {
+        vatRegistered: defaults.vatRegistered,
+        vatRate: defaults.vatRate,
+        pricesIncludeTax: defaults.pricesIncludeTax,
+        taxLabel: defaults.taxLabel,
+      } : {}),
+    }));
+  }
+
+  function selectIndustryType(nextIndustryType: string) {
+    setIndustryType(nextIndustryType);
+    applyActivityDefaults(nextIndustryType);
+  }
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -387,8 +518,20 @@ export default function CommerceSetupPage() {
   useEffect(() => {
     if (!isHydrated) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setDraft(setupDraftFrom(getCommerceSetup()));
-  }, [isHydrated, getCommerceSetup]);
+    setDraft(() => {
+      const next = setupDraftFrom(getCommerceSetup());
+      const businessDefaults = currentBU
+        ? {
+          displayName: next.displayName.trim() ? next.displayName : currentBU.name,
+          legalName: next.legalName.trim() ? next.legalName : currentBU.name,
+        }
+        : {};
+      if (!next.id && currentBU?.industryType) {
+        return { ...next, ...activityDefaults(currentBU.industryType), ...businessDefaults };
+      }
+      return { ...next, ...businessDefaults };
+    });
+  }, [isHydrated, getCommerceSetup, currentBU]);
 
   function goNext() {
     if (step < SETUP_STEPS.length - 1) { setStep(step + 1); return; }
@@ -401,8 +544,50 @@ export default function CommerceSetupPage() {
     router.push("/dashboard");
   }
 
-  const businessType = draft.presetId || draft.businessType || draft.preset || "retail";
-  const presetLabel = PRESETS.find((p) => p.id === businessType)?.label || "Retail Store";
+  function createSetupBusiness() {
+    const name = businessName.trim();
+    if (!name) {
+      showToast("Enter a business name to continue.", "warn");
+      return;
+    }
+    const suggestedPreset = presetForIndustry(industryType);
+    createBusinessUnit({ name, preset: suggestedPreset, osId: "commerce", industryType });
+    applyBusinessNameDefaults(name);
+    applyActivityDefaults(industryType);
+    showToast("Business created. Add your first branch next.", "success");
+  }
+
+  function createSetupBranch() {
+    const name = branchName.trim();
+    if (!name) {
+      showToast("Enter a branch name to continue.", "warn");
+      return;
+    }
+    try {
+      createBranch({
+        name,
+        city: branchCity.trim() || undefined,
+        address: branchAddress.trim() || undefined,
+        country: currentWorkspace?.country,
+        currency: currentWorkspace?.currency,
+        isMain: true,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === "branch_name_exists") {
+        showToast("A branch with this name already exists for this business.", "warn");
+        return;
+      }
+      throw error;
+    }
+    showToast("Branch created. Continue Commerce setup.", "success");
+  }
+
+  const businessType = draft.presetId || draft.businessType || draft.preset || "retail_store";
+  const presetLabel = presetMetaFor(businessType).label;
+  const branchCityOptions = cityOptionsForCountry(currentWorkspace?.country);
+  const identityCityOptions = cityOptionsForCountry(draft.country || currentWorkspace?.country);
+  const billingAddress = getBusinessBillingAddress(draft);
+  const operationalBranchAddress = getBranchOperationalAddress(currentBranch);
 
   if (isHydrated && !hasCommerceSetupContext) {
     return (
@@ -429,6 +614,113 @@ export default function CommerceSetupPage() {
               <a className="nx-btn" href={`${CORE_APP_URL}/login`} style={{ textDecoration: "none" }}>
                 Sign in
               </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isHydrated && hasCommerceSetupContext && !currentBU) {
+    return (
+      <div className="nx-onb">
+        <div className="nx-onb-bar">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/branding/logo-bottom.png" alt="NexoraXS" className="nx-setup-wordmark" />
+          <span style={{ width: 1, height: 20, background: "var(--border)" }} />
+          <span style={{ fontSize: 13.5, fontWeight: 600 }}>Commerce OS</span>
+        </div>
+        <div className="nx-onb-body">
+          <div className="nx-onb-card">
+            <span className="nx-eyebrow">Step 1 of 6</span>
+            <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Create or select a Business</h1>
+            <p className="nx-onb-sub">This is the Commerce activity, brand, or store that will use Commerce OS inside {currentWorkspace?.name || "your workspace"}.</p>
+            <div className="nx-form-grid" style={{ marginTop: 22 }}>
+              <Field label="Business name">
+                <input className="nx-input" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Mustafa Pharmacy" />
+              </Field>
+              <div>
+                <div className="nx-field-label" style={{ marginBottom: 10 }}>Industry / Activity Type</div>
+                <div className="nx-preset-grid">
+                  {INDUSTRY_OPTIONS.map((option) => {
+                    const active = industryType === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        className={"nx-choice" + (active ? " on" : "")}
+                        style={{ flexDirection: "column", alignItems: "flex-start", gap: 10, padding: 14, minHeight: 96 }}
+                        onClick={() => selectIndustryType(option.id)}
+                      >
+                        <span className="nx-choice-ic">
+                          <PresetIcon icon={option.icon} size={18} />
+                        </span>
+                        <span style={{ fontWeight: 700, fontSize: 13.5, lineHeight: 1.3 }}>{option.label}</span>
+                        {active && (
+                          <span className="nx-choice-check">
+                            <Check size={12} />
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="nx-note">
+                <Info size={14} />
+                <span>Activity Type classifies the Business. The next step uses it only to suggest a Commerce preset.</span>
+              </div>
+            </div>
+            <div className="nx-onb-actions">
+              <button className="nx-btn nx-btn-ghost nx-btn-md" onClick={() => router.push("/dashboard")}>Save &amp; exit</button>
+              <button className="nx-btn nx-btn-primary nx-btn-md" onClick={createSetupBusiness}>Continue →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isHydrated && hasCommerceSetupContext && currentBU && !currentBranch) {
+    return (
+      <div className="nx-onb">
+        <div className="nx-onb-bar">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/branding/logo-bottom.png" alt="NexoraXS" className="nx-setup-wordmark" />
+          <span style={{ width: 1, height: 20, background: "var(--border)" }} />
+          <span style={{ fontSize: 13.5, fontWeight: 600 }}>Commerce OS</span>
+        </div>
+        <div className="nx-onb-body">
+          <div className="nx-onb-card">
+            <span className="nx-eyebrow">Step 2 of 6</span>
+            <h1 className="nx-onb-h" style={{ marginTop: 8 }}>Create or select a Branch</h1>
+            <p className="nx-onb-sub">Branches are physical selling locations for {currentBU.name}. You can add more branches later from Commerce Settings.</p>
+            <div className="nx-form-grid" style={{ marginTop: 22 }}>
+              <Field label="Branch name">
+                <input className="nx-input" value={branchName} onChange={(e) => setBranchName(e.target.value)} placeholder="Main Branch" />
+              </Field>
+              <Field label="Branch City" optional>
+                <select
+                  className="nx-input"
+                  value={branchCity}
+                  onChange={(e) => setBranchCity(e.target.value)}
+                  disabled={!currentWorkspace?.country}
+                >
+                  <option value="">{currentWorkspace?.country ? "Select a city..." : "Select country first"}</option>
+                  {branchCityOptions.map((city) => <option key={city} value={city}>{city}</option>)}
+                </select>
+              </Field>
+              <Field label="Branch Address" optional>
+                <input
+                  className="nx-input"
+                  value={branchAddress}
+                  onChange={(e) => setBranchAddress(e.target.value)}
+                  placeholder="Street, building, area"
+                />
+              </Field>
+            </div>
+            <div className="nx-onb-actions">
+              <button className="nx-btn nx-btn-ghost nx-btn-md" onClick={() => router.push("/dashboard")}>Save &amp; exit</button>
+              <button className="nx-btn nx-btn-primary nx-btn-md" onClick={createSetupBranch}>Continue →</button>
             </div>
           </div>
         </div>
@@ -474,20 +766,30 @@ export default function CommerceSetupPage() {
                 <p className="nx-onb-sub">This appears on receipts, invoices, tax invoices, reports and customer documents.</p>
                 <div className="nx-form-grid" style={{ marginTop: 24 }}>
                   <Field label="Business display name">
-                    <input className="nx-input" value={draft.displayName} onChange={(e) => upd({ displayName: e.target.value })} placeholder={currentBU?.name || "Business display name"} />
+                    <input className="nx-input" value={draft.displayName} onChange={(e) => updManual({ displayName: e.target.value }, ["displayName"])} placeholder={currentBU?.name || "Business display name"} />
                   </Field>
                   <Field label="Legal business name" optional>
-                    <input className="nx-input" value={draft.legalName} onChange={(e) => upd({ legalName: e.target.value })} placeholder="Legal business name" />
+                    <input className="nx-input" value={draft.legalName} onChange={(e) => updManual({ legalName: e.target.value }, ["legalName"])} placeholder="Legal business name" />
                   </Field>
                   <div className="nx-form-grid cols-2">
                     <Field label="Phone"><input className="nx-input" value={draft.phone} onChange={(e) => upd({ phone: e.target.value })} placeholder="01000000000" /></Field>
                     <Field label="Email" optional><input className="nx-input" value={draft.email} onChange={(e) => upd({ email: e.target.value })} placeholder="store@business.com" /></Field>
                   </div>
-                  <Field label="Address"><input className="nx-input" value={draft.address} onChange={(e) => upd({ address: e.target.value })} placeholder="Street, area" /></Field>
+                  <Field label="Billing Address"><input className="nx-input" value={draft.billingAddressLine1 ?? draft.address} onChange={(e) => upd({ address: e.target.value, billingAddressLine1: e.target.value })} placeholder="Street, area" /></Field>
                   <div className="nx-form-grid cols-2">
-                    <Field label="City"><input className="nx-input" value={draft.city} onChange={(e) => upd({ city: e.target.value })} placeholder="Alexandria" /></Field>
-                    <Field label="Country">
-                      <select className="nx-input" value={draft.country} onChange={(e) => upd({ country: e.target.value })}>
+                    <Field label="Billing City" optional>
+                      <select
+                        className="nx-input"
+                        value={draft.billingCity ?? draft.city}
+                        onChange={(e) => upd({ city: e.target.value, billingCity: e.target.value })}
+                        disabled={!(draft.country || currentWorkspace?.country)}
+                      >
+                        <option value="">{draft.country || currentWorkspace?.country ? "Select a city..." : "Select country first"}</option>
+                        {identityCityOptions.map((city) => <option key={city} value={city}>{city}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Billing Country">
+                      <select className="nx-input" value={draft.billingCountry ?? draft.country} onChange={(e) => upd({ country: e.target.value, billingCountry: e.target.value })}>
                         <option value="">Select country…</option>
                         {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -506,7 +808,7 @@ export default function CommerceSetupPage() {
 
             {/* Step 1: Preset */}
             {step === 1 && (
-              <PresetStep businessType={businessType} presetLabel={presetLabel} upd={upd} />
+              <PresetStep businessType={businessType} presetLabel={presetLabel} upd={upd} markManual={markManual} />
             )}
 
             {/* Step 2: Mode */}
@@ -556,7 +858,7 @@ export default function CommerceSetupPage() {
                       key={label}
                       className={"nx-choice" + (draft.vatRegistered === v ? " on" : "")}
                       style={{ flex: 1 }}
-                      onClick={() => upd({ vatRegistered: v })}
+                      onClick={() => updManual({ vatRegistered: v }, ["tax"])}
                     >
                       <span className="nx-choice-ic">
                         <ModeIcon size={18} strokeWidth={1.75} />
@@ -571,14 +873,14 @@ export default function CommerceSetupPage() {
                     <div className="nx-form-grid" style={{ marginTop: 22 }}>
                       <div className="nx-form-grid cols-2">
                         <Field label="Tax registration number"><input className="nx-input" value={draft.taxNumber} onChange={(e) => upd({ taxNumber: e.target.value })} /></Field>
-                        <Field label="Default VAT rate"><input className="nx-input" type="number" value={draft.vatRate} onChange={(e) => upd({ vatRate: +e.target.value })} /></Field>
+                        <Field label="Default VAT rate"><input className="nx-input" type="number" value={draft.vatRate} onChange={(e) => updManual({ vatRate: +e.target.value }, ["tax"])} /></Field>
                       </div>
                       <div className="nx-form-grid cols-2">
-                        <Field label="Tax label" hint="Shown on documents."><input className="nx-input" value={draft.taxLabel} onChange={(e) => upd({ taxLabel: e.target.value })} /></Field>
+                        <Field label="Tax label" hint="Shown on documents."><input className="nx-input" value={draft.taxLabel} onChange={(e) => updManual({ taxLabel: e.target.value }, ["tax"])} /></Field>
                         <Field label="Prices include tax?">
                           <div className="nx-seg" style={{ width: "100%" }}>
-                            <button className={draft.pricesIncludeTax ? "on" : ""} style={{ flex: 1 }} onClick={() => upd({ pricesIncludeTax: true })}>Yes — inclusive</button>
-                            <button className={!draft.pricesIncludeTax ? "on" : ""} style={{ flex: 1 }} onClick={() => upd({ pricesIncludeTax: false })}>No — exclusive</button>
+                            <button className={draft.pricesIncludeTax ? "on" : ""} style={{ flex: 1 }} onClick={() => updManual({ pricesIncludeTax: true }, ["tax"])}>Yes — inclusive</button>
+                            <button className={!draft.pricesIncludeTax ? "on" : ""} style={{ flex: 1 }} onClick={() => updManual({ pricesIncludeTax: false }, ["tax"])}>No — exclusive</button>
                           </div>
                         </Field>
                       </div>
@@ -647,7 +949,7 @@ export default function CommerceSetupPage() {
                   <div className="nx-field-label" style={{ marginBottom: 10 }}>POS receipt size</div>
                   <div className="nx-seg">
                     {(["58mm", "80mm"] as const).map((s) => (
-                      <button key={s} className={draft.receiptSize === s ? "on" : ""} onClick={() => upd({ receiptSize: s })}>{s}</button>
+                      <button key={s} className={draft.receiptSize === s ? "on" : ""} onClick={() => updManual({ receiptSize: s }, ["templates"])}>{s}</button>
                     ))}
                   </div>
                 </div>
@@ -655,7 +957,7 @@ export default function CommerceSetupPage() {
                   <div className="nx-field-label" style={{ marginBottom: 10 }}>Receipt style</div>
                   <div className="nx-preset-grid">
                     {([["minimal", "Minimal", "Just the essentials"], ["classic", "Classic", "Balanced & branded"], ["detailed", "Detailed", "Full breakdown"]] as const).map(([id, t, d]) => (
-                      <button key={id} className={"nx-choice" + (draft.receiptStyle === id ? " on" : "")} style={{ flexDirection: "column", alignItems: "flex-start", gap: 4 }} onClick={() => upd({ receiptStyle: id })}>
+                      <button key={id} className={"nx-choice" + (draft.receiptStyle === id ? " on" : "")} style={{ flexDirection: "column", alignItems: "flex-start", gap: 4 }} onClick={() => updManual({ receiptStyle: id }, ["templates"])}>
                         <span style={{ fontWeight: 700, fontSize: 13.5 }}>{t}</span>
                         <span style={{ fontSize: 12, color: "var(--text-2)" }}>{d}</span>
                       </button>
@@ -686,7 +988,7 @@ export default function CommerceSetupPage() {
 
             {/* Step 6: Categories */}
             {step === 6 && (
-              <CategoriesStep draft={draft} upd={upd} presetLabel={presetLabel} />
+              <CategoriesStep draft={draft} upd={upd} markManual={markManual} presetLabel={presetLabel} />
             )}
 
             {/* Step 7: Review */}
@@ -699,7 +1001,11 @@ export default function CommerceSetupPage() {
                     ["Workspace", currentWorkspace?.name || "—"],
                     ["Operating System", "Commerce OS"],
                     ["Business", draft.displayName || currentBU?.name || "—"],
-                    ["Commerce preset", presetLabel],
+                    ["Branch", currentBranch?.name || "—"],
+                    ["Industry Type", industryLabelFor(currentBU?.industryType)],
+                    ["Commerce Preset", presetLabel],
+                    ["Billing Address", billingAddress.singleLine || "—"],
+                    ["Branch Address", operationalBranchAddress.singleLine || currentBranch?.city || "—"],
                     ["Operational mode", draft.mode === "physical" ? "Physical Store" : draft.mode === "online" ? "Online Store" : "Both"],
                     ["VAT", draft.vatRegistered ? `Enabled · ${draft.vatRate}%` : "Not registered"],
                     ["Prices", draft.pricesIncludeTax ? "Tax inclusive" : "Tax exclusive"],
@@ -757,17 +1063,27 @@ function PresetStep({
   businessType,
   presetLabel,
   upd,
+  markManual,
 }: {
   businessType: string;
   presetLabel: string;
   upd: (p: Partial<SetupDraft>) => void;
+  markManual: (keys: GeneratedFieldKey[]) => void;
 }) {
   const [editing, setEditing] = useState(false);
-  const currentPreset = PRESETS.find((p) => p.id === businessType) ?? PRESETS[0];
-  const rec = PRESET_RECOMMENDATION[businessType];
+  const currentPreset = presetMetaFor(businessType);
+  const rec = PRESET_RECOMMENDATION[resolvePresetId(businessType)];
 
   function pick(id: string) {
-    upd({ presetId: id, businessType: id, preset: id, categories: PRESET_CATEGORIES[id] || ["General"] });
+    markManual(["preset", "categories", "templates"]);
+    upd({
+      presetId: id,
+      businessType: id,
+      preset: id,
+      categories: categoriesForPreset(id),
+      receiptStyle: "classic",
+      invoiceTemplate: "a4-simple",
+    });
     setEditing(false);
   }
 
@@ -789,10 +1105,10 @@ function PresetStep({
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="nx-row" style={{ gap: 8, flexWrap: "wrap" }}>
               <span style={{ fontWeight: 800, fontSize: 16 }}>{currentPreset.label}</span>
-              <span className="nx-badge tone-accent">From your business</span>
+              <span className="nx-badge tone-accent">Commerce setup</span>
             </div>
             <div style={{ fontSize: 12.5, color: "var(--text-2)", marginTop: 3 }}>
-              {currentPreset.desc ?? "Synced with your business type · one shared value"}
+              {currentPreset.desc ?? "Commerce-only defaults for setup and daily operations"}
             </div>
           </div>
           <button
@@ -812,7 +1128,7 @@ function PresetStep({
           <div className="nx-field-label" style={{ marginBottom: 10 }}>Choose a different Commerce preset</div>
           <div className="nx-preset-grid">
             {PRESETS.map((p) => {
-              const active = businessType === p.id;
+              const active = resolvePresetId(businessType) === p.id;
               return (
                 <button
                   key={p.id}
@@ -835,7 +1151,7 @@ function PresetStep({
           </div>
           <div className="nx-note" style={{ marginTop: 12 }}>
             <Info size={14} />
-            Changing this also updates your business type — there is only ever one value.
+            Changing this only updates Commerce setup defaults; your Business classification remains separate.
           </div>
         </div>
       )}
@@ -879,7 +1195,7 @@ function Field({ label, hint, optional, children }: { label: string; hint?: stri
   );
 }
 
-function CategoriesStep({ draft, upd, presetLabel }: { draft: SetupDraft; upd: (p: Partial<SetupDraft>) => void; presetLabel: string }) {
+function CategoriesStep({ draft, upd, markManual, presetLabel }: { draft: SetupDraft; upd: (p: Partial<SetupDraft>) => void; markManual: (keys: GeneratedFieldKey[]) => void; presetLabel: string }) {
   const [cats, setCats] = useState<string[]>(draft.categories?.length ? draft.categories : ["General"]);
   const [units, setUnits] = useState<string[]>(draft.units?.length ? draft.units : DEFAULT_UNITS.slice(0, 3));
   const [newCat, setNewCat] = useState("");
@@ -889,7 +1205,7 @@ function CategoriesStep({ draft, upd, presetLabel }: { draft: SetupDraft; upd: (
 
   function addCat() {
     const v = newCat.trim();
-    if (v && !cats.includes(v)) { setCats([...cats, v]); setNewCat(""); }
+    if (v && !cats.includes(v)) { markManual(["categories"]); setCats([...cats, v]); setNewCat(""); }
   }
 
   return (
@@ -901,7 +1217,7 @@ function CategoriesStep({ draft, upd, presetLabel }: { draft: SetupDraft; upd: (
         {cats.map((c) => (
           <span key={c} className="nx-cat-chip">
             {c}
-            <button onClick={() => setCats(cats.filter((x) => x !== c))}>
+            <button onClick={() => { markManual(["categories"]); setCats(cats.filter((x) => x !== c)); }}>
               <X size={13} />
             </button>
           </span>
@@ -926,7 +1242,7 @@ function CategoriesStep({ draft, upd, presetLabel }: { draft: SetupDraft; upd: (
             <button
               key={u}
               className={"nx-chip-filter" + (on ? " on" : "")}
-              onClick={() => setUnits(on ? units.filter((x) => x !== u) : [...units, u])}
+              onClick={() => { markManual(["categories"]); setUnits(on ? units.filter((x) => x !== u) : [...units, u]); }}
             >
               {on && <Check size={13} style={{ marginInlineEnd: 5, verticalAlign: "-2px" }} />}{u}
             </button>

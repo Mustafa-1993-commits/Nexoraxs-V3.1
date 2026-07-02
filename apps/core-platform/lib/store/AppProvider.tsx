@@ -6,17 +6,18 @@ import {
   uid, nowISO, normalizeEmail, getUserDisplayName,
   readCollection, writeCollection, readSession, writeSession,
   seedDB, storageUsagePercent, formatBytes,
+  getCurrentOSEnablement, ensureCommerceBusinessEnablement, isBranchNameAvailableForBusiness,
 } from "@nexoraxs/shared";
 import { t as tFn, type Lang } from "@nexoraxs/shared";
 import { money as moneyFn } from "@nexoraxs/shared";
 import type {
   User, Workspace, Branch, OSSubscription, BusinessUnit, WorkspaceMember,
   CommerceSetup, CommerceProduct, CommerceOrder, CommerceInvoice, CommerceCustomer, OrderItem,
-  WorkspaceStorageUsage,
+  OSEnablement, WorkspaceStorageUsage,
 } from "@nexoraxs/types";
 
 // ---- types ----
-export type { User, Workspace, Branch, OSSubscription, BusinessUnit, WorkspaceMember, CommerceSetup, CommerceProduct, CommerceOrder, CommerceInvoice, CommerceCustomer, OrderItem };
+export type { User, Workspace, Branch, OSSubscription, OSEnablement, BusinessUnit, WorkspaceMember, CommerceSetup, CommerceProduct, CommerceOrder, CommerceInvoice, CommerceCustomer, OrderItem };
 // backward-compat aliases
 export type TeamMember = WorkspaceMember;
 
@@ -45,6 +46,7 @@ interface AppContextType {
   currentBranch: Branch | null;
   currentBU: BusinessUnit | null;
   currentOSSubscription: OSSubscription | null;
+  currentOSEnablement: OSEnablement | null;
   onboardingState: OnboardingState;
   // ui
   lang: Lang;
@@ -73,13 +75,13 @@ interface AppContextType {
   loginUser: (email: string, password: string) => "success" | "invalid_credentials";
   logoutUser: () => void;
   // workspace
-  createWorkspace: (data: { name: string; country: string; currency: string; timezone: string }) => Workspace;
+  createWorkspace: (data: { name: string; region?: string; country: string; currency: string; timezone: string }) => Workspace;
   // onboarding
   setLocale: (locale: Lang) => void;
   createBranch: (data: { name: string; country?: string; currency?: string; isMain: boolean }) => Branch;
   selectOS: (osId: string) => void;
   selectPlan: (planKey: "starter" | "pro" | "business") => void;
-  createBusinessUnit: (data: { name: string; preset: string; osId: string }) => BusinessUnit;
+  createBusinessUnit: (data: { name: string; preset: string; osId: string; industryType?: string }) => BusinessUnit;
   completeOnboarding: () => void;
   // commerce setup
   saveCommerceSetup: (data: Partial<CommerceSetup>) => void;
@@ -136,6 +138,7 @@ function emptyRuntimeState() {
     branches: [] as Branch[],
     subscriptions: [] as OSSubscription[],
     businessUnits: [] as BusinessUnit[],
+    osEnablements: [] as OSEnablement[],
     teamMembers: [] as WorkspaceMember[],
     commerceSetups: [] as CommerceSetup[],
     products: [] as CommerceProduct[],
@@ -174,6 +177,7 @@ function loadState(): ReturnType<typeof emptyRuntimeState> {
     branches: readCollection<Branch>(STORAGE_KEYS.branches),
     subscriptions: readCollection<OSSubscription>(STORAGE_KEYS.osSubscriptions),
     businessUnits: readCollection<BusinessUnit>(STORAGE_KEYS.businessUnits),
+    osEnablements: readCollection<OSEnablement>(STORAGE_KEYS.osEnablements),
     teamMembers: readCollection<WorkspaceMember>(STORAGE_KEYS.teamMembers),
     commerceSetups: readCollection<CommerceSetup>(STORAGE_KEYS.commerceSetups),
     products: readCollection<CommerceProduct>(STORAGE_KEYS.products),
@@ -189,6 +193,7 @@ function persistAll(data: ReturnType<typeof seedDB>): void {
   writeCollection(STORAGE_KEYS.workspaces, data.workspaces);
   writeCollection(STORAGE_KEYS.branches, data.branches);
   writeCollection(STORAGE_KEYS.osSubscriptions, data.subscriptions);
+  writeCollection(STORAGE_KEYS.osEnablements, data.osEnablements);
   writeCollection(STORAGE_KEYS.businessUnits, data.businessUnits);
   writeCollection(STORAGE_KEYS.teamMembers, data.teamMembers);
   writeCollection(STORAGE_KEYS.commerceSetups, data.commerceSetups);
@@ -263,6 +268,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const currentBU = useMemo(() => state.businessUnits.find((b) => b.id === state.currentBusinessUnitId) ?? null, [state.businessUnits, state.currentBusinessUnitId]);
   const currentBranch = useMemo(() => state.branches.find((b) => b.id === state.currentBranchId) ?? null, [state.branches, state.currentBranchId]);
   const currentOSSubscription = useMemo(() => state.subscriptions.find((s) => s.id === state.currentOSSubscriptionId) ?? null, [state.subscriptions, state.currentOSSubscriptionId]);
+  const currentOSEnablement = useMemo(() => getCurrentOSEnablement({
+    enablements: state.osEnablements,
+    workspaceId: state.currentWorkspaceId,
+    osId: state.currentOSId || currentOSSubscription?.osId,
+    businessUnitId: state.currentBusinessUnitId,
+    branchId: state.currentBranchId,
+  }), [state.osEnablements, state.currentWorkspaceId, state.currentOSId, state.currentBusinessUnitId, state.currentBranchId, currentOSSubscription]);
 
   const BUSINESS_UNITS = useMemo(() => state.businessUnits.filter((b) => b.workspaceId === state.currentWorkspaceId), [state.businessUnits, state.currentWorkspaceId]);
   const BRANCHES = useMemo(() => state.branches.filter((b) => b.workspaceId === state.currentWorkspaceId && b.businessUnitId === state.currentBusinessUnitId), [state.branches, state.currentWorkspaceId, state.currentBusinessUnitId]);
@@ -347,8 +359,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ---- workspace ----
-  const createWorkspace = useCallback((data: { name: string; country: string; currency: string; timezone: string }): Workspace => {
-    const ws: Workspace = { id: uid("ws"), name: data.name, country: data.country, currency: data.currency, timezone: data.timezone, language: state.lang, ownerUserId: state.currentUserId!, createdAt: nowISO() };
+  const createWorkspace = useCallback((data: { name: string; region?: string; country: string; currency: string; timezone: string }): Workspace => {
+    const ws: Workspace = { id: uid("ws"), name: data.name, region: data.region, country: data.country, currency: data.currency, timezone: data.timezone, language: state.lang, ownerUserId: state.currentUserId!, createdAt: nowISO() };
     const newWS = [...state.workspaces, ws];
     writeCollection(STORAGE_KEYS.workspaces, newWS);
     writeSession(STORAGE_KEYS.currentWorkspaceId, ws.id);
@@ -367,8 +379,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const createBranch = useCallback((data: { name: string; country?: string; currency?: string; isMain: boolean }): Branch => {
     const workspaceId = state.currentWorkspaceId || readSession<string | null>(STORAGE_KEYS.currentWorkspaceId, null) || "";
+    const businessUnitId = state.currentBusinessUnitId || readSession<string | null>(STORAGE_KEYS.currentBusinessUnitId, null) || "";
+    if (businessUnitId && !isBranchNameAvailableForBusiness(state.branches, businessUnitId, data.name)) {
+      throw new Error("branch_name_exists");
+    }
     const branch: Branch = {
-      id: uid("br"), workspaceId, businessUnitId: "",
+      id: uid("br"), workspaceId, businessUnitId,
       name: data.name, country: data.country || currentWorkspace?.country, currency: data.currency || currentWorkspace?.currency,
       isMain: data.isMain, createdAt: nowISO(),
     };
@@ -377,7 +393,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     writeSession(STORAGE_KEYS.currentBranchId, branch.id);
     setState((prev) => ({ ...prev, branches: newBranches, currentBranchId: branch.id }));
     return branch;
-  }, [state.branches, state.currentWorkspaceId, currentWorkspace]);
+  }, [state.branches, state.currentWorkspaceId, state.currentBusinessUnitId, currentWorkspace]);
 
   const selectOS = useCallback((osId: string) => {
     writeSession(STORAGE_KEYS.currentOSId, osId);
@@ -388,15 +404,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const osId = state.currentOSId || readSession<string | null>(STORAGE_KEYS.currentOSId, null) || "commerce";
     const workspaceId = state.currentWorkspaceId || readSession<string | null>(STORAGE_KEYS.currentWorkspaceId, null) || "";
     const planId = planIdFor(osId, planKey);
-    const sub: OSSubscription = {
-      id: uid("sub"), workspaceId, os: osId,
-      osId, plan: planKey, planId,
-      status: "trialing", startedAt: nowISO(),
-      trialEndsAt: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
-      renewsAt: new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
+    const existing = state.subscriptions.find((s) => s.workspaceId === workspaceId && s.osId === osId);
+    const trialDate = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+    const sub: OSSubscription = existing
+      ? { ...existing, plan: planKey, planId, status: existing.status === "canceled" ? "trialing" : existing.status, renewsAt: existing.renewsAt || trialDate }
+      : {
+          id: uid("sub"), workspaceId, os: osId,
+          osId, plan: planKey, planId,
+          status: "trialing", startedAt: nowISO(),
+          trialEndsAt: trialDate,
+          renewsAt: trialDate,
+        };
+    const newSubs = existing
+      ? state.subscriptions.map((s) => s.id === existing.id ? sub : s)
+      : [...state.subscriptions, sub];
+    const existingEnablement = state.osEnablements.find((e) =>
+      e.workspaceId === workspaceId && e.osSubscriptionId === sub.id && e.osId === osId && e.scope === "workspace",
+    );
+    const enablement: OSEnablement = {
+      id: existingEnablement?.id || uid("ose"),
+      osSubscriptionId: sub.id,
+      workspaceId,
+      osId,
+      businessUnitId: null,
+      branchIds: [],
+      scope: "workspace",
+      status: "active",
+      createdAt: existingEnablement?.createdAt || nowISO(),
+      updatedAt: nowISO(),
     };
-    const newSubs = [...state.subscriptions, sub];
+    const newEnablements = existingEnablement
+      ? state.osEnablements.map((e) => e.id === existingEnablement.id ? enablement : e)
+      : [...state.osEnablements, enablement];
     writeCollection(STORAGE_KEYS.osSubscriptions, newSubs);
+    writeCollection(STORAGE_KEYS.osEnablements, newEnablements);
     writeSession(STORAGE_KEYS.currentOSSubscriptionId, sub.id);
 
     const planMeta = PLAN_CATALOG.find((p) => p.id === planId);
@@ -408,10 +449,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       );
       writeCollection(STORAGE_KEYS.workspaceStorageUsage, newUsage);
     }
-    setState((prev) => ({ ...prev, subscriptions: newSubs, currentOSSubscriptionId: sub.id, workspaceStorageUsage: newUsage }));
-  }, [state.subscriptions, state.currentWorkspaceId, state.currentOSId, state.workspaceStorageUsage]);
+    setState((prev) => ({ ...prev, subscriptions: newSubs, osEnablements: newEnablements, currentOSSubscriptionId: sub.id, workspaceStorageUsage: newUsage }));
+  }, [state.subscriptions, state.osEnablements, state.currentWorkspaceId, state.currentOSId, state.workspaceStorageUsage]);
 
-  const createBusinessUnit = useCallback((data: { name: string; preset: string; osId: string }): BusinessUnit => {
+  const createBusinessUnit = useCallback((data: { name: string; preset: string; osId: string; industryType?: string }): BusinessUnit => {
     const workspaceId = state.currentWorkspaceId || readSession<string | null>(STORAGE_KEYS.currentWorkspaceId, null) || "";
     const osSubscriptionId = state.currentOSSubscriptionId || readSession<string | null>(STORAGE_KEYS.currentOSSubscriptionId, null) || "";
     const branchId = state.currentBranchId || readSession<string | null>(STORAGE_KEYS.currentBranchId, null) || "";
@@ -420,10 +461,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
       os: data.osId, osId: data.osId, selectedOS: data.osId,
       branchIds: branchId ? [branchId] : [],
       branchId,
-      name: data.name, preset: data.preset, presetId: data.preset, createdAt: nowISO(),
+      name: data.name, industryType: data.industryType || data.preset,
+      preset: data.preset, presetId: data.preset, createdAt: nowISO(),
     };
     const newBUs = [...state.businessUnits, bu];
+    const enablementResult = ensureCommerceBusinessEnablement({
+      enablements: state.osEnablements,
+      subscriptions: state.subscriptions,
+      workspaceId,
+      businessUnitId: bu.id,
+      branchIds: bu.branchIds,
+    });
+    const newEnablements = data.osId === "commerce" ? enablementResult.enablements : state.osEnablements;
     writeCollection(STORAGE_KEYS.businessUnits, newBUs);
+    writeCollection(STORAGE_KEYS.osEnablements, newEnablements);
     writeSession(STORAGE_KEYS.currentBusinessUnitId, bu.id);
     // Read fresh from localStorage so a preceding synchronous createBranch call's
     // persisted branch isn't lost (state.branches is still the stale closure value).
@@ -434,10 +485,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ...prev,
       businessUnits: newBUs,
       branches: prev.branches.map((b) => b.id === branchId ? { ...b, businessUnitId: bu.id } : b),
+      osEnablements: newEnablements,
       currentBusinessUnitId: bu.id,
     }));
     return bu;
-  }, [state.businessUnits, state.currentWorkspaceId, state.currentOSSubscriptionId, state.currentBranchId]);
+  }, [state.businessUnits, state.osEnablements, state.subscriptions, state.currentWorkspaceId, state.currentOSSubscriptionId, state.currentBranchId]);
 
   const completeOnboarding = useCallback(() => {
     const osId = state.currentOSId || readSession<string | null>(STORAGE_KEYS.currentOSId, null) || "commerce";
@@ -592,7 +644,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const ctx: AppContextType = {
     isHydrated,
-    currentUser, currentWorkspace, currentBranch, currentBU, currentOSSubscription, onboardingState: state.onboardingState,
+    currentUser, currentWorkspace, currentBranch, currentBU, currentOSSubscription, currentOSEnablement, onboardingState: state.onboardingState,
     lang: state.lang, setLang, theme: state.theme, toggleTheme,
     toasts, showToast, dismissToast,
     isAuthenticated, isOnboardingComplete, isCommerceOSActive, isCommerceSetupComplete,

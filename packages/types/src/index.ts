@@ -4,6 +4,7 @@ export type {
   BusinessUnit,
   Branch,
   OSSubscription,
+  OSEnablement,
   WorkspaceMember,
   TeamMember,
   WorkspaceStorageUsage,

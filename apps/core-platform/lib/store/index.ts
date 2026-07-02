@@ -1,6 +1,6 @@
 export { AppProvider, useApp } from "./AppProvider";
 export type {
-  User, Workspace, Branch, OSSubscription, BusinessUnit, WorkspaceMember, TeamMember,
+  User, Workspace, Branch, OSSubscription, OSEnablement, BusinessUnit, WorkspaceMember, TeamMember,
   CommerceSetup, CommerceProduct, CommerceOrder, CommerceInvoice, CommerceCustomer,
   OrderItem, Toast, CommercePlanInfo, OnboardingState,
 } from "./AppProvider";
@@ -15,6 +15,7 @@ export type { Lang } from "@nexoraxs/shared";
 export {
   money, taxBreak, nxOrdersForPeriod, nxRevenue, nxBestSellers,
   nxGroupSales, nxOrderDate, nxOrderTotal, computeDoc, fmtDate,
+  suggestCommercePresetForIndustry, getBusinessBillingAddress, getBranchOperationalAddress,
 } from "@nexoraxs/shared";
-export type { SalesBucket, SalesGroup } from "@nexoraxs/shared";
+export type { SalesBucket, SalesGroup, ResolvedAddress } from "@nexoraxs/shared";
 export { uid, nowISO, normalizeEmail, getUserDisplayName } from "@nexoraxs/shared";

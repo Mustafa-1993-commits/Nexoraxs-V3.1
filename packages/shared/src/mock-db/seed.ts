@@ -1,6 +1,6 @@
 import type {
   User, Workspace, BusinessUnit, Branch, OSSubscription, WorkspaceMember,
-  MediaAsset, WorkspaceStorageUsage,
+  MediaAsset, OSEnablement, WorkspaceStorageUsage,
 } from "@nexoraxs/types";
 import type {
   CommerceSetup, CommerceProduct, CommerceOrder, CommerceCustomer, CommerceInvoice,
@@ -8,6 +8,7 @@ import type {
 import { OS_CATALOG, PLAN_CATALOG } from "./schema";
 
 export const DEFAULT_SETUP = {
+  // address/city/country are retained for existing mock data and mean Business Billing Address.
   displayName: "", legalName: "", phone: "", email: "", address: "", city: "", country: "Egypt",
   crn: "", trn: "", logo: null as string | null,
   presetId: "retail", businessType: "retail", preset: "retail", mode: "physical" as const,
@@ -35,6 +36,7 @@ export function emptyDB(locale = "en", theme = "light") {
     plans: PLAN_CATALOG,
     workspaces: [] as Workspace[],
     subscriptions: [] as OSSubscription[],
+    osEnablements: [] as OSEnablement[],
     businessUnits: [] as BusinessUnit[],
     branches: [] as Branch[],
     users: [] as User[],
@@ -81,10 +83,15 @@ export function seedDB(locale = "en", theme = "light") {
       plan: "starter", planId: "commerce_starter",
       status: "trialing" as const, startedAt: created, trialEndsAt: "2026-06-18", renewsAt: "2026-06-18",
     }] as OSSubscription[],
+    osEnablements: [{
+      id: "ose_001", osSubscriptionId: subId, workspaceId: wsId, osId: "commerce",
+      businessUnitId: buId, branchIds: [branchId], scope: "business",
+      status: "active", createdAt: created, updatedAt: created,
+    }] as OSEnablement[],
     businessUnits: [{
       id: buId, workspaceId: wsId, osSubscriptionId: subId, os: "commerce", osId: "commerce",
       selectedOS: "commerce", branchIds: [branchId], branchId, name: "Mustafa Pharmacy",
-      preset: "pharmacy", presetId: "pharmacy", createdAt: created,
+      industryType: "pharmacy", preset: "pharmacy", presetId: "pharmacy", createdAt: created,
     }] as BusinessUnit[],
     branches: [{
       id: branchId, workspaceId: wsId, businessUnitId: buId, name: "Smouha Branch",

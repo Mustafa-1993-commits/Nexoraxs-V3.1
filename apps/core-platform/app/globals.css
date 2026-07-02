@@ -2,3 +2,116 @@
 @import "@nexoraxs/ui/styles/nexoraxs-theme.css";
 @import "@nexoraxs/ui/styles/core-theme.css";
 
+.nx-location-section {
+  display: grid;
+  gap: 10px;
+}
+
+.nx-location-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.nx-location-card {
+  width: 100%;
+  min-height: 82px;
+  padding: 14px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: start;
+  box-shadow: var(--sh-sm);
+  transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.nx-location-card:hover,
+.nx-location-card[aria-expanded="true"] {
+  border-color: var(--accent-weak-2);
+  background: var(--surface-2);
+  box-shadow: var(--sh);
+}
+
+.nx-location-card.selected {
+  border-color: color-mix(in srgb, var(--accent), var(--border) 55%);
+}
+
+.nx-location-chevron {
+  color: var(--text-3);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.nx-location-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.nx-location-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nx-location-main {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.nx-location-sub {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-3);
+  font-size: 11.5px;
+  line-height: 1.25;
+  margin-top: 3px;
+}
+
+.nx-currency-mark {
+  min-width: 38px;
+  height: 30px;
+  border-radius: 8px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--accent-weak);
+  color: var(--accent);
+  font-weight: 900;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.nx-time-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .nx-location-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .nx-location-grid {
+    grid-template-columns: 1fr;
+  }
+}

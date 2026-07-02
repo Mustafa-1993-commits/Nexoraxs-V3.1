@@ -1,8 +1,10 @@
 import type {
   CommerceCustomer, CommerceOrder, CommerceProduct, WorkspaceStorageUsage,
-  BranchInventory, CommerceReturn,
+  BranchInventory, CommerceReturn, Branch, BusinessUnit, OSEnablement, OSSubscription,
+  CommerceSetup,
 } from "@nexoraxs/types";
 import type { Lang } from "./schema";
+import { nowISO, uid } from "./actions";
 
 export function money(n: number, lang: Lang = "en"): string {
   const v = (Math.round(n * 100) / 100).toLocaleString("en-EG", {
@@ -203,6 +205,242 @@ export function formatBytes(bytes: number, lang: Lang = "en"): string {
 export function remainingBytes(usage: WorkspaceStorageUsage | null): number {
   if (!usage) return 0;
   return Math.max(0, usage.limitBytes - usage.usedBytes);
+}
+
+function normalizeId(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+export function normalizeBranchIds(enablement: OSEnablement): string[] {
+  const ids = new Set<string>();
+  enablement.branchIds?.forEach((id) => {
+    const normalized = normalizeId(id);
+    if (normalized) ids.add(normalized);
+  });
+  const legacyBranchId = normalizeId(enablement.branchId);
+  if (legacyBranchId) ids.add(legacyBranchId);
+  return [...ids];
+}
+
+export function normalizeOSEnablement(enablement: OSEnablement): OSEnablement {
+  return {
+    ...enablement,
+    businessUnitId: enablement.businessUnitId ?? null,
+    branchIds: normalizeBranchIds(enablement),
+  };
+}
+
+export function getWorkspaceOSEnablements(
+  enablements: OSEnablement[],
+  workspaceId: string | null | undefined,
+): OSEnablement[] {
+  if (!workspaceId) return [];
+  return (enablements || [])
+    .map(normalizeOSEnablement)
+    .filter((enablement) => enablement.workspaceId === workspaceId);
+}
+
+export function getBusinessOSEnablements(
+  enablements: OSEnablement[],
+  workspaceId: string | null | undefined,
+  businessUnitId: string | null | undefined,
+  options: { includeWorkspace?: boolean } = {},
+): OSEnablement[] {
+  if (!workspaceId || !businessUnitId) return [];
+  return getWorkspaceOSEnablements(enablements, workspaceId).filter((enablement) => {
+    if (enablement.scope === "workspace") return options.includeWorkspace === true;
+    return enablement.businessUnitId === businessUnitId;
+  });
+}
+
+export function getCurrentOSEnablement(input: {
+  enablements: OSEnablement[];
+  workspaceId: string | null | undefined;
+  osId: string | null | undefined;
+  businessUnitId?: string | null;
+  branchId?: string | null;
+}): OSEnablement | null {
+  if (!input.workspaceId || !input.osId) return null;
+  const active = getWorkspaceOSEnablements(input.enablements, input.workspaceId)
+    .filter((enablement) => enablement.osId === input.osId && enablement.status === "active");
+  const branchId = normalizeId(input.branchId);
+  const businessUnitId = normalizeId(input.businessUnitId);
+
+  if (branchId) {
+    const branchScoped = active.find((enablement) =>
+      enablement.scope === "branch" &&
+      enablement.businessUnitId === businessUnitId &&
+      normalizeBranchIds(enablement).includes(branchId),
+    );
+    if (branchScoped) return branchScoped;
+  }
+
+  if (businessUnitId) {
+    const businessScoped = active.find((enablement) =>
+      enablement.scope === "business" && enablement.businessUnitId === businessUnitId,
+    );
+    if (businessScoped) return businessScoped;
+  }
+
+  return active.find((enablement) => enablement.scope === "workspace") ?? null;
+}
+
+export function isOSEnabledForBusiness(
+  enablements: OSEnablement[],
+  workspaceId: string | null | undefined,
+  osId: string | null | undefined,
+  businessUnitId: string | null | undefined,
+): boolean {
+  if (!workspaceId || !osId || !businessUnitId) return false;
+  return getBusinessOSEnablements(enablements, workspaceId, businessUnitId, { includeWorkspace: true })
+    .some((enablement) => enablement.osId === osId && enablement.status === "active");
+}
+
+export function industryTypeFromPreset(preset: string | null | undefined): string {
+  const value = normalizeId(preset);
+  if (!value) return "other";
+  if (value === "retail_store") return "retail";
+  if (value === "restaurant_cafe") return "restaurant";
+  if (value === "electronics_mobile") return "electronics";
+  if (value === "clothing_fashion") return "fashion";
+  return value;
+}
+
+export function getBusinessIndustryType(businessUnit: Pick<BusinessUnit, "industryType" | "presetId" | "preset"> | null | undefined): string {
+  return businessUnit?.industryType || industryTypeFromPreset(businessUnit?.presetId || businessUnit?.preset);
+}
+
+export function suggestCommercePresetForIndustry(industryType: string | null | undefined): string {
+  const value = normalizeId(industryType)?.toLowerCase().replace(/\s*\/\s*/g, "_").replace(/[\s-]+/g, "_");
+  if (!value) return "retail_store";
+  if (value === "retail" || value === "retail_store") return "retail_store";
+  if (value === "pharmacy") return "pharmacy";
+  if (value === "supermarket") return "supermarket";
+  if (value === "restaurant" || value === "restaurant_cafe" || value === "cafe") return "restaurant_cafe";
+  if (value === "electronics" || value === "electronics_mobile" || value === "mobile") return "electronics_mobile";
+  if (value === "fashion" || value === "clothing" || value === "clothing_fashion" || value === "fashion_clothing") return "clothing_fashion";
+  if (value === "cosmetics") return "cosmetics";
+  if (value === "medical_supplies") return "medical_supplies";
+  return "retail_store";
+}
+
+export interface ResolvedAddress {
+  line1: string;
+  line2: string;
+  city: string;
+  country: string;
+  postalCode: string;
+  lines: string[];
+  singleLine: string;
+}
+
+function compactAddress(input: {
+  line1?: string | null;
+  line2?: string | null;
+  city?: string | null;
+  country?: string | null;
+  postalCode?: string | null;
+}): ResolvedAddress {
+  const line1 = input.line1?.trim() || "";
+  const line2 = input.line2?.trim() || "";
+  const city = input.city?.trim() || "";
+  const country = input.country?.trim() || "";
+  const postalCode = input.postalCode?.trim() || "";
+  const lines = [
+    line1,
+    line2,
+    [city, postalCode].filter(Boolean).join(" "),
+    country,
+  ].filter(Boolean);
+  return { line1, line2, city, country, postalCode, lines, singleLine: lines.join(", ") };
+}
+
+export function getBusinessBillingAddress(setup: Partial<CommerceSetup> | null | undefined): ResolvedAddress {
+  return compactAddress({
+    line1: setup?.billingAddressLine1 || setup?.address,
+    line2: setup?.billingAddressLine2,
+    city: setup?.billingCity || setup?.city,
+    country: setup?.billingCountry || setup?.country,
+    postalCode: setup?.billingPostalCode,
+  });
+}
+
+export function getBranchOperationalAddress(branch: Partial<Branch> | null | undefined): ResolvedAddress {
+  return compactAddress({
+    line1: branch?.branchAddressLine1 || branch?.address,
+    line2: branch?.branchAddressLine2,
+    city: branch?.branchCity || branch?.city,
+    country: branch?.branchCountry || branch?.country,
+    postalCode: branch?.postalCode,
+  });
+}
+
+export function ensureCommerceBusinessEnablement(input: {
+  enablements: OSEnablement[];
+  subscriptions: OSSubscription[];
+  workspaceId: string | null | undefined;
+  businessUnitId: string | null | undefined;
+  branchIds?: string[];
+}): { enablements: OSEnablement[]; enablement: OSEnablement | null; created: boolean } {
+  if (!input.workspaceId || !input.businessUnitId) {
+    return { enablements: input.enablements, enablement: null, created: false };
+  }
+
+  const existing = getCurrentOSEnablement({
+    enablements: input.enablements,
+    workspaceId: input.workspaceId,
+    osId: "commerce",
+    businessUnitId: input.businessUnitId,
+  });
+  if (existing && existing.scope === "business") {
+    return { enablements: input.enablements.map(normalizeOSEnablement), enablement: existing, created: false };
+  }
+
+  const subscription = input.subscriptions.find((sub) =>
+    sub.workspaceId === input.workspaceId &&
+    sub.osId === "commerce" &&
+    (sub.status === "trialing" || sub.status === "active"),
+  );
+  if (!subscription) {
+    return { enablements: input.enablements.map(normalizeOSEnablement), enablement: null, created: false };
+  }
+
+  const branchIds = [...new Set((input.branchIds || []).map((id) => id.trim()).filter(Boolean))];
+  const createdAt = nowISO();
+  const enablement: OSEnablement = {
+    id: uid("ose"),
+    workspaceId: input.workspaceId,
+    osId: "commerce",
+    osSubscriptionId: subscription.id,
+    scope: "business",
+    businessUnitId: input.businessUnitId,
+    branchIds,
+    status: "active",
+    createdAt,
+    updatedAt: createdAt,
+  };
+
+  return {
+    enablements: [...input.enablements.map(normalizeOSEnablement), enablement],
+    enablement,
+    created: true,
+  };
+}
+
+export function isBranchNameAvailableForBusiness(
+  branches: Branch[],
+  businessUnitId: string | null | undefined,
+  name: string,
+  excludeBranchId?: string | null,
+): boolean {
+  const normalized = name.trim().toLowerCase();
+  if (!businessUnitId || !normalized) return false;
+  return !branches.some((branch) =>
+    branch.businessUnitId === businessUnitId &&
+    branch.id !== excludeBranchId &&
+    branch.name.trim().toLowerCase() === normalized,
+  );
 }
 
 export { computeDoc, fmtDate, computeReturnTotals } from "../commerce/documents";

@@ -6,7 +6,7 @@ export type OnboardingStep = 1 | 2 | 3 | 4;
 const STEP_LABELS: Record<OnboardingStep, string> = {
   1: "Language",
   2: "Workspace",
-  3: "Business Unit",
+  3: "Business",
   4: "Main Branch",
 };
 
