@@ -100,6 +100,44 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
+## Constitution Requirements *(mandatory)*
+
+<!--
+  Cite controlling Freeze/ADR sources. Use N/A only with a concrete reason. Do not resolve
+  Deferred Decisions or architecture contradictions inside a feature specification.
+-->
+
+### Authority and Ownership
+
+- **Controlling authority**: [Freeze and Accepted ADR references]
+- **Owning domain**: [Core Platform or named Operating System/domain owner]
+- **Canonical writes affected**: [facts/write models/aggregates, or None]
+- **Projection/read-model impact**: [reconstructable views only, or None]
+- **Deferred Decisions touched**: [stable identifiers, or None]
+
+### Scope and Boundaries
+
+- **Tenant context**: [Workspace and applicable Business/Business Unit/Department/Branch scope]
+- **Authorization context**: [actor, OS, resource, action, and owning-domain validation]
+- **Cross-domain interaction**: [versioned contract and optional dependency, or None]
+- **OS independence**: [how the owning OS remains usable without another OS]
+- **Lifecycle impact**: [entitlement/subscription/install/setup/configure/activate/ready/access states, or None]
+
+### Intelligence and Product Quality
+
+- **Capability/Knowledge/Rules/AI order**: [preserved behavior, or N/A]
+- **Explainability and human approval**: [requirements for Recommendations/AI/consequential actions, or N/A]
+- **Arabic/English and direction**: [localized content plus RTL/LTR acceptance requirements, or N/A]
+- **Accessibility**: [keyboard, semantic naming, focus, readable states, assistive-technology criteria, or N/A]
+
+### Security, Operations, and Compatibility
+
+- **Security and privacy**: [isolation, minimization, secrets, sensitive-data requirements]
+- **Audit and observability**: [Audit, logs, metrics, traces, health, and correlation requirements]
+- **Contract compatibility**: [versioning/deprecation/migration requirements, or N/A]
+- **Required test evidence**: [unit/integration/contract/e2e/manual evidence appropriate to risk]
+- **Documentation synchronization**: [documents/contracts updated with implementation]
+
 ## Success Criteria *(mandatory)*
 
 <!--
@@ -126,3 +164,7 @@
 - [Assumption about scope boundaries, e.g., "Mobile support is out of scope for v1"]
 - [Assumption about data/environment, e.g., "Existing authentication system will be reused"]
 - [Dependency on existing system/service, e.g., "Requires access to the existing user profile API"]
+
+Assumptions MUST NOT select an unresolved architectural owner, lifecycle, canonical model,
+contract, technology, or Deferred Decision. Mark such items as `NEEDS CLARIFICATION` and route
+them through the applicable Governance process.

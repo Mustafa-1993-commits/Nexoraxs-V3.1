@@ -1,1324 +1,402 @@
-# NexoraXS — Agent Instructions (AGENTS.md)
+# NexoraXS Agent Instructions
 
-> This file is the single source of truth for any AI agent (Claude Code, Codex, or other)
-> working on the NexoraXS platform. Read this fully before writing any code.
+> Runtime guidance for AI agents and contributors working in this repository.
 >
-> **Architecture status:** v5.3 Final Master Architecture — Architecture Freeze Ready.
-> Do not reopen platform architecture unless an implementation blocker proves a real conflict.
+> This file is subordinate to the frozen architecture and
+> `.specify/memory/constitution.md`. It summarizes operating rules; it does not create
+> architecture.
 
----
+## 1. Authority Order
 
-## Project Documentation
+Read the applicable sources before changing code or documentation:
 
-| Document | Path | Purpose |
-|----------|------|---------|
-| Final Master Architecture | `docs/NexoraXS_Platform_Documentation_v5_3_Final_Master_Architecture.md` | Final platform architecture and MVP execution boundary |
-| Master Plan | `docs/NexoraXS-Master-Plan.docx` | Legacy roadmap reference |
-| UX Master Plan | `docs/NexoraXS-UX-Master-Plan.docx` | UX screens, flows, states |
+1. `docs/99-architecture-freeze/`
+2. `docs/00-governance/`, including Accepted ADRs and the canonical glossary
+3. `docs/01-genesis/`
+4. approved milestone baselines:
+   - `docs/02-core-platform/`
+   - `docs/03-business-brain/`
+   - `docs/04-commerce-os/`
+   - `docs/05-marketplace/`
+   - `docs/06-ai-expert-network/`
+   - `docs/07-global-platform/`
+5. `.specify/memory/constitution.md`
+6. this file, feature specs, plans, tasks, and implementation guidance
 
----
+Historical Proposals, Patches, and Reviews explain provenance. The controlling Freeze determines
+the accepted baseline. Files under `docs/archives/` are non-authoritative references.
 
-## 1. Project Identity
+If two sources conflict:
 
-| Field        | Value                                               |
-|--------------|-----------------------------------------------------|
-| Project      | NexoraXS — Business Operating Platform              |
-| Version      | v3 repo / v5.3 architecture                         |
-| Repo         | git@github.com:Mustafa-1993-commits/nexoraxs-v3.git |
-| Domain       | https://www.nexoraxs.com                            |
-| Architecture | Modular Monolith (NOT microservices)                |
-| Strategy     | Spec-Driven Development via Specify CLI             |
-| Current Build Scope | Core Platform + Commerce OS MVP               |
+- cite both exact statements and their authority levels;
+- stop work at the affected boundary;
+- do not invent a compromise model, owner, lifecycle, or default; and
+- route architectural change through Governance.
 
----
+## 2. Project Identity
 
-## 1A. Spec 049 — Onboarding Architecture v2 Lock
+NexoraXS is a Business Operating Intelligence Platform composed of a shared Core Platform and
+independent Operating Systems. It is not a single application, a POS-only product, or a giant ERP
+monolith.
 
-`049-onboarding-architecture-v2` is the final onboarding architecture alignment spec before future OS expansion.
+The foundational architecture program is complete and frozen:
 
-Scope is limited to Core Platform onboarding, Product Hub, OS subscription/enablement state, and Commerce OS setup entry. It must not modify Commerce operational modules such as POS, Products, Inventory, Orders, Customers, Reports, Returns, Transfers, or related business workflows except for navigation/context wiring required by onboarding.
+- Governance
+- Genesis v1.1
+- Core Platform Architecture v1.0; Documentation Baseline v1.0.1
+- Business Brain Architecture v1.0
+- Commerce OS Architecture v1.0
+- Marketplace Architecture v1.0
+- AI Expert Network Architecture v1.0
+- Global Platform Architecture v1.0
 
-After Spec 049 is implemented, the onboarding architecture is considered frozen. Later specs should be feature specs, not redesigns of the core onboarding flow.
+Do not reopen these baselines unless a real implementation blocker demonstrates an architectural
+conflict. Architecture changes require an ADR, explicit approval, Architecture Review, updated or
+successor Freeze, and readiness validation.
 
----
+## 3. Canonical Organization Model
 
-## 2. What NexoraXS Is (and Is NOT)
+The organization hierarchy is non-negotiable:
 
-### ✅ IS:
-
-- A **Business Operating Platform** composed of independent Operating Systems per business domain.
-- **Core Platform** = shared SaaS infrastructure.
-- **Commerce OS** = first product and current MVP focus.
-- **Healthcare OS** = future separate product for clinics, hospitals, patients, appointments, medical records.
-- **HR OS** = future separate product for employees, attendance, payroll, leaves, contracts.
-- **CRM OS** = future separate product for leads, pipelines, campaigns, follow-ups.
-- **Gym OS** = future separate product for members, memberships, trainers, classes.
-- **Maintenance OS** = future separate product for repair centers, tickets, technicians, warranties.
-- Multi-tenant platform using `workspace_id` isolation.
-- Arabic + English platform from day one, with RTL/LTR-ready UI.
-
-### ❌ IS NOT:
-
-- A giant ERP monolith.
-- A microservices architecture.
-- A Kubernetes cluster.
-- A single-app product.
-- A POS-only product.
-- A shop-only product.
-- A healthcare app inside Commerce.
-- An HR system inside Commerce.
-- A CRM inside Commerce.
-- `apps/commerce` is the current Commerce OS frontend app. `shops-app` is a legacy/deprecated temporary code label and must not be reintroduced.
-- `restaurants-app` is a deprecated concept — restaurants are Commerce presets/modules, not a separate app.
-
----
-
-## 3. Platform Architecture Vision
-
-```txt
-NexoraXS Business Operating Platform
-│
-├── Core Platform (app.nexoraxs.com)
-│   ├── Auth & Sessions
-│   ├── Workspaces
-│   ├── Businesses (UI label; BusinessUnit internally)
-│   ├── Branches
-│   ├── Product Hub / OS Launcher
-│   ├── Billing & OS Subscriptions
-│   ├── Team & Access
-│   ├── Permissions Core
-│   ├── Notifications
-│   ├── Audit Logs
-│   ├── Localization (Arabic + English, RTL/LTR)
-│   └── Integrations Hub (future)
-│
-├── Commerce OS (commerce.nexoraxs.com)
-│   ├── Commerce Core
-│   ├── Business Presets: Retail, Restaurant/Cafe, Pharmacy, Supermarket, Electronics, Fashion, Cosmetics, Medical Supplies
-│   ├── POS Module
-│   ├── Online Store Module (future)
-│   ├── Delivery Module (future)
-│   ├── Kitchen Module (future)
-│   ├── Commerce Repairs Module (simple repair intake; future)
-│   └── Add-on Ready Architecture (future marketplace, not now)
-│
-├── Healthcare OS — FUTURE
-├── HR OS — FUTURE
-├── CRM OS — FUTURE
-├── Gym OS — FUTURE
-└── Maintenance OS — FUTURE
-```
-
-### Golden Rule
-
-Each OS works standalone. Each OS has its own subscription, navigation, workflows, permissions, and domain model. Integrations enhance workflows, but they never unlock basic functionality.
-
----
-
-## 4. Monorepo Structure
-
-```txt
-nexoraxs-v3/
-├── apps/
-│   ├── landing/          → nexoraxs.com (Marketing site)
-│   ├── core-platform/    → app.nexoraxs.com (Auth, Workspace, Billing, Product Hub)
-│   ├── commerce/         → commerce.nexoraxs.com (Commerce OS frontend app)
-│   │                        Legacy: shops-app was the previous temporary code label; do not reintroduce it.
-│   ├── clinics-app/      → legacy placeholder; future product should be Healthcare OS, not Clinics-only
-│   └── restaurants-app/  → deprecated concept — absorbed into Commerce OS presets/modules
-│
-├── packages/
-│   ├── ui/               → Shared component library only
-│   ├── sdk/              → API clients, fetch helpers only
-│   ├── auth/             → Shared auth helpers only
-│   ├── types/            → Shared TypeScript types only
-│   └── shared/           → Shared utilities/constants only
-│
-├── backend/              → Laravel API (api.nexoraxs.com)
-├── infra/                → Docker, Nginx configs
-├── docs/                 → Documentation
-└── .specify/             → Specify CLI workflow
-```
-
----
-
-## 5. MVP Execution Boundary
-
-The full platform vision is defined now, but the build scope is intentionally narrow.
-
-### Build now
-
-- Core Platform foundation.
-- Product Hub / OS Launcher alignment.
-- Arabic + English localization foundation.
-- Commerce OS MVP.
-- Business visible from onboarding, stored internally as BusinessUnit.
-- Multi-Branch target architecture with exactly one Main Branch per operational Business.
-- Mock/sessionStorage UI flows before backend persistence.
-
-### Do not build now
-
-- Real multi-OS backend integration.
-- Full HR OS, CRM OS, Gym OS, Healthcare OS, or Maintenance OS.
-- Marketplace/plugin sandbox.
-- Event bus / queues unless backend spec explicitly requires them.
-- Full Business Unit management UI.
-- Full ecommerce, driver tracking, kitchen system, payroll, medical records, or CRM pipelines.
-
----
-
-
-
-## 5A. MVP Onboarding Journey — Current Product Decision
-
-The current onboarding direction is business-first, not OS-first.
-
-### Final flow
-
-```txt
-Sign Up / Login
-→ Welcome + Language
-→ Create Workspace
-→ Create Business (UI label; includes `businessActivity`)
-→ Product Hub
-→ Launch Commerce OS
-→ Choose Commerce Plan
-→ Commerce Setup
-→ Auto Configuration
-→ Commerce Dashboard
-```
-
-### Local development routing
-
-```txt
-localhost:3001 → Core Platform / Product Hub
-localhost:3002 → Commerce OS Setup + Commerce Dashboard
-```
-
-### Production routing
-
-```txt
-app.nexoraxs.com        → Core Platform / Product Hub
-commerce.nexoraxs.com   → Commerce OS Setup + Commerce Dashboard
-api.nexoraxs.com        → Backend API
-```
-
-### Business naming rule
-
-Use **Business** in the UI.
-
-Use **BusinessUnit** in architecture, types, data contracts, storage, and backend.
-
-```txt
-UI label:      Business
-Data entity:   BusinessUnit
-```
-
-Do not create a separate duplicated `Business` model.
-
-### Recommendation rule
-
-`businessActivity` recommends OS products, presets, and sample defaults. It does not force them.
-
-```txt
-businessActivity
-→ Recommendation Engine
-→ Suggested OS products
-→ User chooses OS products
-```
-
-Future OS products may appear as Coming Soon, optional, or locked, but the MVP must keep Commerce OS as the primary actionable product.
-
-### OS Subscription and OS Enablement
-
-OSSubscription and OSEnablement are separate first-class architecture concepts.
-
-```txt
-OSSubscription = workspace-level license and billing record
-OSEnablement   = operational activation of an OS for a workspace, business, or branch scope
+```text
+Workspace
+  -> Business
+    -> Business Unit
+      -> Department
+      -> Branch
 ```
 
 Rules:
 
-- Buying an OS plan creates an `OSSubscription`.
-- Launching/setup for a business creates an `OSEnablement`.
-- Product Hub must display subscription state and setup/enablement state separately.
-- Product Hub must distinguish availability state (`available`, `coming soon`, `locked`), subscription state (`not subscribed`, `subscribed`, `trial`, `active`, `past due`, `cancelled`), and enablement state (`not enabled`, `setup required`, `active`, `disabled`).
-- OSEnablement references:
-  - `workspaceId`
-  - `osId`
-  - `osSubscriptionId`
-  - `scope: workspace | business | branch`
-  - `businessUnitId` optional depending on scope
-  - `branchIds` optional depending on scope
-  - `status: setup_required | active | disabled`
-  - `setupVersion`
-  - `setupCompletedAt`
-  - `setupCompletedBy`
-
-```ts
-interface OSEnablement {
-  workspaceId: string;
-  osId: string;
-  osSubscriptionId: string;
-  scope: "workspace" | "business" | "branch";
-  businessUnitId?: string;
-  branchIds?: string[];
-  status: "setup_required" | "active" | "disabled";
-  setupVersion?: string;
-  setupCompletedAt?: string;
-  setupCompletedBy?: string;
-}
-```
-
-### Product Hub ownership
-
-Product Hub is part of Core Platform.
-
-Product Hub may:
-
-- display recommended OS products;
-- show subscription states;
-- show setup/enablement states;
-- route to OS setup;
-- launch OS dashboards.
-
-Product Hub must not implement OS domain setup or business logic.
-
-### OS-specific Setup Experience
-
-Each OS owns its setup experience.
-
-```txt
-Core Platform
-→ Product Hub
-→ selected OS app
-→ OS-specific Setup Experience
-→ OS Dashboard
-```
-
-For Commerce OS MVP, the setup should be concise:
-
-```txt
-Commerce Setup Experience
-→ Choose Plan
-→ Business Identity
-→ Commerce Preset
-→ Main Branch + Tax
-→ Review & Launch
-→ Auto Configuration
-```
-
-Commerce preset defaults may automatically seed:
-
-- categories;
-- units;
-- suggested modules;
-- document templates;
-- invoice / receipt numbering;
-- optional sample products.
-
-Advanced or future behavior must remain locked, coming soon, recommended, or plan-gated until implemented.
-
-### CommerceSetup ownership
-
-CommerceSetup belongs to `BusinessUnit`. It must not be modeled as a child of Branch.
-
-Branch is an operational scope for POS, inventory, orders, invoices, reports, transfers, and returns.
-
-CommerceSetup owns:
-
-- commerce preset;
-- billing/legal identity;
-- tax configuration;
-- numbering;
-- templates;
-- categories;
-- units;
-- selling mode.
-
-### Address ownership
-
-- Workspace country, currency, and timezone are workspace defaults.
-- Branch address/city is the operational location.
-- Commerce billing address/city/country is for invoices and legal documents.
-- Billing address may default from branch/workspace, but user edits must be preserved.
-
-### Preset ownership
-
-`businessActivity` may suggest a preset, but every OS owns its own preset.
-
-Correct:
-
-```txt
-businessActivity: Pharmacy
-Selected OS: Commerce OS
-Loaded Preset: Commerce Pharmacy Preset
-```
-
-Wrong:
-
-```txt
-businessActivity directly owns Commerce modules or hardcoded workflows.
-```
-
-## 6. Workspace / Business / Branch Model
-
-| Level | Meaning | MVP Rule |
-|-------|---------|----------|
-| Workspace | Company / Group | Visible now |
-| Business | Brand / activity / business line inside Workspace | Visible from onboarding; stored internally as BusinessUnit |
-| Branch | Physical operating location under one Business | Multi-Branch target architecture; exactly one Main Branch required for active operation |
-
-Example future structure:
-
-```txt
-Workspace: Mustafa Group
-├── Business: Mustafa Pharmacy (BusinessUnit internally) → Commerce OS
-│   ├── Branch: Smouha
-│   └── Branch: Miami
-├── Business: Mustafa Gym (BusinessUnit internally) → Gym OS
-└── Business: Mustafa Maintenance Center (BusinessUnit internally) → Maintenance OS
-```
-
-### Business UI and internal model
-
-Spec 049 makes Business visible from onboarding while keeping `BusinessUnit` as the internal model name.
-
-Rules:
-
-- UI must say Business, Businesses, Store, and Branch where user-facing.
-- UI must not show BusinessUnit, Business Unit, BU, or Default Business Unit wording.
-- Do not globally rename `BusinessUnit` in code unless a future Architecture RFC approves it.
-- Every Branch belongs to exactly one BusinessUnit.
-- Every operational Business must have exactly one Main Branch.
-- Zero Main Branches is invalid for active operation.
-- More than one Main Branch under the same Business is invalid.
-
-```txt
-Workspace: Mustafa Group
-  → Business: Mustafa Pharmacy (BusinessUnit internally)
-    → Branch: Main Branch
-    → Branch: Smouha
-```
-
-This prevents the platform from building directly on Workspace and avoids a major refactor when multi-business and multi-branch operations expand.
-
-### Business and Branch visibility
-
-Business management is visible from onboarding. Branches are visible as operational locations under a Business. Multi-Branch is part of the target architecture, and implementation specs may choose how much branch management is exposed at each MVP stage.
-
-Visible concepts:
-
-```txt
-Visible:
-- Workspace
-- Business / Businesses
-- Main Branch / Branches
-
-Internal only:
-- BusinessUnit model name
-```
-
-### Required data model rule
-
-Every Branch must belong to a `businessUnitId`.
-
-```ts
-interface Workspace {
-  id: string;
-  name: string;
-}
-
-interface BusinessUnit {
-  id: string;
-  workspace_id: string;
-  name: string;
-  businessActivity: string;
-  status: "active" | "archived";
-}
-
-interface Branch {
-  id: string;
-  workspace_id: string;
-  business_unit_id: string;
-  name: string;
-  code: string;
-  is_main: boolean;
-}
-```
-
-### Critical rule
-
-Never create typed workspaces.
-
-```ts
-// ✅ Correct
-interface Workspace {
-  id: string;
-  name: string;
-}
-
-interface BusinessUnit {
-  id: string;
-  workspace_id: string;
-  name: string;
-  operating_systems_enabled: string[];
-}
-
-// ❌ Wrong
-interface RestaurantWorkspace {}
-interface PharmacyWorkspace {}
-interface ShopWorkspace {}
-interface GymWorkspace {}
-```
-
----
-
-## 7. Operating System Subscription & Access Model
-
-### Subscription scope
-
-- OS subscriptions are **workspace-level**.
-- A subscribed OS can be enabled for one or more Business Units.
-- Plan limits control how many Business Units, branches, users, and features are allowed.
-
-Example:
-
-```txt
-Workspace: Mustafa Group
-Subscription: Commerce OS Pro
-Allowed: up to 3 Commerce Business Units, 5 branches, 10 users
-```
-
-### OS Subscription States
-
-```ts
-type OSSubscriptionState =
-  | "not_subscribed"
-  | "trial"
-  | "active"
-  | "past_due"
-  | "cancelled"
-  | "locked";
-```
-
-### Product Hub UI states
-
-- `available`
-- `active`
-- `trial`
-- `locked`
-- `coming_soon`
-- `not_started`
-
-In UI, future products may show “Coming Soon”, but architecture still treats them as known future OS products.
-
----
-
-## 8. Pricing Strategy & Plan Limits
-
-Core Platform is usually included with any OS subscription and is not sold alone in the MVP.
-
-Each OS has independent plans:
-
-```txt
-Commerce OS: Starter / Pro / Business
-HR OS: Starter / Pro / Business
-Gym OS: Starter / Pro / Business
-CRM OS: Starter / Pro / Business
-Maintenance OS: Starter / Pro / Business
-Healthcare OS: Starter / Pro / Business
-```
-
-Pricing may depend on:
-
-- Users
-- Branches
-- Business Units
-- Employees
-- Orders / sales volume
-- Gym members
-- Maintenance tickets
-- Enabled modules
-- Advanced features
-- Integrations
-
-### Commerce Plan Limits — draft, not final pricing
-
-| Plan | Example limits |
-|------|----------------|
-| Starter | 1 Business Unit, 1 Branch, 3 Users, POS, Products, Inventory, Basic invoices |
-| Pro | Up to 3 Branches, 10 Users, Advanced reports, Multi-branch inventory, Online/Delivery future |
-| Business | Custom branches/users, Advanced permissions, API/integrations future, advanced modules |
-
-Numbers are placeholders and may change, but the **Plan Limits pattern is mandatory**.
-
----
-
-## 9. Team, Users, Employees, and Access
-
-### Core concepts
-
-- **Core User** = login identity.
-- **Workspace Member** = user invited into a workspace.
-- **OS Access** = which operating systems the member can use.
-- **Business Unit Access** = which business units the member can access.
-- **Branch Access** = which branches the member can access.
-- **OS Role** = operational role inside a specific OS.
-- **HR Employee Profile** = HR OS domain entity, not required for other OS products to work.
-
-### User Invitation Flow
-
-```txt
-Owner
-→ Core Platform / Team & Access
-→ Invite User
-→ Assign Workspace Role
-→ Select OS Access
-→ Select Business Unit Access
-→ Select Branch Access
-→ Assign OS Role
-→ Send Invitation
-```
-
-### HR independence rule
-
-Every OS must support lightweight operational staff roles without requiring HR OS.
+- Workspace is the customer and tenant boundary.
+- Business is a legal or operational organization inside one Workspace.
+- Business Unit is an operating division inside one Business.
+- Operating Systems operate on Business Units.
+- Department and Branch each belong to exactly one Business Unit.
+- Business and Business Unit are distinct canonical concepts and MUST NOT be synonyms.
+- Business DNA belongs to exactly one Business and never to Workspace, Business Unit, Branch,
+  or an Operating System.
+- Typed Workspaces such as `RestaurantWorkspace` or `PharmacyWorkspace` are forbidden.
+
+### Legacy implementation warning
+
+Legacy code and earlier specs may use `BusinessUnit` as the storage model behind a user-facing
+`Business` label. That mapping conflicts with Accepted ADR-004 when treated as canonical
+architecture. Do not silently rename or duplicate production models. Any migration to the frozen
+hierarchy requires an explicit feature spec, data migration plan, compatibility plan, and
+Constitution Check.
+
+## 4. Core Platform Boundary
+
+Core Platform owns the shared control and intelligence plane, including:
+
+- authentication, Users, sessions, Workspace Membership, and authorization foundations;
+- Workspaces, Businesses, and canonical Business Unit, Department, and Branch identities and
+  parent relationships;
+- Workspace Entitlement, OS Subscriptions, Product and Plan catalog, billing coordination, and
+  Product Hub;
+- product discovery, access-state composition, setup handoff, launch, and recovery navigation;
+- Business DNA, Capability Registry, Knowledge, Rules, Business Brain, Recommendations, and
+  configuration coordination;
+- Marketplace governance and bounded-context hosting responsibility;
+- notifications, Audit, settings, localization, search coordination, storage coordination,
+  analytics intake, API governance, and integrations;
+- AI Coordinator and shared AI governance.
+
+Core Platform MUST NOT own OS operational facts or workflows such as Commerce Products,
+Inventory, Orders, POS Transactions, Payments, Taxes, Invoices, Returns, clinical records, HR
+payroll, CRM pipelines, memberships, or repair tickets.
+
+Core Organization Registry owns organization identity. The applicable OS owns operational data,
+behavior, configuration, and domain facts scoped to those identifiers.
+
+## 5. Independent Operating Systems
+
+Every Operating System:
+
+- is independently usable for its core workflow;
+- owns its UI, setup, navigation, workflows, operational domain model, data, reports, dashboards,
+  settings, permission semantics, and release lifecycle;
+- uses shared Core services through governed contracts; and
+- cannot require another OS for basic operation.
 
 Examples:
-
-- Commerce can add a cashier without HR OS.
-- Gym can add a trainer without HR OS.
-- Maintenance can add a technician without HR OS.
-
-When HR OS is enabled, HR may become the master employee profile system.
-
----
-
-## 10. Permission Scope Matrix
-
-| Permission | Scope |
-|------------|-------|
-| `core.billing.manage` | Workspace |
-| `core.team.manage` | Workspace |
-| `commerce.pos.use` | Branch |
-| `commerce.products.manage` | Business Unit or Branch |
-| `commerce.reports.view` | Branch or Business Unit |
-| `commerce.settings.manage` | Business Unit |
-| `hr.payroll.manage` | Workspace or Business Unit |
-| `gym.members.checkin` | Branch |
-| `crm.leads.manage` | Business Unit or Branch |
-| `maintenance.tickets.manage` | Branch |
-
-Permission format:
-
-```txt
-{os}.{resource}.{action}
-```
-
-Examples:
-
-```txt
-commerce.pos.use
-commerce.invoices.view
-commerce.tax.manage
-hr.payroll.manage
-gym.members.checkin
-crm.leads.manage
-maintenance.tickets.close
-```
-
----
-
-## 11. Commerce OS — Domain Model
-
-### Commerce Core — immutable layer
-
-Commerce Core is always present for every Commerce workspace. Modules extend it; they never replace it.
-
-| Core Entity | Responsibility |
-|-------------|----------------|
-| Business Identity | Business name, logo, legal data, tax identity |
-| Products & Categories | Catalog management, pricing, variants, SKU/barcode |
-| Inventory | Stock, branch inventory, adjustments, low-stock alerts |
-| Orders | Order lifecycle across POS, online, delivery |
-| Customers | Transactional customer profiles and purchase history |
-| Payments | Payment methods, payment records, refunds |
-| Taxes | VAT/tax settings, inclusive/exclusive pricing, tax reports |
-| Invoices | Receipt/tax invoice/refund document records |
-| Document Templates | Receipt, tax invoice, refund receipt, delivery note templates |
-| Reports | Sales, tax, inventory, product performance |
-| Branches | Physical operating locations |
-| Operational Staff | Commerce roles such as cashier/manager/inventory manager |
-
-### Rules
-
-- POS creates Orders through Commerce Core.
-- Delivery extends Orders; it does not replace Orders.
-- Kitchen extends Orders; it does not create a parallel order system.
-- Pharmacy is a Commerce preset/module, not Healthcare OS.
-- Restaurant/Cafe is a Commerce preset/module, not a separate app.
-- No module creates parallel orders, inventory, customers, payments, invoices, or tax records.
-
----
-
-## 12. Commerce Presets and Modules
-
-### Business Presets
-
-The user-facing phrase “Business Type” is a simplified UX label. Architecturally, it must be treated as a **Business Preset** and stored as `businessPreset`.
-
-The UI may ask:
-
-```txt
-What type of business are you running?
-```
-
-But internally this means:
-
-```txt
-businessPreset
-```
-
-Business Preset is a smart starter setup only. It seeds defaults and recommendations, not app boundaries.
-
-A Commerce Preset may define or suggest:
-
-- Default categories
-- Default units
-- Suggested modules
-- Suggested document templates
-- Suggested POS behavior
-- Suggested reports
-- Suggested product fields
-- Optional sample products
-
-A preset must not create a separate OS, must not own modules, and must not hardcode workflows.
-
-#### Preset vs Module rule
-
-```txt
-Preset recommends modules.
-Preset does not own modules.
-Preset does not hardcode workflows.
-Users may enable or disable allowed modules based on plan and configuration.
-```
-
-Examples:
-
-- Mobile Store may use barcode scanning.
-- Restaurant may use online orders.
-- Pharmacy may use delivery.
-- Fashion may use POS only.
-
-| Preset | Enabled now | Recommended / locked later |
-|--------|-------------|-----------------------------|
-| Retail Store | POS, Products, Inventory, Invoices, Taxes | Online catalog, loyalty, advanced reports |
-| Restaurant / Cafe | POS, Orders, Invoices, Taxes | Dine-in, Delivery, Kitchen, Tables, Service charge |
-| Pharmacy | POS, Products, Inventory, Invoices, Taxes | Barcode, Expiry tracking, Batch tracking, Supplier purchases, Healthcare prescription integration |
-| Medical Supplies | POS, Products, Inventory, Invoices, Taxes | Batch/expiry, supplier purchases, Healthcare integration where applicable |
-| Supermarket | POS, Products, Inventory, Invoices, Taxes | Barcode-first POS, expiry, kg/gram/liter/pack units, fast checkout |
-| Electronics / Mobile Store | POS, Inventory, Invoices, Taxes | Barcode, Serial/IMEI, Warranty, Maintenance OS integration |
-| Clothing / Fashion | POS, Inventory, Invoices | Variants, Size, Color, Exchange policy template |
-| Cosmetics | POS, Products, Inventory, Invoices, Taxes | Expiry, shade/category defaults, batch tracking |
-| Other | Minimal generic setup | User-selected modules |
-
-#### Commerce Presets in MVP
-
-MVP onboarding should show these presets:
-
-- Retail
-- Pharmacy
-- Restaurant / Cafe
-- Supermarket
-- Electronics / Mobile Store
-- Fashion
-- Cosmetics
-- Other
-
-In the MVP, a preset only changes:
-
-- Default categories
-- Default units
-- Suggested modules UI
-- Optional sample products
-- Document template recommendation
-
-Complex behaviors such as batch tracking, expiry tracking, kitchen workflows, IMEI tracking, supplier purchases, or Healthcare prescription integration must appear only as recommended, locked, or plan-gated capabilities until implemented.
-
-#### Suggested Modules Step
-
-After selecting a preset, onboarding should show a “Recommended setup” step.
-
-Example for Pharmacy:
-
-```txt
-Recommended setup for Pharmacy
-
-Enabled now:
-✓ POS
-✓ Products
-✓ Inventory
-✓ Invoices
-✓ Taxes
-
-Recommended later:
-○ Expiry Tracking
-○ Batch Tracking
-○ Supplier Purchases
-○ Healthcare Prescription Integration
-```
-
-If the selected plan does not allow a module, the UI should show:
-
-```txt
-Locked by plan
-```
-
-Modules remain independently enabled, disabled, locked, or plan-gated based on workspace subscription and user configuration.
-
-### Commerce Modules
-
-```ts
-type ModuleState =
-  | "enabled"
-  | "disabled"
-  | "trial"
-  | "locked"
-  | "deprecated";
-
-interface CommerceModule {
-  id: string;
-  name: string;
-  state: ModuleState;
-  plan_required: "starter" | "pro" | "business";
-  nav?: NavItem;
-}
-```
-
-Core modules/features now:
-
-- POS
-- Products
-- Inventory
-- Orders
-- Customers
-- Invoices
-- Taxes
-- Reports
-- Settings
-
-Future modules:
-
-- Online Store
-- Delivery
-- Kitchen
-- Loyalty
-- Advanced Repairs
-- Supplier Purchases
-- Advanced Pharmacy
-
-### Maintenance OS vs Commerce Repairs
-
-Simple repair intake attached to a commerce sale may exist as a Commerce module.
-Full repair-center operations belong to Maintenance OS.
-
----
-
-## 13. Module-Driven Navigation
-
-Navigation must be generated from module/config state, not hardcoded by business preset.
-
-```ts
-interface NavItem {
-  label: string;
-  href: string;
-  icon: IconName;
-  permission?: string;
-  badge?: string;
-}
-
-// ✅ Correct
-const navItems = enabledModules
-  .filter(m => m.state === "enabled" || m.state === "trial")
-  .filter(m => m.nav !== undefined)
-  .map(m => m.nav as NavItem);
-
-// ❌ Wrong
-if (businessPreset === "restaurant") showKitchenLink();
-if (businessPreset === "electronics") showRepairsLink();
-```
-
----
-
-## 14. Product Boundaries
-
-### Commerce vs CRM
-
-- Commerce owns transactional customers and purchase history.
-- CRM owns leads, deals, campaigns, follow-ups, and relationship workflows.
-
-### Commerce vs Healthcare
-
-- Commerce Pharmacy owns stock, sale, invoice, and tax records.
-- Healthcare owns patients, appointments, prescriptions, medical records, and clinical workflows.
-
-### Commerce vs HR
-
-- Commerce owns cashier/manager operational roles.
-- HR owns employee profile, attendance, payroll, leaves, contracts when HR OS is enabled.
-
-### Healthcare vs Pharmacy integration future
-
-```txt
-Healthcare creates prescription
-→ Commerce Pharmacy receives linked pharmacy order
-→ Pharmacy sells/dispenses items
-→ Commerce deducts stock and creates invoice
-→ Healthcare receives fulfilment status
-```
-
----
-
-## 15. Integration Data Ownership
-
-| Integration | Master source | Consumer / extension |
-|-------------|---------------|----------------------|
-| HR ↔ Commerce | HR owns employee profile | Commerce owns operational role / cashier access |
-| Commerce ↔ CRM | Commerce owns purchase history | CRM owns campaigns, follow-ups, pipeline |
-| Healthcare ↔ Commerce Pharmacy | Healthcare owns prescription | Commerce owns stock, sale, invoice, payment |
-| Gym ↔ CRM | Gym owns membership | CRM owns lead/campaign workflow |
-| Maintenance ↔ Commerce | Maintenance owns repair ticket | Commerce may own linked parts inventory/invoice if integrated |
-
-### No Cross-OS Hard Dependency Rule
-
-No OS may require another OS to complete its core workflow.
 
 - Commerce can sell without HR.
-- Gym can manage members without CRM.
 - Healthcare can create prescriptions without Commerce.
 - Maintenance can manage tickets without Commerce.
-- CRM can create contacts/leads without Commerce.
-
----
-
-## 16. Document Templates as a Platform Pattern
-
-Document templates exist per OS when needed.
-
-| OS | Example documents |
-|----|-------------------|
-| Commerce | POS receipt, tax invoice, refund receipt, delivery note, packing slip |
-| HR | contract, payslip, leave approval, employee letter |
-| Gym | membership contract, renewal receipt, waiver |
-| Maintenance | repair job card, warranty certificate, handover receipt |
-| Healthcare | prescription, medical report, visit summary |
-
-Commerce MVP must include Business Identity, Tax Settings, Invoice Numbering, and basic receipt/invoice templates before backend sale persistence.
-
----
-
-## 17. Audit Logs
-
-Audit logs are a platform-level pattern. Every OS must be audit-log-ready for critical actions.
-
-Examples:
-
-- user invited
-- permission changed
-- subscription changed
-- product price changed
-- invoice cancelled
-- refund created
-- payroll approved
-- prescription fulfilled
-- repair ticket closed
-
-MVP may show mock activity logs; backend audit persistence comes later.
-
----
-
-## 18. Notifications Model
-
-Notifications are platform-level infrastructure with OS-specific producers.
-
-### Core Notifications
-
-- subscription expiring
-- payment failed
-- user invited
-- integration failed
-
-### Commerce Notifications
-
-- low stock
-- sale completed
-- refund created
-- tax report ready
-
-### HR Notifications
-
-- leave request
-- payroll ready
-- attendance issue
-
-### Gym Notifications
-
-- membership expiring
-- class reminder
-
-### Maintenance Notifications
-
-- ticket status changed
-- warranty expiring
-
----
-
-## 19. Localization Rules
-
-NexoraXS must support Arabic and English from day one.
-
-### Required
-
-- All user-facing UI must be i18n-ready.
-- Arabic requires RTL layout.
-- English requires LTR layout.
-- Presets, module labels, system statuses, invoice labels, tax labels, and document labels must support bilingual display names.
-- User-entered business data is stored as entered and is not auto-translated.
-
-### Forbidden
-
-- Do not hardcode new user-facing strings without a path to translation.
-- Do not use left/right-only layout assumptions when logical RTL/LTR classes can be used.
-- Do not build invoice/receipt templates that only work in English.
-
----
-
-## 20. POS Architecture Rules
-
-POS is a Transaction Engine, not just a screen.
-
-### UI requirements now
-
-- keyboard-first
-- barcode-ready
-- fast checkout
-- optimistic cart updates
-- tax breakdown visible
-- discount before tax
-- receipt/invoice preview
-- bilingual-ready labels
-
-### Backend requirements later
-
-- POS session tied to `workspace_id + business_unit_id + branch_id + employee_id`
-- order creation through Commerce Core
-- payment recorded through Commerce Core
-- inventory adjusted through Commerce Core
-- invoice/receipt generated from Document Templates
-- offline-tolerant queue later, not MVP unless explicitly specified
-
----
-
-## 21. Technology Stack
-
-### Frontend
-
-| Technology   | Usage |
-|--------------|-------|
-| Next.js      | All frontend apps |
-| React        | UI framework |
-| TypeScript   | All frontend code, strict mode |
-| TailwindCSS  | Styling system |
-| ShadCN UI    | Component library in packages/ui |
-| pnpm         | Package manager |
-| Turborepo    | Monorepo build system |
-
-### Backend
-
-| Technology | Usage |
-|------------|-------|
-| Laravel | Main API |
-| Laravel Sanctum | Session-based auth across subdomains |
-| PostgreSQL | Primary database |
-| Redis | Cache, queues, sessions |
-
----
-
-## 22. Domain Map
-
-| Domain | App | Purpose |
-|--------|-----|---------|
-| nexoraxs.com | landing | Marketing, pricing, docs |
-| app.nexoraxs.com | core-platform | Auth, workspace, billing, Product Hub |
-| api.nexoraxs.com | backend | Laravel REST API |
-| commerce.nexoraxs.com | commerce | Commerce OS frontend app |
-| shops.nexoraxs.com | legacy/deprecated | Old Commerce OS preview domain; do not use for new code |
-| admin.nexoraxs.com | admin panel | Internal ops future |
-| healthcare.nexoraxs.com | healthcare-app | Future Healthcare OS |
-| hr.nexoraxs.com | hr-app | Future HR OS |
-| crm.nexoraxs.com | crm-app | Future CRM OS |
-| gym.nexoraxs.com | gym-app | Future Gym OS |
-| maintenance.nexoraxs.com | maintenance-app | Future Maintenance OS |
-
----
-
-## 23. Architecture Rules — Never Violate
-
-### Core Platform allowed
-
-- Auth & sessions
-- Workspace creation and management
-- Business Unit shell/future management
-- Product Hub / OS subscription states
-- Billing & subscriptions
-- Team and access
-- Permissions core
-- Notifications
-- Audit logs
-- Localization
-- Integration Hub shell/future
-
-### Core Platform forbidden
-
-- Products, inventory, orders
-- POS sales
-- Commerce tax/invoice logic
-- Healthcare clinical logic
-- HR payroll/attendance logic
-- CRM pipeline logic
-- Gym membership workflow
-- Maintenance ticket workflow
-
-### Commerce OS boundary
-
-- All commerce logic lives here.
-- Pharmacy belongs here.
-- Restaurant/Cafe belongs here as preset/module.
-- Basic operational staff roles belong here.
-- Do not put healthcare, HR, CRM, Gym, or Maintenance domain workflows here.
-
-### Shared packages
-
-- `packages/ui` → UI components only; no business logic.
-- `packages/sdk` → API clients and fetch helpers only.
-- `packages/types` → TypeScript interfaces/types only.
-- `packages/auth` → Auth helpers only.
-- Apps import from packages, never from another app directly.
-
-### Multi-tenancy
-
-Every business table must include `workspace_id`. Business Unit and Branch scoped data must also include the correct IDs when implemented.
-
----
-
-## 24. Coding Standards
-
-### TypeScript
-
-- Strict mode enabled in all apps.
-- No `any` types.
-- Use interfaces/types from `packages/types` where shared.
-- Always type function parameters and returns.
-
-### React / Next.js
-
-- Use App Router.
-- Server Components by default.
-- Use `"use client"` only when needed.
-- Keep components small and focused.
-
-### API calls
-
-- Use `packages/sdk`.
-- Never call `api.nexoraxs.com` directly from components.
-- All API errors need loading/error/empty states.
-
----
-
-## 25. Git Workflow
-
-### Branch strategy
-
-```txt
-main         → production-ready code only
-develop      → integration branch
-feature/*    → new features
-hotfix/*     → urgent fixes
-docs/*       → documentation-only alignment
+- CRM can manage leads without Commerce.
+
+Commerce OS is the first Operating System and current implementation focus. Pharmacy and
+Restaurant/Cafe are Commerce presets or modules, not separate applications. Clinical workflows
+remain Healthcare-owned; employee lifecycle remains HR-owned; relationship workflows remain
+CRM-owned; full repair-center operations remain Maintenance-owned.
+
+## 6. Canonical Ownership and Data Access
+
+Every canonical fact, write model, aggregate, and lifecycle has one owner.
+
+- Only the owner writes canonical state or validates a requested change through its contract.
+- Read models, caches, search indexes, analytics, dashboards, Product Hub compositions,
+  Recommendations, and AI context never become sources of truth.
+- No OS may access another OS database, tables, ORM models, internal state, or private service.
+- Co-deployment in the modular monolith does not permit direct cross-module table access.
+- Apps MUST NOT import from another app directly.
+- Cross-domain changes use versioned APIs, Events, or authorized contracts.
+- Consumers must tolerate absence, pause, failure, upgrade, or removal of optional integrations.
+
+Every tenant-owned record and operation must resolve `workspace_id`. Business, Business Unit,
+Department, Branch, OS, actor, resource, and action scope must be included where applicable.
+Client-provided IDs are authorization inputs, not proof of access. Tenant isolation is enforced
+server-side and at the owning-domain boundary.
+
+## 7. Capability, Knowledge, Business Brain, and AI
+
+The required ordering is:
+
+```text
+Business context and Business DNA
+  -> Capabilities
+  -> Knowledge and deterministic Rules
+  -> Business Brain Decision
+  -> Recommendation Candidate
+  -> Recommendation Engine
+  -> optional Implementation Options or Configuration Proposal
+  -> target-owner validation and human-authorized execution
 ```
-
-### Commit messages
-
-```txt
-feat(core-platform): add product hub shell
-feat(commerce): add commerce tax setup
-fix(commerce): correct sidebar module filtering
-docs: align AGENTS.md with v5.3 architecture
-```
-
-### Rules
-
-- Do not commit directly to `main`.
-- Do not commit `.next/`.
-- Do not commit `node_modules/`.
-- Do not break Docker or existing local ports.
-
----
-
-## 26. Current Implementation State (spec 042)
-
-The Claude AI Design prototype (`docs/claude.aidesign/`) has been ported into the live Next.js apps with shared packages.
-
-Current app ownership:
-- `apps/core-platform/` → Core Platform: auth, workspace, onboarding, Product Hub, billing, team, integrations, platform settings.
-- `apps/commerce/` → Commerce OS: commerce dashboard, setup, products, inventory, POS, orders, invoices, customers, reports, commerce settings.
-- `apps/shops-app/` → legacy/deprecated previous temporary code label. Do not recreate or import from it.
-
-All runtime data/types should come from shared packages, not from `docs/claude.aidesign/`.
-
-### Shared data/types packages
-
-| Package / File | Purpose |
-|------|---------|
-| `packages/types/` | Canonical shared TypeScript domain types only |
-| `packages/shared/src/mock-db/` | Mock local/session storage data layer, actions, selectors, seed data |
-| `packages/shared/src/commerce/documents.ts` | Commerce document/tax calculations such as `computeDoc` |
-| `packages/ui/src/styles/` | Shared scoped theme CSS: NexoraXS base, Core theme, Commerce theme |
-| `apps/*/lib/store/AppProvider.tsx` | App-specific React provider importing from `@nexoraxs/shared` and `@nexoraxs/types` |
-| `apps/*/lib/store/index.ts` | App store barrel export |
 
 Rules:
-- Pages/components must not read `localStorage` or `sessionStorage` directly.
-- Providers must initialize from an SSR-safe empty state and hydrate storage in `useEffect`.
-- `docs/claude.aidesign/` is reference only and must never be imported at runtime.
 
-### Shell components — `components/shell/`
+- Business needs and Capabilities precede products, plans, modules, and AI prompts.
+- Capabilities are platform-owned; OS Modules may implement them but do not redefine them.
+- Published Knowledge, Rules, Capabilities, Marketplace Asset Versions, and other published
+  platform assets are versioned and immutable.
+- Business Brain owns its deterministic Decisions and advisory outputs, not Business DNA,
+  Knowledge, Rules, OS facts, or target execution.
+- Recommendations are optional and explainable, with evidence, rationale, assumptions,
+  alternatives, risk, confidence, and expected benefit.
+- AI is downstream of Knowledge, Rules, completed Decisions, and authorization.
+- AI may explain, summarize, suggest, or propose actions; it never owns or silently changes
+  canonical Business, permission, financial, or OS facts.
+- Consequential action requires human approval and the owning domain's authorization,
+  validation, execution, and Audit evidence.
 
-| Component | Purpose |
-|-----------|---------|
-| `Shell.tsx` | Generic shell (topbar + sidebar + content area) |
-| `ContextSwitcher.tsx` | Workspace/BU/Branch switcher dropdown |
-| `CoreShell.tsx` | Shell pre-configured for Core Platform nav |
-| `CommerceShell.tsx` | Shell pre-configured for Commerce OS nav |
+## 8. Commercial and OS Lifecycle Separation
 
-> Old `components/dashboard/Sidebar.tsx` and `components/dashboard/Topbar.tsx` are marked `@deprecated`.
+Keep these concepts distinct:
 
-### Auth components — `components/auth/`
+- Workspace Entitlement
+- OS Product availability
+- Plan
+- OS Subscription
+- installation
+- OS-specific setup
+- configuration
+- activation
+- Operating System Ready
+- operational access
+- pause, archive, and removal
 
-`AuthShell.tsx`, `PasswordInput.tsx`, `PasswordStrength.tsx`, `SocialAuth.tsx`
+An OS Subscription is Workspace-scoped commercial state. It does not grant every user, Business,
+Business Unit, or Branch access and does not imply installation, activation, or readiness.
+Product Hub composes owner projections and routes to the OS-owned setup experience; it does not
+implement OS setup or domain logic.
 
-### Route tree — `app/`
+The exact successor to legacy `OSEnablement` semantics is unresolved by ADR-023. Do not create a
+canonical `OSEnablement` aggregate, schema, or state machine from older guidance. A feature that
+needs such a model must stop and obtain the applicable approved decision.
 
-```txt
-app/
-├── (landing preserved) page.tsx         ← DO NOT TOUCH
-├── login/page.tsx
-├── register/page.tsx
-├── verify-email/page.tsx
-├── forgot-password/page.tsx
-├── reset-password/page.tsx
-├── welcome/page.tsx
-├── onboarding/page.tsx                  ← 6-step wizard
-├── dashboard/
-│   ├── layout.tsx                       ← CoreShell guard
-│   ├── page.tsx                         ← Core Platform home
-│   ├── apps/page.tsx                    ← Product Hub / OS Launcher
-│   ├── billing/page.tsx
-│   ├── team/page.tsx
-│   ├── integrations/page.tsx
-│   └── settings/page.tsx
-apps/commerce/
+## 9. Marketplace and Shared Assets
 
-    ├── layout.tsx                       ← CommerceShell + 3-level guard
-    ├── setup/
-    │   ├── layout.tsx                   ← minimal layout, no shell
-    │   └── page.tsx                     ← 8-step Commerce Setup wizard
-    ├── dashboard/page.tsx
-    ├── pos/page.tsx
-    ├── products/page.tsx
-    ├── inventory/page.tsx
-    ├── orders/page.tsx
-    ├── invoices/page.tsx
-    ├── customers/
-    │   ├── page.tsx
-    │   └── [id]/page.tsx
-    ├── reports/page.tsx
-    └── settings/page.tsx
+Marketplace is a bounded context within the Core Platform offering. It owns Marketplace Asset,
+Asset Version, publisher, review, certification, trust, compatibility, dependency, licensing,
+purchase, entitlement, distribution, installation, activation, applicability, upgrade, and
+removal state within its frozen boundary.
+
+Published Marketplace Asset Versions are shared, versioned, and immutable. Workspace and
+Business acquisition, installation, activation, applicability, and version selection are scoped
+state. Marketplace representation never transfers canonical ownership from an external asset
+family owner.
+
+## 10. Contracts and Evolution
+
+- Architecture contracts are technology-independent and versioned.
+- Compatible additive evolution is preferred.
+- Breaking changes require approved migration, deprecation, and consumer-transition plans.
+- Events communicate governed facts and never disguise commands or transfer ownership.
+- Boundary operations declare context, authorization, correlation, failure behavior,
+  idempotency where repeat submission is possible, and observability.
+- Framework types and database schemas are not the only definitions of shared contracts.
+
+Core Platform begins as an enforced modular monolith. Physical service extraction is allowed
+only for demonstrated scaling, security, release, or ownership needs and must preserve the same
+boundaries through Governance.
+
+## 11. Security, Privacy, Audit, and Observability
+
+Authentication does not imply authorization.
+
+Every affected feature must define and verify:
+
+- least privilege and explicit resource authorization;
+- Workspace and applicable organization scope;
+- tenant isolation and data minimization;
+- secret and sensitive-data handling;
+- append-only Audit evidence for consequential actions;
+- structured logs, metrics, traces, health, and correlation;
+- safe failure, retry, timeout, recovery, and dependency-isolation behavior; and
+- telemetry that excludes secrets and unauthorized tenant data.
+
+Owning domains enforce final authorization and invariants even when a gateway or Core boundary
+has already authenticated and applied coarse policy.
+
+## 12. Localization and Accessibility
+
+Arabic and English are first-class languages from the first implementation of every user-facing
+feature.
+
+- All user-facing strings must have a translation path.
+- Arabic uses RTL; English uses LTR.
+- Layout uses logical direction rather than left/right assumptions.
+- User-entered Business data is stored as entered unless a governed translation workflow exists.
+- Critical flows must be keyboard-operable, semantically named, focus-safe, readable, and usable
+  with applicable assistive technology.
+- Color alone must not convey required meaning.
+- Acceptance scenarios and tests must cover the applicable language, direction, and accessibility
+  behavior.
+
+## 13. Spec-Driven Development
+
+Meaningful work requires an approved `spec.md`, `plan.md`, and `tasks.md` before implementation.
+Every artifact must pass the Constitution Checks defined by
+`.specify/memory/constitution.md` and the templates under `.specify/templates/`.
+
+Every spec and plan must identify:
+
+1. controlling Freeze and Accepted ADRs;
+2. owning domain and canonical write owner;
+3. Workspace and applicable organization/resource scope;
+4. OS independence and cross-domain contracts;
+5. Capability, Knowledge, Recommendation, Business Brain, and AI boundaries;
+6. commercial and operational lifecycle impact;
+7. security, privacy, Audit, and observability;
+8. Arabic/English, RTL/LTR, and accessibility;
+9. compatibility and migration impact;
+10. required test evidence; and
+11. documentation updates.
+
+A failed Constitution Check stops the affected work. Do not use an assumption or complexity
+justification to bypass frozen architecture.
+
+## 14. Testing and Delivery Gates
+
+Tests are not globally optional. Add risk-appropriate evidence for the changed surface:
+
+- unit tests for domain logic and invariants;
+- contract tests for owner/consumer boundaries and compatibility;
+- integration tests for tenancy, authorization, persistence, Events, and cross-module behavior;
+- end-to-end tests for critical user journeys;
+- Arabic/English and RTL/LTR verification;
+- accessibility verification; and
+- Audit and observability verification for consequential flows.
+
+Frameworks, exact coverage thresholds, and CI products remain implementation choices unless an
+approved source defines them. Any omitted test category requires an explicit N/A rationale in the
+plan. Required lint, type, test, and build checks for the affected project must pass before merge.
+
+## 15. Documentation Synchronization
+
+Implementation, specifications, plans, tasks, contracts, and affected documentation change
+together. Code must not silently introduce a new canonical owner, term, lifecycle, permission
+scope, contract, or cross-domain dependency.
+
+Do not rewrite historical architecture to conceal a change. Use ADRs, bounded patches, updated
+Freezes, and readiness gates as required. Unresolved Deferred Decisions retain their stable IDs
+and must not be answered in implementation tasks.
+
+## 16. Repository Structure and Current Implementation
+
+Current repository structure:
+
+```text
+apps/landing/          marketing experience
+apps/core-platform/    Core Platform frontend
+apps/commerce/         Commerce OS frontend
+backend/               current API implementation area
+packages/ui/           shared presentation components only
+packages/sdk/          API clients and fetch helpers only
+packages/auth/         shared auth helpers only
+packages/types/        shared contract types only
+packages/shared/       shared utilities and non-owning helpers
+infra/                 current infrastructure configuration
+docs/                  governed documentation and archives
+.specify/              Spec Kit workflow and constitution
 ```
 
-### TypeScript — 0 errors. ESLint — 0 errors, 0 warnings.
+`apps/commerce` is the current Commerce OS application. `shops-app` is a deprecated legacy label
+and must not be reintroduced. `restaurants-app` is a deprecated separate-app concept.
 
----
+Current repository technologies include Next.js, React, TypeScript, TailwindCSS, pnpm,
+Turborepo, Laravel, PostgreSQL, and Redis. These are implementation choices and do not override
+the technology-independent architecture or its Deferred Decisions. A feature plan must verify
+that the relevant technology is approved for that implementation scope.
 
-## 27. Recommended Next Specs
+Shared packages must not become ownerless business-logic modules. Runtime code must not import
+from archived prototypes or `docs/`.
 
-Start from architecture alignment, not backend.
+## 17. Coding Standards
 
-```txt
-Spec 038 — Platform Alignment + Localization + Product Hub
-Spec 039 — Commerce Identity, Tax & Document Templates
-Spec 040 — Commerce Products + Inventory Polish
-Spec 041 — POS MVP with Tax, Invoice and Receipt
-Spec 042 — Orders, Invoices and Reports
-Spec 043 — Module-driven Commerce Navigation
-Spec 044 — Core Billing + OS Subscription States
-Spec 045 — Team & Access MVP
-```
+### TypeScript and React
 
-Backend starts only after UI flows and contracts are stable.
+- TypeScript strict mode remains enabled.
+- Do not introduce `any` without a documented, reviewed exception.
+- Use shared contract types where ownership and compatibility permit.
+- Prefer Server Components in Next.js; use client components only when client behavior requires
+  them.
+- Keep components focused and keep business logic in the owning domain layer.
+- Data-driven UI includes loading, empty, error, unauthorized, and recovery states.
 
----
+### API and data access
 
-## 28. Final Instruction for Agents
+- Frontend components use governed SDK/client boundaries rather than hardcoded service URLs.
+- Validate all client input server-side.
+- Enforce tenant and resource scope server-side.
+- Never expose internal database models as the sole public contract.
+- Never bypass the owning domain for convenience.
 
-Before writing code, answer these questions:
+### Git
 
-1. Does this belong to Core Platform or a specific OS?
-2. If it belongs to Commerce, is it Core, Preset, or Module?
-3. Does it require Arabic/English and RTL/LTR support?
-4. What is the Workspace / Business Unit / Branch scope?
-5. Does it affect billing, plan limits, or access permissions?
-6. Does it create a cross-OS dependency? If yes, stop.
-7. Can this be implemented as UI/mock first before backend?
+- Do not commit directly to `main` unless the repository workflow explicitly authorizes it.
+- Do not commit `node_modules/`, build outputs, secrets, or local credentials.
+- Use scoped, descriptive commit messages.
+- Preserve unrelated user changes in a dirty worktree.
 
-If unsure, do not expand the architecture. Create a small spec and keep the MVP boundary narrow.
+## 18. Current Delivery Scope
 
----
+The current implementation focus is Core Platform plus Commerce OS. Future Operating Systems,
+Marketplace executable/plugin sandboxing, broad cross-OS runtime integration, and deferred global
+policies are not implicitly authorized by their frozen architecture.
 
-<!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
-<!-- SPECKIT END -->
+Do not implement a deferred capability merely because its architecture exists. The controlling
+feature spec must establish that the required decisions, contracts, security policy, and tests are
+approved.
 
+## 19. Final Agent Checklist
 
-## Multi-Branch Architecture Goal (Spec 049 Addition)
+Before writing or approving code, answer:
 
-Architecture Goals
+1. Which frozen source and Accepted ADR govern this work?
+2. Which domain owns the canonical fact and write?
+3. What Workspace, Business, Business Unit, Department, Branch, OS, actor, and resource context
+   applies?
+4. Does any OS core workflow depend on another OS?
+5. Does any code directly access another domain's internal state?
+6. Are Capability, Knowledge, Rules, Business Brain, Recommendation, and AI boundaries preserved?
+7. Are entitlement, subscription, setup, activation, readiness, and access distinct?
+8. Are security, privacy, Audit, and observability testable?
+9. Are Arabic/English, RTL/LTR, and accessibility testable?
+10. Are contracts backward-compatible and documentation synchronized?
+11. Do `spec.md`, `plan.md`, and `tasks.md` pass the Constitution Checks?
 
-- Multi-Business
-- Multi-Branch
-- Multi-Operating System
-- Product Hub as Operating System entry point
-- OSSubscription and OSEnablement separation
-
-Rules
-
-- Business (BusinessUnit internally) owns one or more Branches.
-- UI uses Business; internal model remains BusinessUnit.
-- BusinessUnit, BU, and Default Business Unit must not appear in user-facing UI.
-- Branch represents the operational scope only.
-- Business is visible from onboarding.
-- The platform architecture must support multiple Branches per Business from day one.
-- Every operational Business must have exactly one Main Branch.
-- OSEnablement may target workspace, business, or branch scope depending on the Operating System.
-- Spec 049 freezes onboarding architecture after approval.
-
-### Spec 049 Additional Acceptance Criteria
-
-- Multi-Business architecture-ready.
-- Multi-Branch architecture-ready.
-- Branches belong to Business (BusinessUnit internally).
-- OSEnablement supports workspace, business, and branch scopes.
-- Future specs must extend Spec 049 concepts unless an Architecture RFC is approved.
+If any answer is unclear because architecture is missing or contradictory, stop the affected work
+and report the exact sources. Do not invent the answer.

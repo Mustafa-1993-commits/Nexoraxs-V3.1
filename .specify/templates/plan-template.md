@@ -31,7 +31,27 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Record **PASS**, **FAIL**, or **N/A with rationale** for every gate. A FAIL stops planning and
+identifies the required Governance action; the Complexity Tracking table cannot waive a frozen
+architecture rule.
+
+| Gate | Required evidence | Result |
+|---|---|---|
+| Frozen authority | Controlling Freeze/Accepted ADR references; no unresolved contradiction | [PASS/FAIL/N/A] |
+| Ownership | Owning domain, canonical facts, write models, and target validation are explicit | [PASS/FAIL/N/A] |
+| Organization and tenancy | Workspace, Business, Business Unit, Department, Branch, OS, actor, and resource scope are explicit as applicable | [PASS/FAIL/N/A] |
+| OS independence | No core workflow requires another OS; no direct cross-OS database/internal-state access | [PASS/FAIL/N/A] |
+| Knowledge and AI order | Capability/Knowledge/Rules/Business Brain/Recommendation/AI boundaries are preserved | [PASS/FAIL/N/A] |
+| Lifecycle separation | Entitlement, Subscription, installation, setup, configuration, activation, readiness, and access remain distinct as applicable | [PASS/FAIL/N/A] |
+| Contracts and compatibility | Boundary contracts are owner-governed, versioned, and backward-compatible or have an approved migration | [PASS/FAIL/N/A] |
+| Security and operations | Authorization, privacy, Audit, observability, failure, and recovery requirements are planned | [PASS/FAIL/N/A] |
+| Product quality | Arabic/English, RTL/LTR, accessibility, and measurable UX criteria are planned | [PASS/FAIL/N/A] |
+| Verification | Risk-appropriate automated/manual tests cover invariants and acceptance scenarios | [PASS/FAIL/N/A] |
+| Documentation sync | Specs, tasks, contracts, and affected docs will change with implementation; deferrals remain unresolved | [PASS/FAIL/N/A] |
+
+**Pre-research verdict**: [PASS/FAIL]
+
+**Post-design verdict**: [PASS/FAIL]
 
 ## Project Structure
 
@@ -96,7 +116,8 @@ directories captured above]
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
+> **Fill ONLY for non-architectural complexity that remains after all Constitution gates pass.**
+> Frozen architecture violations cannot be justified here.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
