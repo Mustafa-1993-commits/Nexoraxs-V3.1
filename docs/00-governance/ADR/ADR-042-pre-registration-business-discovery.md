@@ -82,8 +82,9 @@ The proposed experience would:
    context;
 2. distinguish visitor-provided answers, observed context, inferred assumptions, missing or
    contradictory evidence, and provenance;
-3. when evidence is sufficient, present a non-canonical **Business Health Snapshot**, limited
-   summary, or clearly labeled provisional guidance;
+3. when evidence is sufficient, present a non-canonical
+   **Business Health Snapshot (working term)**, limited summary, or clearly labeled provisional
+   guidance;
 4. converge with the existing account path at Create Account or Sign In, while allowing a Visitor
    to skip Discovery entirely;
 5. resolve identity verification conditionally under existing/future approved Identity authority;
@@ -95,6 +96,12 @@ The proposed experience would:
    Recommendation, and readiness rules to run at their governed points.
 
 ### Proposed journey boundary
+
+> **Review-aid boundary:** The following journey and conceptual-state models are review aids only.
+> They are not approved detailed documentation, normative state machines, interaction contracts,
+> implementation specifications, or persistence models. If the proposal is approved, they must be
+> revalidated and recreated through an explicitly authorized documentation wave rather than
+> promoted automatically.
 
 ```text
 Visitor
@@ -144,6 +151,9 @@ These labels are proposal concepts only. Their exact names, transitions, termina
 concurrency, and policy relationships require approval. Replacement should be treated as a
 relationship unless future approved authority decides otherwise.
 
+No label in this section is reserved, canonical, implementation-ready, approved for persistence,
+or approved as an API or state-machine term until terminology and lifecycle review is completed.
+
 ## Decision Boundaries
 
 If accepted as proposed, this decision would establish only the following durable boundaries:
@@ -152,7 +162,8 @@ If accepted as proposed, this decision would establish only the following durabl
 - Discovery is not Business Architect and an anonymous Discovery flow is not a Business Architect
   Session.
 - Discovery Evidence is not Business DNA.
-- A Business Health Snapshot is non-canonical presentation and not a Business DNA Snapshot.
+- Business Health Snapshot (working term) is non-canonical presentation, not a Business DNA
+  Snapshot, not Business DNA, not a canonical Recommendation, and grants no readiness state.
 - Provisional guidance is not a new canonical Recommendation state.
 - Entry Intent may influence presentation but is not fit, confidence, Business DNA, or
   Recommendation evidence.
@@ -241,7 +252,7 @@ The conflicts are:
 12. BDP-C12 — Duplicate or legacy journey and master-architecture documents.
 13. BDP-C13 — Marketplace as a recurring destination.
 14. BDP-C14 — Canonical Nexoraxs product-identity terminology.
-15. BDP-C15 — Business Health Snapshot versus Business DNA Snapshot.
+15. BDP-C15 — Business Health Snapshot (working term) versus Business DNA Snapshot.
 
 No human-decision conflict is resolved by this Proposed ADR.
 
@@ -306,7 +317,9 @@ implementation:
   hold, backup, and support access;
 - minimized and purpose-bound logs, analytics, traces, errors, prompts, AI context, and Audit;
 - auditable consequential operations where approved policy requires them; and
-- Arabic/English, RTL/LTR, accessibility, safe failure, and recovery behavior.
+- evaluation against applicable accepted localization, accessibility, UX, security, privacy, and
+  design authority, including the
+  [NexoraXS Constitution §X](../../../.specify/memory/constitution.md#x-bilingual-accessible-product-quality).
 
 This ADR selects none of the mechanisms or policy values above. Anonymous participation is not
 marketing consent.

@@ -13,6 +13,13 @@
 > This crosswalk records authority and impact. It does not approve the proposal and does not
 > authorize modification of any listed source or affected document.
 
+> **Review-aid boundary:** Journey, sequence, conceptual-state, ownership, failure, and
+> edge-condition models referenced by this crosswalk are review aids only. They are not approved
+> detailed documentation, normative state machines, interaction contracts, implementation
+> specifications, or persistence models. If the proposal is approved, they must be revalidated
+> and recreated through an explicitly authorized documentation wave rather than promoted
+> automatically.
+
 ## 1. Purpose and Method
 
 This artifact carries the Stage A Authority Review into the Wave 1 proposal package. It:
@@ -338,12 +345,12 @@ permission.
 | Classification | Product / Technical Governance. |
 | Status | **Resolved by existing authority** for category; spelling governance requires clarification. |
 
-### BDP-C15 — Business Health Snapshot versus Business DNA Snapshot
+### BDP-C15 — Business Health Snapshot (working term) versus Business DNA Snapshot
 
 | Field | Record |
 |---|---|
-| Existing Authority | Business DNA Snapshot is a canonical published, versioned view of one Business DNA identity; no canonical Business Health Snapshot exists. |
-| Proposed Change | Use Business Health Snapshot only as proposed, non-canonical presentation terminology. |
+| Existing Authority | Business DNA Snapshot is a canonical published, versioned view of one Business DNA identity; no canonical term or concept corresponding to Business Health Snapshot (working term) exists. |
+| Proposed Change | Use Business Health Snapshot (working term) only as proposed, non-canonical presentation terminology. It is not a Business DNA Snapshot, Business DNA, or a canonical Recommendation and grants no readiness state. |
 | Rationale | Describe early value without mislabeling it as published Business DNA. |
 | Impact | Glossary, UX labels, Snapshot staleness/versioning, accessibility and localization. |
 | Risk | Visitors or implementers may treat anonymous output as published Business DNA. |
@@ -360,7 +367,7 @@ permission.
 | BDP-D01 | Optional pre-registration Discovery branch | Genesis trust/value philosophy; ADR-015 infer before asking | C01, C02, C04 | New proposed journey branch; no canonical entity | Acquisition value, accessible branch/convergence | Customer Journey and Freeze only after approval | Human decision required |
 | BDP-D02 | Discovery never creates formal Core/commercial/readiness state | ADR-003–005, ADR-018, ADR-021–026 | C02, C11 | No Workspace, Business, DNA, subscription, installation, or readiness transition | Prevent misleading success states | Later journey/spec must state non-equivalence | Aligned principle; proposal acceptance pending |
 | BDP-D03 | Discovery output is non-canonical evidence | ADR-005, ADR-016, Candidate Fact glossary | C03, C15 | Candidate Fact import only after formal context | Source labeling, correction, privacy notice | Business Architect integration detail after policy approval | Proposed resolution |
-| BDP-D04 | Business Health Snapshot is non-canonical presentation | Business DNA Snapshot glossary boundary; Business Brain deferrals | C05, C15 | No Business DNA Snapshot or health aggregate created | Explicit labels; no numeric precision | Glossary/UX decision required | Human decision required |
+| BDP-D04 | Business Health Snapshot (working term) is non-canonical presentation | Business DNA Snapshot glossary boundary; Business Brain deferrals | C05, C15 | No Business DNA Snapshot or health aggregate created | Explicit labels; no numeric precision | Glossary/UX decision required | Human decision required |
 | BDP-D05 | Use provisional guidance, not a new Recommendation status | ADR-013, Recommendation governance | C05, C06 | No canonical Recommendation transition | Avoid false authority/product funnel | Recommendation terminology decision | Human decision required |
 | BDP-D06 | Identity verification is conditional and mechanism-neutral | Core Security authentication section | C09 | No new verification state machine approved | Recovery/accessibility/Security UX unresolved | Identity decision required | Proposed boundary only |
 | BDP-D07 | Claim and import are separate operations | Permission/security owner authorization; ADR-034 | C07, C08, C09, C10 | Separate conceptual claim/import dimensions | Prevent account/session/tenant escalation | Security/Privacy/contract detail after approval | Human decision required |
@@ -407,9 +414,11 @@ Listing a document below does not authorize editing it.
 
 ### 6.3 Glossary and ontology impact
 
-- `Business Discovery Preview`, `Business Health Snapshot`, `Discovery Evidence`, `Entry Intent`,
-  claim, and import are proposed terms only.
-- Business Health Snapshot must remain distinct from canonical Business DNA Snapshot.
+- `Business Discovery Preview`, `Business Health Snapshot (working term)`, `Discovery Evidence`,
+  `Entry Intent`, claim, and import are proposed terms only.
+- Business Health Snapshot (working term) is proposed non-canonical presentation only. It is not a
+  Business DNA Snapshot, Business DNA, or a canonical Recommendation and grants no readiness
+  state.
 - Anonymous Discovery must not be called Business Architect Session.
 - Persona labels must not become canonical roles.
 - No change is proposed to Workspace → Business → Business Unit → Department/Branch, Business DNA
@@ -423,7 +432,8 @@ Listing a document below does not authorize editing it.
 - Imported evidence may enter or enrich the governed pre-publication pipeline only; it cannot
   jump to published/analyzed/completed.
 - Proposed anonymous progress, Snapshot, lifecycle, claim, import, and replacement dimensions are
-  conceptual and orthogonal. No transition table or physical enum is approved.
+  conceptual review aids and orthogonal. No label is reserved or canonical; no transition table,
+  physical enum, persistence term, API term, or implementation state machine is approved.
 - Existing Recommendation, commercial, installation, activation, and readiness lifecycles remain
   unchanged.
 
@@ -433,8 +443,9 @@ Listing a document below does not authorize editing it.
 - Requires evidence-source labels, inference correction, missing/contradictory evidence,
   qualitative uncertainty, failure, staleness, and resume communication.
 - Requires persona-aware destinations without assuming roles or forcing a single context.
-- Requires Arabic/English, RTL/LTR, accessibility, keyboard/focus, error, empty, limited, and
-  recovery design in a later authorized wave.
+- Any later authorized UX wave must evaluate the experience against applicable accepted
+  localization, accessibility, UX, security, privacy, and design authority, including the
+  [NexoraXS Constitution §X](../../../../.specify/memory/constitution.md#x-bilingual-accessible-product-quality).
 - Forbids unsupported numeric confidence, fit, health, and setup-time claims.
 
 ### 6.6 Security and Privacy impact
@@ -505,7 +516,7 @@ Line references describe the repository at Wave 1 review time and may move after
 | TR-BDP-003 Candidate Fact pipeline | `docs/00-governance/ADR/ADR-016...:1-25`; `docs/00-governance/glossary/GLOSSARY.md:187-221`; `docs/02-core-platform/02-CORE-PLATFORM-ARCHITECTURE.md:210-268` | Proposal §§9–10 | Import/review/publication | Core Business Architect | C03 | Proposed compatible integration |
 | TR-BDP-004 Claim separate from import | `docs/02-core-platform/05-PERMISSION-MODEL.md:39-65,81-110`; `docs/02-core-platform/08-SECURITY-MODEL.md:175-223`; ADR-034 | Proposal §12; ADR-042 | Claim and import dimensions | Identity / target resource owner | C07–C10 | Human decisions required |
 | TR-BDP-005 Conditional verification | `docs/02-core-platform/08-SECURITY-MODEL.md:175-190` | Proposal §§8, 12 | Authentication | Core Identity and Access | C09 | Mechanism deferred |
-| TR-BDP-006 Orthogonal states | ADR-016 resumability; `docs/02-core-platform/03-DOMAIN-MODEL.md:215-301` | Proposal §13 | Anonymous progress/Snapshot/lifecycle/claim/import/replacement | Owner unresolved | C07 | Conceptual proposal only |
+| TR-BDP-006 Orthogonal states | ADR-016 resumability; `docs/02-core-platform/03-DOMAIN-MODEL.md:215-301` | Proposal §13 | Anonymous progress/Snapshot/lifecycle/claim/import/replacement | Owner unresolved | C07 | Conceptual review aids only; labels are not canonical or implementation-ready |
 | TR-BDP-007 No numeric precision | `docs/99-architecture-freeze/BUSINESS-BRAIN-FREEZE-v1.0.md:401-444`; `docs/01-genesis/13-PRODUCT-HUB.md:189-267` | Proposal §11 | Snapshot/guidance | Business Brain / Recommendation / Product | C05 | Proposed safeguard |
 | TR-BDP-008 Provisional guidance distinction | ADR-013; ADR-014; Genesis Customer Journey `:179-200` | Proposal §§7, 11 | Pre-Recommendation presentation | Product / Recommendation owner | C06 | Human terminology decision |
 | TR-BDP-009 Core readiness unchanged | `docs/02-core-platform/02-CORE-PLATFORM-ARCHITECTURE.md:480-510`; ADR-018; Genesis Journey `:179-202` | Proposal §§8, 19 | Core readiness resolution | Core readiness owner | C02, C11 | Inherited guardrail |
@@ -517,7 +528,7 @@ Line references describe the repository at Wave 1 review time and may move after
 | TR-BDP-015 Proposal-before-waves | `docs/00-governance/MILESTONE-LIFECYCLE.md:67-143,249-289,465-509` | Proposal §§23–24 | Governance lifecycle | Architecture Governance | C04 | Wave 1 conforms; approval pending |
 | TR-BDP-016 Historical traceability | Constitution `:80-83`; Core Freeze manifest; legacy journey/master docs | Crosswalk §§2.3, 4 C12 | Documentation authority | Documentation Governance | C12 | Cleanup separately governed |
 | TR-BDP-017 Product identity | `docs/00-governance/glossary/GLOSSARY.md:25-31` | Proposal metadata/§26 | All presentation | Product / Documentation Governance | C14 | Category inherited |
-| TR-BDP-018 Snapshot terminology | Glossary `:151-158`; Business Brain Freeze `:421-427` | Proposal §11 | Snapshot presentation | Product / UX / Business DNA owner | C15 | Human decision required |
+| TR-BDP-018 Snapshot terminology | Glossary `:151-158`; Business Brain Freeze `:421-427` | Proposal §11 | Business Health Snapshot (working term) presentation | Product / UX / Business DNA owner | C15 | Human decision required |
 
 ## 8. Review and Change Control
 

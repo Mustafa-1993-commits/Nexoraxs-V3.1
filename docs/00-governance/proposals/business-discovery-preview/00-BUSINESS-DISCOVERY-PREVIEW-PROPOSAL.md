@@ -5,7 +5,7 @@
 | Version | v0.1 |
 | Status | **Proposed for Authority Review** |
 | Date | 2026-07-22 |
-| Owner | Nexoraxs Architecture Governance |
+| Review owner | Nexoraxs Architecture Governance |
 | Artifact type | Non-authoritative governance proposal |
 | Product identity | Nexoraxs Business Operating Intelligence Platform |
 | Related ADR | [ADR-042: Pre-registration Business Discovery](../../ADR/ADR-042-pre-registration-business-discovery.md) — Proposed |
@@ -21,9 +21,9 @@
 
 This proposal introduces **Business Discovery Preview** as optional, pre-registration value
 demonstration terminology. The proposed experience would gather non-canonical evidence and,
-when evidence is sufficient, present a non-canonical **Business Health Snapshot** or clearly
-labeled provisional guidance. It would demonstrate that Nexoraxs can begin to understand a
-business before asking the visitor to register.
+when evidence is sufficient, present a non-canonical **Business Health Snapshot (working term)**
+or clearly labeled provisional guidance. It would demonstrate that Nexoraxs can begin to
+understand a business before asking the visitor to register.
 
 The proposed experience would not create a Workspace, Business, Workspace Membership, Business
 DNA, canonical Recommendation, Workspace Entitlement, OS Subscription, installation,
@@ -113,7 +113,8 @@ pre-registration value demonstration that:
    provisional value;
 2. distinguishes visitor-provided answers, observed context, inferred assumptions, evidence
    strength, missing information, and provisional guidance;
-3. may present a Business Health Snapshot or limited summary only as non-canonical presentation;
+3. may present a Business Health Snapshot (working term) or limited summary only as non-canonical
+   presentation;
 4. asks the visitor to create an account or sign in to save and continue, without claiming that
    registration unlocks the first value;
 5. treats authenticated claim of an anonymous Discovery session and authorized import into a
@@ -153,6 +154,8 @@ This proposal does not:
 - approve or replace the Genesis Customer Journey or any Freeze;
 - create a Customer Journey v2, decision matrix, edge-case matrix, readiness validation, or
   implementation specification;
+- promote the review-aid diagrams, tables, conceptual states, failure principles, or edge-condition
+  examples in this proposal directly into approved detailed documentation or implementation;
 - define storage, tables, schemas, fields, APIs, routes, Events, messages, packages, services,
   deployment, cookies, tokens, or recovery mechanisms;
 - create or change a Workspace, Business, Business Unit, Department, Branch, User, Workspace
@@ -193,10 +196,18 @@ inherited guardrails unless a higher-authority change explicitly replaces them:
 12. Knowledge and deterministic Rules precede Business Brain decisions, Recommendations, and AI.
 13. Infer before asking, retain provenance, expose assumptions, and provide correction paths.
 14. The customer should feel they are building the business, not configuring software.
-15. Arabic and English, RTL/LTR, accessibility, safe failure, and privacy/data minimization remain
-    mandatory design concerns for any later approved experience.
+15. Any later approved experience must be evaluated against applicable accepted localization,
+    accessibility, UX, security, privacy, and design authority, including the
+    [NexoraXS Constitution §X](../../../../.specify/memory/constitution.md#x-bilingual-accessible-product-quality).
 
 ## 8. Branched Customer Journey Proposal
+
+> **Review-aid boundary:** The following journey, evidence, sequence, conceptual-state,
+> ownership, failure, and edge-condition models are review aids only. They are not approved
+> detailed documentation, normative state machines, interaction contracts, implementation
+> specifications, or persistence models. If the proposal is approved, they must be revalidated
+> and recreated through an explicitly authorized documentation wave rather than promoted
+> automatically.
 
 The following is a proposal diagram, not an approved Customer Journey v2:
 
@@ -207,7 +218,7 @@ flowchart TD
     ME -->|Skip| AUTH[Create Account or Sign In]
     BDP --> AD[Adaptive Discovery]
     AD --> SR{Evidence resolution}
-    SR -->|Sufficient| SNAP[Non-canonical Business Health Snapshot]
+    SR -->|Sufficient| SNAP[Non-canonical Business Health Snapshot (working term)]
     SR -->|Insufficient or degraded| LIMITED[Limited Summary or minimum follow-up]
     SNAP --> SAVE[Save and Continue]
     LIMITED --> SAVE
@@ -318,12 +329,13 @@ Rules:
 
 ## 11. Snapshot and Provisional Guidance Boundary
 
-**Business Health Snapshot** is proposed, non-canonical presentation terminology. It must not be
-confused with the canonical **Business DNA Snapshot**, which is a published, versioned view of one
-Business's Business DNA.
+**Business Health Snapshot (working term)** is proposed, non-canonical presentation terminology.
+The working term remains unresolved and must not be confused with the canonical **Business DNA
+Snapshot**, which is a published, versioned view of one Business's Business DNA. It is not Business
+DNA, is not a canonical Recommendation, and grants no readiness state.
 
-When evidence supports it, a proposed Business Health Snapshot could present qualitative,
-source-labeled observations about business type or model, stage, approximate operational
+When evidence supports it, a proposed Business Health Snapshot (working term) could present
+qualitative, source-labeled observations about business type or model, stage, approximate operational
 complexity, locations, challenges, risks, opportunities, relevant Capabilities, potentially
 suitable Operating Systems as implementation options, missing information, and evidence strength.
 
@@ -395,6 +407,9 @@ Boundary rules:
 Anonymous Discovery cannot be represented faithfully as one overloaded lifecycle enum. The
 following independent dimensions are proposal concepts for review, not tables, schemas, APIs, or
 implementation contracts.
+
+No label in this section is reserved, canonical, implementation-ready, approved for persistence,
+or approved as an API or state-machine term until terminology and lifecycle review is completed.
 
 ```mermaid
 flowchart TB
@@ -513,8 +528,9 @@ This proposal adopts obligations, not policy values:
 - minimize logs, analytics, exports, prompts, errors, and observability data;
 - provide clear notice for user-provided versus inferred information and a correction path;
 - revalidate authority at import rather than trusting a historical claim; and
-- preserve Arabic/English, RTL/LTR, accessibility, keyboard, focus, semantics, and non-color-only
-  status communication in later UX work.
+- evaluate any later approved experience against applicable accepted localization, accessibility,
+  UX, security, privacy, and design authority, including the
+  [NexoraXS Constitution §X](../../../../.specify/memory/constitution.md#x-bilingual-accessible-product-quality).
 
 Retention duration, deletion/anonymization mechanics, legal basis, personal-data classification,
 privacy-right verification, export, residency, legal hold, encryption/key policy, cookies, and
@@ -593,8 +609,8 @@ The proposal depends on:
 2. Architecture Review classifying the account-first journey change and required Freeze/Genesis
    path (OQ-GOV-002).
 3. Approval or rejection of [ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md).
-4. Terminology decisions for Business Discovery Preview, Business Health Snapshot, Entry Intent,
-   Discovery Evidence, claim, and import (OQ-ONT-001 through OQ-ONT-003).
+4. Terminology decisions for Business Discovery Preview, Business Health Snapshot (working term),
+   Entry Intent, Discovery Evidence, claim, and import (OQ-ONT-001 through OQ-ONT-003).
 5. Identity, claim-proof, concurrency, replay, recovery, and target-authorization decisions.
 6. Privacy/Security policy for collection, cookies/storage, retention, deletion/anonymization,
    export, residency, legal hold, audit, and marketing-consent separation.
