@@ -1,10 +1,20 @@
 # Customer Journey
 
-Version: 1.0
+Version: 1.1
 
-Status: Foundation
+Status: Foundation — amended by Accepted ADR-042
 
 Owner: Nexoraxs
+
+Amendment date: 2026-07-22
+
+Amendment authority: [ADR-042 — Pre-Registration Business Discovery](../00-governance/ADR/ADR-042-pre-registration-business-discovery.md)
+
+Human Architecture Review: [ADR-042 Human Architecture Review](../00-governance/reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md)
+
+Implementation authorization: None
+
+Freeze synchronization: Pending — blocks implementation
 
 ---
 
@@ -28,67 +38,77 @@ Customers should feel they are building their business.
 
 # Journey Overview
 
+Accepted [ADR-042](../00-governance/ADR/ADR-042-pre-registration-business-discovery.md)
+adds Business Discovery as an **optional additive material pre-registration journey branch**.
+It does not replace the existing account-first journey.
+
+## Path A — Optional Discovery-first
+
+```text
 Visitor
+→ Start Business Discovery
+→ Temporary anonymous session
+→ Guided business questions
+→ Discovery preview
+→ Create account or log in
+→ Verify identity
+→ Claim Discovery session
+→ Select or create an authorized Workspace
+→ Select or create an authorized Business
+→ Review and confirm proposed facts
+→ Import accepted evidence into Business Architect Candidate Facts
+→ Governed human review
+→ Publish Business DNA
+→ Recommendations
+→ Product Hub
+```
 
-↓
+## Path B — Existing account-first
 
-Marketing Website
+```text
+Visitor
+→ Sign Up / Login
+→ Create or select Workspace
+→ Create or select Business
+→ Business Architect
+→ Business DNA
+→ Recommendations
+→ Product Hub
+```
 
-↓
+Both paths converge on the existing downstream journey:
 
-Sign Up / Login
-
-↓
-
-Create Workspace
-
-↓
-
-Create Business Identity
-
-↓
-
-Business Architect
-
-↓
-
-Core Business DNA
-
-↓
-
-Recommendations
-
-↓
-
+```text
 Product Hub
+→ Select OS and Plan
+→ OS-Specific Setup
+→ Operational Dashboard
+→ Daily Operations
+→ Growth
+→ Marketplace
+→ Expansion
+```
 
-↓
+## Business Discovery amendment rules
 
-Select OS and Plan
-
-↓
-
-OS-Specific Setup
-
-↓
-
-Operational Dashboard
-
-↓
-
-Daily Operations
-
-↓
-
-Growth
-
-↓
-
-Marketplace
-
-↓
-
-Expansion
+- Discovery-first is optional. Direct signup, login, skip, abandonment, failure, expiry, or an
+  unsupported Discovery outcome continues through Path B without requiring a
+  `DiscoverySnapshot`, claim, or import.
+- No anonymous canonical Workspace, Business, Business Unit, Branch, Membership, Business DNA,
+  subscription, entitlement, readiness, Operating System configuration, or operational record is
+  created.
+- A `DiscoverySnapshot` is temporary, provisional, and non-canonical.
+- Claim requires verified identity, binds only to the verified User, and grants no Workspace,
+  Business, Membership, Permission, or import authority.
+- Workspace and Business creation or selection uses Core-owned boundaries and requires current,
+  target-scoped authorization.
+- Accepted evidence enters Business Architect as provenance-bearing Candidate Facts and remains
+  subject to field-level human review. Discovery never publishes directly to Business DNA.
+- Discovery completion, claim, and import have no subscription, entitlement, readiness,
+  Operating System, billing, payment, or operational effect.
+- This amendment synchronizes the Customer Journey with Accepted ADR-042. It does not amend any
+  Architecture Freeze and does not authorize implementation. A separately governed Freeze
+  amendment or successor and readiness validation remain required before implementation.
 
 ---
 
@@ -106,6 +126,9 @@ The customer should understand:
 • Why it is different.
 
 • Why it understands businesses.
+
+The visitor may optionally start the bounded Business Discovery preview described in Path A, or
+continue directly to account creation through Path B.
 
 ---
 
@@ -168,7 +191,12 @@ Never like a wizard.
 # Phase 6
 ## Core Business DNA
 
-Every answer updates the Business DNA of the selected Business.
+Business Architect evidence enters as Candidate Facts. Only facts that complete the governed
+human review and publication pipeline update the Business DNA of the selected Business.
+
+Anonymous answers and `DiscoverySnapshot` content never update Business DNA directly. Imported
+Discovery evidence remains a proposal, preserves provenance, and may be corrected, rejected, or
+partially accepted before publication.
 
 Core Business DNA contains the minimum knowledge required to generate initial recommendations.
 
@@ -331,3 +359,12 @@ The customer should never think:
 The customer should always feel:
 
 "I am building my business."
+
+---
+
+# Revision History
+
+| Version | Date | Change | Authority | Implementation effect |
+|---|---|---|---|---|
+| 1.0 | Historical foundation | Original account-first Customer Journey | Genesis foundation | Historical baseline preserved |
+| 1.1 | 2026-07-22 | Added the optional Discovery-first material branch; preserved account-first; corrected the Business DNA handoff to the Candidate Fact pipeline | [Accepted ADR-042](../00-governance/ADR/ADR-042-pre-registration-business-discovery.md) and its [Human Architecture Review](../00-governance/reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) | None; Freeze synchronization and readiness validation remain pending |

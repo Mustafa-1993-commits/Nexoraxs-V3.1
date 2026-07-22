@@ -2,17 +2,22 @@
 
 | Metadata | Value |
 |---|---|
-| Version | v0.1 |
-| Status | **Proposed for Authority Review** |
+| Version | v0.2 |
+| Status | **Synchronized after Accepted ADR-042** |
 | Date | 2026-07-22 |
-| Artifact type | Non-authoritative decision register |
+| Synchronization date | 2026-07-22 |
+| Artifact type | Historical proposal register with synchronized Governance dispositions |
 | Parent proposal | [Business Discovery Preview Proposal](./00-BUSINESS-DISCOVERY-PREVIEW-PROPOSAL.md) |
 | Authority crosswalk | [Authority and Impact Crosswalk](./01-AUTHORITY-AND-IMPACT-CROSSWALK.md) |
-| Related ADR | [ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md) — Proposed |
+| Related ADR | [ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md) — **Accepted** |
+| Human Architecture Review | [ADR-042 Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) — Approved for Accepted status |
+| Implementation authorization | **None** |
 
-> Every entry is open unless a later explicitly approved artifact records its disposition. This
-> register does not choose retention periods, verification or recovery mechanisms, scoring
-> formulas, permission grants, or implementation contracts.
+> The original Wave 1 question text and row-level status are preserved below as historical intake
+> evidence. [Section 15](#15-post-acceptance-governance-disposition) is the current disposition
+> record following BD-001, BD-002, Accepted ADR-042, and its Human Architecture Review. Resolved
+> architecture questions do not imply that their deferred policy, legal, Security, or
+> implementation details are resolved.
 
 > Models and example state labels referenced by this register are review aids only. They are not
 > approved detailed documentation, canonical terminology, normative state machines, interaction
@@ -22,6 +27,8 @@
 ## 1. Register Rules
 
 - IDs are stable. Closed or rejected questions remain in the register for traceability.
+- The `Status` cells in sections 2–12 preserve the original Wave 1 status. Current status is
+  recorded only in section 15 so the original question history is not overwritten.
 - `Proposal-blocking` prevents approval of this proposal or ADR-042.
 - `Wave-blocking` prevents the affected later documentation wave.
 - `Architecture-blocking` prevents acceptance or authority changes at the affected boundary.
@@ -142,54 +149,106 @@
 | OQ-ECO-004 | What, if anything, may Product Hub show before canonical Recommendation conditions are satisfied? | Provisional guidance must not be relabeled as an official Recommendation. | Architecture-blocking; Wave-blocking | Product / Recommendation | Product Hub, Recommendation owner, Product | Product Hub composes governed outputs and does not own Recommendation facts. | Clearly separated provisional presentation; capabilities/options without fit claim; withhold until governed. No selection. | Product Hub becomes source of fit or creates a forced product funnel. | Product value research, Recommendation-owner and UX review, terminology decision. | **Open — human decision required** |
 | OQ-ECO-005 | May a User select a non-recommended or not-currently-recommended Operating System, and what explanation/authorization applies? | Recommendations are optional, while product availability, entitlement, setup, and Permission remain separate. | Wave-blocking | Product / Commercial | Product Hub, Commercial, applicable OS owner | ADR-013 makes Recommendations optional; product lifecycle authority controls availability and access. | Allow available selection with explanation; require more information for unsupported applicability; deny only under separate authoritative constraint. Exact UX open. | Recommendation becomes coercive, or unavailable/unsafe products are offered. | Availability/applicability rules, commercial policy, OS owner review, user research. | **Open — human decision required** |
 
-## 13. Decision Dependencies by Gate
+## 13. Current Decision Dependencies by Gate
 
-### Proposal approval blockers
+### Architecture decision status
 
-- OQ-GOV-001 and OQ-GOV-002: authority and architectural change path.
-- OQ-ONT-001: whether core proposal terminology is acceptable.
-- OQ-PRV-001: privacy purpose/classification and consent separation at principle level.
-- OQ-REC-001 and OQ-REC-005: provisional guidance and Business Health semantics.
-- OQ-ECO-001: confirmation that existing Core readiness criteria/timing remain controlling.
+- The 29 questions conditionally closed by [BD-001] are approved as resolved for ADR-042 MVP
+  architecture reconciliation by [BD-002] and Accepted [ADR-042].
+- The six former ADR-acceptance blockers OQ-GOV-001, OQ-GOV-002, OQ-AUT-001, OQ-IMP-005,
+  OQ-PRV-001, and OQ-PRV-003 are resolved at architecture-decision level by [BD-002] and
+  Accepted [ADR-042].
+- These resolutions supported ADR acceptance; they do not settle the policy, legal, Security,
+  contract, UX, or implementation details explicitly deferred in section 15.
 
-### Customer Journey v2 wave blockers
+### Remaining pre-implementation gates
 
-- OQ-GOV-003 and OQ-GOV-004.
-- OQ-PRD-003 through OQ-PRD-005.
-- OQ-ID-001 and OQ-ID-003.
-- OQ-AUT-002 and OQ-AUT-003.
-- OQ-SES-003, OQ-SES-004, and OQ-SES-006.
-- OQ-SNP-001, OQ-SNP-002, and OQ-SNP-004.
-- OQ-ECO-002 through OQ-ECO-005.
-
-### Architecture acceptance blockers
-
-- All Governance/precedence questions.
-- OQ-ONT-001 and OQ-ONT-002.
-- OQ-AUT-001 and OQ-AUT-003.
-- OQ-SES-001 and OQ-SES-002.
-- OQ-IMP-001 through OQ-IMP-006.
-- OQ-REC-001 through OQ-REC-005.
-
-### Security and Privacy design blockers
-
-- OQ-PRD-002.
-- OQ-ID-001 through OQ-ID-003.
-- OQ-AUT-001 through OQ-AUT-003.
-- OQ-SES-001 through OQ-SES-006.
-- OQ-IMP-004 and OQ-IMP-005.
-- OQ-PRV-001 through OQ-PRV-006.
-
-### Implementation blockers
-
-All questions marked Implementation-blocking must be resolved in approved authority or an
-approved implementation-level decision permitted by that authority. In addition, implementation
-requires an approved feature `spec.md`, `plan.md`, and `tasks.md`, Constitution Checks, owner
-contracts, risk-appropriate tests, and explicit implementation authorization. None is authorized
-by Wave 1.
+- OQ-ID-002, OQ-ID-003, OQ-SES-004, OQ-SES-005, OQ-PRV-002, and OQ-PRV-005 remain deferred
+  implementation-policy, legal, or Security-design questions and block the affected
+  implementation boundary.
+- OQ-GOV-003, OQ-PRD-001, OQ-ONT-003, OQ-ECO-002, and OQ-ECO-003 remain deferred without
+  blocking the accepted ADR decision; they still govern their affected later documentation,
+  policy, product-validation, or implementation work.
+- OQ-GOV-004, OQ-REC-002, OQ-REC-004, and OQ-ECO-005 remain outside the ADR-042 MVP decision and
+  require separate Governance if pursued.
+- Implementation additionally requires Freeze synchronization, readiness validation, approved
+  Security, Permission, Privacy/Legal, identity/recovery, retention/backup, and observability
+  policies; approved specification, Constitution Check, plan, tasks, contracts, tests; and
+  explicit implementation authorization.
 
 ## 14. Review Record
 
-No question has been answered or closed in Wave 1. Future reviewers must record the deciding
-artifact, date, owner, rationale, conditions, and affected conflict/traceability IDs before
-changing a status.
+Wave 1 created all 50 questions without answering them. BD-001 classified 29 questions as closed
+upon Human Approval and classified the remaining questions without claiming universal closure.
+BD-002 approved those 29 conditional closures and resolved six additional ADR-acceptance blockers
+at architecture-decision level. [ADR-042] incorporated those decisions and was accepted by the
+[Human Architecture Review][Review]. This v0.2 synchronization records the resulting current
+status on 2026-07-22 without deleting or rewriting the original question records.
+
+Implementation authorization remains **None**. Resolution of an architecture question is not
+approval of a deferred mechanism, policy value, legal conclusion, Permission identifier,
+contract, schema, API, UI, plan, task, or code change.
+
+## 15. Post-acceptance Governance Disposition
+
+The following table is the current status source for the stable question IDs. “Resolved” means
+the architecture question needed for ADR-042 was decided; any named remainder is still required
+before its affected implementation may proceed.
+
+| Question ID | Current status | Resolution authority | Remaining policy or implementation work |
+|---|---|---|---|
+| OQ-GOV-001 | **Resolved — architecture question** (2026-07-22) | [BD-002] §3.1; [ADR-042]; [Review] | Scoped precedence applies to Business Discovery only; global Governance wording is unchanged. |
+| OQ-GOV-002 | **Resolved — architecture question** (2026-07-22) | [BD-002] §3.2; [ADR-042]; [Review] | Journey amendment is synchronized here; Freeze amendment/successor and readiness remain pending. |
+| OQ-GOV-003 | **Deferred — documentation-governance detail** | [BD-001] §12.3; [BD-002] §8.3; [ADR-042] | Exact scope of any later detailed journey documentation wave requires separate authorization. |
+| OQ-GOV-004 | **Outside ADR-042 MVP — separate Governance** | [BD-001] §12.2; [BD-002] §8.3 | Legacy duplicate labeling remains open; historical sources are preserved. |
+| OQ-PRD-001 | **Deferred — product-policy and validation detail** | [BD-001] §12.3; [BD-002] §8.3; [ADR-042] | Question-to-value measures, research, and Privacy validation remain required before implementation. |
+| OQ-PRD-002 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Email is not required by MVP architecture; any collection needs separate purpose, legal basis, consent UX, and threat review. |
+| OQ-PRD-003 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Exact target-scoped Permission identifiers and UX remain deferred. |
+| OQ-PRD-004 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Detailed resume UX and lifecycle contracts remain deferred. |
+| OQ-PRD-005 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Numeric expiry, restart/replacement policy, and UX remain deferred. |
+| OQ-ONT-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | `DiscoverySnapshot` is a provisional architecture concept; final implementation name and localization remain deferred. |
+| OQ-ONT-002 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Final glossary and contract naming remain deferred; Candidate Fact keeps its canonical meaning. |
+| OQ-ONT-003 | **Deferred — documentation-policy detail** | [BD-001] §12.3; [BD-002] §8.3 | Product-name normalization remains outside this synchronization. |
+| OQ-ID-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Verification is required before claim; exact method, expiry, recovery, and step-up policy remain Security work. |
+| OQ-ID-002 | **Deferred — Security design required; implementation-blocking** | [BD-001] §12.2; [BD-002] §8.3; [ADR-042] | Authentication, verification, provider-conflict, and recovery mechanisms require approved Identity/Security policy. |
+| OQ-ID-003 | **Deferred — Security and Privacy design required; implementation-blocking** | [BD-001] §12.2; [BD-002] §8.3; [ADR-042] | Persistence-free behavior and cross-device recovery need threat, consent, accessibility, and UX decisions. |
+| OQ-AUT-001 | **Resolved — logical architecture question** (2026-07-22) | [BD-002] §3.5; [ADR-042]; [Review] | Final Permission identifiers, catalog approval, and segregation-of-duties analysis remain implementation-blocking. |
+| OQ-AUT-002 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Selector UI and complete context-state policy remain deferred; explicit authorized target selection is mandatory. |
+| OQ-AUT-003 | **Resolved — MVP architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Consultant, partner, and reseller collaboration is outside MVP; future delegation needs separate Governance. |
+| OQ-SES-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Valid session-control evidence is required; exact proof and recovery mechanism remain Security design. |
+| OQ-SES-002 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Atomic, replay-safe, single-claim behavior is mandatory; concurrency and idempotency contracts remain deferred. |
+| OQ-SES-003 | **Resolved — MVP architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Shared multi-user sessions are excluded; numeric limits and replacement UX remain implementation policy. |
+| OQ-SES-004 | **Deferred — lifecycle, Security, and Privacy policy; implementation-blocking** | [BD-001] §12.2; [BD-002] §8.3; [ADR-042] | Persistence technology and numeric expiry/resume periods require approved policy. |
+| OQ-SES-005 | **Deferred — implementation detail; implementation-blocking** | [BD-001] §12.2; [BD-002] §8.3; [ADR-042] | Concurrency control and edit-reconciliation contract remain to be specified. |
+| OQ-SES-006 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Claimed data remains purpose-limited and expiring; exact retention/resume values require Privacy policy. |
+| OQ-IMP-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Item outcome, idempotency, retry, transaction, API, and schema design remain deferred. |
+| OQ-IMP-002 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | No silent overwrite; detailed conflict taxonomy and concurrent-editor UX remain deferred. |
+| OQ-IMP-003 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Existing-Business import requires field-level review; detailed versioning and merge algorithm remain deferred. |
+| OQ-IMP-004 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Authorization must be revalidated and invalid targets fail safely; exact lifecycle recovery UX remains deferred. |
+| OQ-IMP-005 | **Resolved — architecture question** (2026-07-22) | [BD-002] §3.6; [ADR-042]; [Review] | Retention values, deletion mechanics, legal hold, and exact authorization remain approved-policy work. |
+| OQ-IMP-006 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Provenance is mandatory; detailed version compatibility and staleness policy remain deferred. |
+| OQ-PRV-001 | **Resolved — architecture purpose/classification baseline** (2026-07-22) | [BD-002] §3.7; [ADR-042]; [Review] | Jurisdiction-specific legal basis and Privacy/Legal approval remain implementation-blocking. |
+| OQ-PRV-002 | **Deferred — Privacy/Legal policy required; implementation-blocking** | [BD-001] §12.2; [BD-002] §8.3; [ADR-042] | State-specific numeric retention and expiry schedules remain unapproved. |
+| OQ-PRV-003 | **Resolved — architecture rights/Audit/backup boundary** (2026-07-22) | [BD-002] §3.8; [ADR-042]; [Review] | Rights verification, retention values, backup procedures, and legal-hold policy require Privacy/Legal and Security approval. |
+| OQ-PRV-004 | **Resolved — MVP architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Anonymous email/export is not required; any future delivery needs separate purpose, consent, and threat review. |
+| OQ-PRV-005 | **Deferred — legal and Security design required; implementation-blocking** | [BD-001] §12.2; [BD-002] §8.3; [ADR-042] | Residency, transfers, encryption/key management, processor, access, and backup policy remain unapproved. |
+| OQ-PRV-006 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Ordinary telemetry/content exclusions are decided; final observability inventory, redaction, access, and consent policy remain required. |
+| OQ-SNP-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Failure must not force registration; detailed failure taxonomy, reliability targets, and UX remain deferred. |
+| OQ-SNP-002 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Snapshot is versioned/provisional; numeric staleness and regeneration policy remain deferred. |
+| OQ-SNP-003 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Provenance and source versions are mandatory; physical revision and comparison design remain deferred. |
+| OQ-SNP-004 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Unsupported outcomes must fail honestly and allow Path B; coverage criteria and UX remain deferred. |
+| OQ-REC-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Discovery guidance is non-binding and non-canonical; detailed presentation terminology remains deferred. |
+| OQ-REC-002 | **Outside ADR-042 MVP — separate Governance** | [BD-001] §12.2; [BD-002] §8.3 | Advanced confidence scoring remains excluded and unapproved. |
+| OQ-REC-003 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Version/provenance preservation is required; exact freshness and regeneration policy remains deferred. |
+| OQ-REC-004 | **Outside ADR-042 MVP — separate Governance** | [BD-001] §12.2; [BD-002] §8.3 | Setup-effort estimation remains excluded and unapproved. |
+| OQ-REC-005 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | `DiscoverySnapshot` is not a Business DNA Snapshot or canonical health output; future health semantics require separate Governance. |
+| OQ-ECO-001 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Discovery grants no readiness; Freeze successor/amendment and readiness validation remain required. |
+| OQ-ECO-002 | **Deferred — downstream journey detail** | [BD-001] §12.3; [BD-002] §8.3; [ADR-042] | Product Hub/Marketplace recurring navigation remains a later governed UX/architecture concern. |
+| OQ-ECO-003 | **Deferred — commercial/OS recovery detail** | [BD-001] §12.3; [BD-002] §8.3; [ADR-042] | Trial, payment, subscription, entitlement, installation, activation, and setup failure routing remains later owner work. |
+| OQ-ECO-004 | **Resolved — architecture question** (2026-07-22) | [BD-001] §12.2; [BD-002] §8.2; [ADR-042] | Discovery guidance is non-binding and does not bypass the canonical Recommendation/Product Hub sequence; final UI remains deferred. |
+| OQ-ECO-005 | **Outside ADR-042 MVP — separate Governance** | [BD-001] §12.2; [BD-002] §8.3 | Non-recommended OS selection behavior remains outside this MVP architecture decision. |
+
+[BD-001]: ./15-BUSINESS-DISCOVERY-MVP-ARCHITECTURE-DECISION.md
+[BD-002]: ./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md
+[ADR-042]: ../../ADR/ADR-042-pre-registration-business-discovery.md
+[Review]: ../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md

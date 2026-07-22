@@ -1,24 +1,29 @@
 # Business Discovery Preview — Conflict and Open Question Gate Map
 
-**Status:** Proposed for Authority Review
+**Status:** Synchronized after Accepted ADR-042
 
 ## 1. Purpose and Preservation Boundary
 
 | Metadata | Value |
 |---|---|
-| Version | v0.1 |
-| Status | **Proposed for Authority Review** |
+| Version | v0.2 |
+| Status | **Synchronized after Accepted ADR-042** |
 | Date | 2026-07-22 |
-| Artifact type | Non-authoritative conflict and Open Question gate-planning index |
+| Synchronization date | 2026-07-22 |
+| Artifact type | Historical proposal index with synchronized Governance dispositions |
 | Review owner | Nexoraxs Architecture Governance |
 | Governing conflict source | [Wave 1 Authority and Impact Crosswalk §4](./01-AUTHORITY-AND-IMPACT-CROSSWALK.md#4-conflict-register) |
 | Governing Open Question source | [Wave 1 Open Questions Register](./02-OPEN-QUESTIONS-REGISTER.md) |
 | Batch plan | [Authority Integration Batch Plan](./11-AUTHORITY-INTEGRATION-BATCH-PLAN.md) |
+| Accepted decision | [ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md) |
+| Human Architecture Review | [ADR-042 Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
+| Implementation authorization | **None** |
 
-> **No-resolution boundary:** This file indexes when an item may first be considered by a future
-> separately authorized human review. It does not resolve, defer, close, merge, rename, reprioritize,
-> or change the status of any conflict or Open Question. An earliest gate is not authorization for
-> that gate, and appearance in a batch is not a decision.
+> Sections 2 and 3 preserve the original Wave 4 descriptions, statuses, and gate mappings as
+> historical intake evidence. Section 2.2 records the current post-acceptance conflict
+> disposition. Current Open Question dispositions are maintained in the synchronized
+> [Open Questions Register](./02-OPEN-QUESTIONS-REGISTER.md#15-post-acceptance-governance-disposition).
+> No historical identifier or description has been deleted.
 
 `AIB` identifiers are Wave 4 planning references only. They are not accepted Governance IDs,
 canonical enums, runtime states, database values, API values, workflows, state machines,
@@ -26,8 +31,8 @@ implementation requirements, or engineering tasks.
 
 ## 2. Conflict Preservation Map
 
-The status text is preserved from Wave 1. The Wave 3 human decision confirms that every conflict
-remains open with its existing status. Wave 4 makes no change.
+The following table preserves the Wave 1 status text and Wave 4 result. It is historical evidence,
+not the current decision-level status for the synchronized conflicts in section 2.2.
 
 | Conflict ID | Conflict | Unchanged current status | Future batch dependencies | Earliest possible consideration gate | Wave 4 result |
 |---|---|---|---|---|---|
@@ -47,18 +52,34 @@ remains open with its existing status. Wave 4 makes no change.
 | BDP-C14 | Canonical Nexoraxs product identity terminology | **Resolved by existing authority** for category; spelling governance requires clarification. | AIB-02, AIB-09 | Separate AIB-02 Human Architecture Review | Clarification remains open; status unchanged |
 | BDP-C15 | Business Health Snapshot (working term) versus Business DNA Snapshot | **Human decision required**. | AIB-02, AIB-03, AIB-05, AIB-09 | Separate AIB-02 Human Architecture Review | Open — unchanged |
 
-### 2.1 Explicitly preserved primary tensions
+### 2.1 Historical primary tensions
 
-- **BDP-C01 remains open:** Wave 4 does not select Freeze-first or Genesis-ultimate precedence and
-  does not prescribe which source changes first.
-- **BDP-C02 remains open:** the current frozen account-first journey remains controlling; Wave 4
-  does not approve the pre-registration Discovery branch or a Genesis change.
+- **BDP-C01 was open in Wave 4:** Wave 4 did not select Freeze-first or Genesis-ultimate
+  precedence. BD-002 later supplied the scoped Business Discovery rule incorporated into
+  Accepted ADR-042.
+- **BDP-C02 was open in Wave 4:** Wave 4 did not approve the pre-registration branch. Accepted
+  ADR-042 later approved it as an optional additive material branch; the Customer Journey is now
+  synchronized while Freeze synchronization remains pending.
+
+### 2.2 Current post-acceptance conflict disposition
+
+“Decision-level resolved” means the architecture contradiction required for ADR-042 acceptance
+has been decided. It does not mean implementation or all policy detail is approved.
+
+| Conflict ID | Decision-level status | Source synchronization status | Implementation status | Remaining follow-up | Decision references |
+|---|---|---|---|---|---|
+| BDP-C01 | **Resolved for Business Discovery reconciliation** | ADR and Governance registers synchronized; no global Governance precedence rewrite was made | **Blocked** | Keep the scoped rule bounded to Business Discovery; any global precedence change requires separate Governance | [BD-002 §3.1](./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md); [Accepted ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md); [Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
+| BDP-C02 | **Resolved — optional additive material journey branch** | Customer Journey amended; Open Question and conflict records synchronized; Freeze synchronization pending | **Blocked** | Governed Freeze amendment or successor, then readiness validation | [BD-002 §3.2](./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md); [Accepted ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md); [Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
+| BDP-C03 | **Resolved — Candidate Fact pipeline required** | Customer Journey wording and Governance registers synchronized | **Blocked** | Feature contracts and specifications must preserve provenance, human review, and Business DNA owner authority | [BD-002 §3.3](./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md); [Accepted ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md); [Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
+| BDP-C07 | **Resolved at architecture ownership boundary** | ADR and Governance registers synchronized; policy and contract sources remain future work | **Blocked** | Security threat model, Privacy/Legal policy, identity/recovery policy, retention policy, contracts, and owner validation | [BD-002 §§3.4–3.5, 3.7](./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md); [Accepted ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md); [Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
+| BDP-C08 | **Resolved at logical permission/persona level** | ADR and Governance registers synchronized; final catalog not created | **Blocked** | Approve exact action Permission identifiers, resource scopes, delegation rules, and segregation of duties | [BD-002 §3.5](./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md); [Accepted ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md); [Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
+| BDP-C10 | **Resolved at privacy/data-lifecycle architecture level** | ADR and Governance registers synchronized; legal/policy sources remain future work | **Blocked** | Privacy/Legal approval; rights, retention, backup, residency, observability, and legal-hold policies | [BD-002 §§3.6–3.8](./16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md); [Accepted ADR-042](../../ADR/ADR-042-pre-registration-business-discovery.md); [Human Architecture Review](../../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
 
 ## 3. Open Question Gate Index
 
-The following 50 entries preserve the identifiers and current statuses from the Wave 1 register.
-`Earliest possible consideration gate` means the first candidate human-review boundary where the
-question's evidence may be examined. It does not answer the question or authorize the batch.
+The following 50 entries preserve the identifiers and **historical Wave 1 statuses**. `Earliest
+possible consideration gate` records the original Wave 4 planning boundary. Current dispositions
+are in the synchronized [Open Questions Register](./02-OPEN-QUESTIONS-REGISTER.md#15-post-acceptance-governance-disposition).
 
 ### 3.1 Governance and precedence
 
@@ -165,24 +186,27 @@ question's evidence may be examined. It does not answer the question or authoriz
 | OQ-ECO-004 | Product Hub presentation before canonical Recommendation conditions | **Open — human decision required** | AIB-05, AIB-06, AIB-08, AIB-09 | Separate AIB-05 Human Architecture Review with AIB-06 evidence | Open — unchanged |
 | OQ-ECO-005 | Selection of a non-recommended Operating System | **Open — human decision required** | AIB-05, AIB-06, AIB-07, AIB-09 | Separate AIB-06 Human Architecture Review with AIB-07 evidence | Open — unchanged |
 
-## 4. Preservation Counts
+## 4. Preservation and Synchronization Counts
 
-| Register | Expected count | Individually indexed | Status changes in Wave 4 | Resolutions in Wave 4 |
+| Register | Preserved identifiers | Current synchronized dispositions | Historical descriptions deleted | Implementation authorizations |
 |---|---:|---:|---:|---:|
-| Conflict IDs | 15 | 15 | 0 | 0 |
-| Open Question IDs | 50 | 50 | 0 | 0 |
+| Conflict IDs | 15 | 6 decision-level dispositions recorded here (BDP-C01, C02, C03, C07, C08, C10) | 0 | 0 |
+| Open Question IDs | 50 | 50 current dispositions maintained in the Open Questions Register | 0 | 0 |
 
 ## 5. Gate-use Rules
 
-- A batch-specific gate may consider only the items mapped to its explicitly authorized scope.
-- A future decision must quote the current status and record whether an item is resolved,
-  explicitly deferred, or remains open; no result may be inferred.
+- Historical AIB mappings remain provenance only; they do not override BD-001, BD-002, Accepted
+  ADR-042, or its Human Architecture Review.
+- A future decision must quote the current synchronized status and record whether a remaining
+  policy or implementation item is resolved, explicitly deferred, or remains open.
 - A resolution that would change authority requires the separately authorized governance path
   applicable to that source.
 - A deferred question retains its stable ID, owner, risk, and evidence requirement.
 - Rejection of a proposed answer leaves the current Open Question and controlling authority intact.
-- Wave 4 does not authorize any batch-specific gate, authority edit, ADR disposition, Freeze
-  successor, readiness action, or implementation step.
+- Accepted ADR-042 and this synchronization do not authorize a Freeze successor, readiness
+  result, specification, plan, task, contract, or implementation step.
+- Architecture decision synchronization is complete, but Freeze synchronization is still pending
+  and blocks implementation.
 
 Related Wave 4 artifacts:
 
