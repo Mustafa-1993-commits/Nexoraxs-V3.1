@@ -1,0 +1,9 @@
+artifact_note,location
+Full machine-readable inventory,Attached to this review package
+Source file,NEXORAXS-DOCS-INVENTORY.csv
+Reviewed corpus,00-governance.zip
+Files reviewed,207 Markdown documents
+Review date,2026-07-22
+Purpose,"Per-file classification by path, area, detected status, authority role, duplication risk, and recommended action"
+Important,"This compact repository pointer exists because the complete CSV is maintained as the review artifact; do not treat this summary as the full inventory"
+Next action,"Use NEXORAXS-DOCS-FULL-REVIEW-v1.0.md and NEXORAXS-DOCS-ACTION-ROADMAP-v1.0.md as the human-readable review and execution plan"
