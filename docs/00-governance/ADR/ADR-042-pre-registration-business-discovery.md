@@ -2,25 +2,30 @@
 
 | Metadata | Value |
 |---|---|
-| Status | **Proposed** |
-| Review posture | **Proposed pending Human Architecture Review** |
+| Status | **Accepted** |
+| Review posture | **Accepted by Human Architecture Review** |
 | Date drafted | 2026-07-22 |
 | Date reconciled | 2026-07-22 |
+| Acceptance date | 2026-07-22 |
+| Human Architecture Review | [ADR-042 Human Architecture Review](../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) |
 | Principal decision | Business Discovery as an optional additive material pre-registration journey branch |
 | Implementation authorization | **None** |
+| Acceptance effect | Architecture-decision status only; no code, specifications, plans, tasks, Journey changes, Freeze changes, readiness changes, commercial activation, entitlement, OS configuration, or operational behavior is authorized |
 | Product Owner decision input | [BD-001](../proposals/business-discovery-preview/15-BUSINESS-DISCOVERY-MVP-ARCHITECTURE-DECISION.md) and [BD-002](../proposals/business-discovery-preview/16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md) |
-| Supersedes | Nothing while Proposed |
+| Supersedes | Nothing |
 
 ## Status
 
-**Proposed**
+**Accepted**
 
-ADR-042 is proposed pending Human Architecture Review. Under the
-[ADR lifecycle](./README.md#adr-lifecycle), a Proposed ADR is not authoritative and becomes
-Accepted or Rejected only through explicit Architecture Governance approval.
+ADR-042 was accepted at the architecture-decision level by the
+[Human Architecture Review](../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md) on 2026-07-22 under
+the [ADR lifecycle](./README.md#adr-lifecycle). The review authorizes this status transition only.
+Acceptance does not amend the current Customer Journey or an Architecture Freeze and does not
+authorize implementation.
 
 > **Implementation authorization: None.** No code may be written from this ADR alone. This ADR
-> defines no implementation contract. Later acceptance of ADR-042 would not by itself authorize
+> defines no implementation contract. Acceptance of ADR-042 does not by itself authorize
 > implementation. Customer Journey synchronization, exact affected-source synchronization, an
 > applicable Freeze amendment or successor, readiness validation, approved Security/Privacy/
 > Permission policies, a feature specification, Constitution Check, plan, tasks, contracts, and
@@ -33,11 +38,12 @@ This revision reconciles ADR-042 with two Product Owner / Human Architecture dec
 - [BD-001 — Business Discovery MVP Architecture Decision](../proposals/business-discovery-preview/15-BUSINESS-DISCOVERY-MVP-ARCHITECTURE-DECISION.md), whose MVP baseline and 29 conditional question closures were approved for ADR reconciliation by BD-002; and
 - [BD-002 — Remaining Business Discovery Architecture Decisions](../proposals/business-discovery-preview/16-BUSINESS-DISCOVERY-REMAINING-ARCHITECTURE-DECISIONS.md), which resolves the remaining six questions and five conflicts at the Product Owner decision level.
 
-BD-001 and BD-002 are decision input to Governance, not Accepted ADRs. This ADR remains
-**Proposed**, and no implementation is authorized. The prior ADR proposal history remains
-preserved through Git history and the related proposal documents. This reconciliation does not
-modify the Customer Journey, a Freeze, an Accepted ADR, the Open Questions Register, or the
-Conflict and Open Question Gate Map.
+BD-001 and BD-002 are decision input to Governance, not Accepted ADRs. Following the
+[Human Architecture Review](../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md), this ADR is
+**Accepted at the architecture-decision level only**, and no implementation is authorized. The
+prior ADR proposal history remains preserved through Git history and the related proposal
+documents. This reconciliation and acceptance do not modify the Customer Journey, a Freeze, an
+earlier Accepted ADR, the Open Questions Register, or the Conflict and Open Question Gate Map.
 
 ## Context
 
@@ -92,7 +98,8 @@ This ADR does not resolve those mechanism or model questions by implication.
 BD-001 selected a bounded MVP baseline. BD-002 approved that baseline for continued Governance,
 resolved its remaining decision blockers, and instructed this reconciliation. Those records do
 not independently amend accepted or frozen authority. They supply approved Product Owner/Human
-Architecture input for Human Architecture Review of this Proposed ADR.
+Architecture input for the completed Human Architecture Review; they have no independent
+Accepted ADR authority.
 
 ### Historical proposal evidence
 
@@ -120,7 +127,7 @@ authority cited above.
 
 ## Decision
 
-Subject to Human Architecture Review and later explicit acceptance, Nexoraxs may introduce:
+At the architecture-decision level, Nexoraxs adopts:
 
 > **Business Discovery as an optional additive material pre-registration journey branch**
 
@@ -203,9 +210,9 @@ Visitor
 
 Path B preserves the existing
 [Genesis journey sequence](../../01-genesis/11-CUSTOMER-JOURNEY.md#journey-overview).
-Path A is the material additive decision proposed by this ADR. ADR acceptance would still require
-a separately governed Customer Journey successor or amendment and applicable Freeze work; this
-ADR does not perform that synchronization.
+Path A is the material additive decision accepted by this ADR. Acceptance still requires a
+separately governed Customer Journey successor or amendment and applicable Freeze work before
+implementation; this ADR does not perform that synchronization.
 
 ## Architecture Boundaries
 
@@ -694,11 +701,12 @@ gate. No framework default or implementation task may decide them silently.
 
 ## Governance and Implementation Gates
 
-Even if ADR-042 is later Accepted, the applicable sequence must still complete before
-implementation:
+ADR-042 is Accepted at the architecture-decision level. The first two gates below were completed
+by the [Human Architecture Review](../reviews/ADR-042-HUMAN-ARCHITECTURE-REVIEW.md); all remaining
+applicable gates must still complete before implementation:
 
-1. Human Architecture Review.
-2. ADR status decision through Governance.
+1. Human Architecture Review — **completed 2026-07-22**.
+2. ADR status decision through Governance — **Accepted 2026-07-22**.
 3. Customer Journey successor or amendment.
 4. Exact affected-source synchronization.
 5. Open-question and conflict-register synchronization.
@@ -730,8 +738,8 @@ database, storage mechanism, cookie, token format, identity mechanism, Permissio
 retention duration, legal text, backup schedule, UI design, infrastructure choice, deployment,
 migration, specification, plan, task, test, or runtime behavior.
 
-No code may be written from this ADR alone. **Implementation remains unauthorized while ADR-042
-is Proposed, and later ADR acceptance alone would not authorize implementation.**
+No code may be written from this ADR alone. **Implementation remains unauthorized. ADR acceptance
+does not authorize implementation.**
 
 ## Related Documents
 
@@ -774,3 +782,4 @@ is Proposed, and later ADR acceptance alone would not authorize implementation.*
 |---|---|---|
 | 2026-07-22 | Proposed | Initial Business Discovery ADR drafted for authority review. |
 | 2026-07-22 | Proposed | Reconciled with BD-001 and BD-002; added the optional material branch, ownership, claim, authorization, Candidate Fact, privacy, recovery, lifecycle, and Governance boundaries. No implementation authorized. |
+| 2026-07-22 | Accepted | Human Architecture Review completed with no blocking architecture findings. ADR accepted at the architecture-decision level only; implementation remains blocked by Customer Journey, source synchronization, register, Freeze, readiness, policy, specification, planning, task, contract, and explicit authorization gates. |
