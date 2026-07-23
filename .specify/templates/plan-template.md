@@ -27,6 +27,21 @@
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
+## Reference Implementation Analysis *(complete when an external reference is selected)*
+
+- **Source repository and revision**: [repository + commit SHA/tag or N/A]
+- **Reference feature ID**: [stable encyclopedia ID or N/A]
+- **Relevant source files**: [paths or N/A]
+- **Observed runtime behavior**: [verified behavior or N/A]
+- **State and data flow**: [summary or N/A]
+- **External dependencies**: [packages/services or N/A]
+- **Internal integration points**: [components/hooks/services/routes/models or N/A]
+- **Coupling and maintenance risks**: [risks or N/A]
+- **Behavior retained**: [what NexoraXS will reproduce]
+- **Behavior rewritten**: [what must be reimplemented natively]
+- **Behavior rejected**: [foreign assumptions/branding/domain/authorization/lifecycle]
+- **License and attribution obligations**: [N/A or required actions]
+
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
@@ -46,6 +61,7 @@ architecture rule.
 | Contracts and compatibility | Boundary contracts are owner-governed, versioned, and backward-compatible or have an approved migration | [PASS/FAIL/N/A] |
 | Security and operations | Authorization, privacy, Audit, observability, failure, and recovery requirements are planned | [PASS/FAIL/N/A] |
 | Product quality | Arabic/English, RTL/LTR, accessibility, and measurable UX criteria are planned | [PASS/FAIL/N/A] |
+| Reference adoption | Selected reference is revision-pinned, verified in executable code, license-checked, and adapted without importing foreign canonical models or boundaries | [PASS/FAIL/N/A] |
 | Verification | Risk-appropriate automated/manual tests cover invariants and acceptance scenarios | [PASS/FAIL/N/A] |
 | Documentation sync | Specs, tasks, contracts, and affected docs will change with implementation; deferrals remain unresolved | [PASS/FAIL/N/A] |
 
