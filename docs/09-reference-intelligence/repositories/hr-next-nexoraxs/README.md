@@ -1,3 +1,5 @@
-# HR Next NexoraXS Reference Workspace
+# HR Next NexoraXS Candidate Source Workspace
 
-Discovery artifacts for the local repository at `/home/mustafa/projects/hr-next-nexoraxs` will be stored here.
+This directory will store evidence-backed discovery artifacts for the local candidate source at `/home/mustafa/projects/hr-next-nexoraxs`.
+
+Its role and useful capabilities are unknown until Repository Discovery is completed. The folder name alone does not make it an HR, architecture, or implementation authority for NexoraXS.
