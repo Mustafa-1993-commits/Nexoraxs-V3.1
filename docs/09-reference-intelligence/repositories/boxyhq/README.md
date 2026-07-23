@@ -1,3 +1,5 @@
-# BoxyHQ Reference Workspace
+# BoxyHQ Candidate Source Workspace
 
-Discovery artifacts for the local repository at `/home/mustafa/projects/BoxyHQ` will be stored here.
+This directory will store evidence-backed discovery artifacts for the local candidate source at `/home/mustafa/projects/BoxyHQ`.
+
+Its role and useful capabilities are unknown until Repository Discovery is completed. The folder name alone does not make it an identity, SSO, architecture, or implementation authority for NexoraXS.
