@@ -1,3 +1,5 @@
-# NexoraXS v2 Historical Reference Workspace
+# NexoraXS v2 Candidate Source Workspace
 
-Discovery artifacts for the local repository at `/home/mustafa/projects/nexoraxs-v2` will be stored here.
+This directory will store evidence-backed discovery artifacts for the local candidate source at `/home/mustafa/projects/nexoraxs-v2`.
+
+It may be historical, experimental, or otherwise useful, but that status and its capabilities must be established by Repository Discovery. It does not override the active `Nexoraxs-V3.1` target.
