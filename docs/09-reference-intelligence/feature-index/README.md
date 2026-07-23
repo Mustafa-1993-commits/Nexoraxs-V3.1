@@ -1,5 +1,5 @@
 # Reference Feature Index
 
-This directory will contain the cross-repository feature index produced by Repository Discovery.
+This directory will contain only features verified by Repository Discovery from the local candidate source repositories.
 
-Each feature entry must use a stable feature ID and link back to its repository evidence, pinned revision, license review, discovery report, and adoption history.
+A folder name or repository presence does not prove a feature role. Every indexed feature must use a stable feature ID and link to its pinned source revision, executable evidence, license review, discovery report, explicit exclusions, and any later NexoraXS adoption history.
