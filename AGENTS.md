@@ -391,7 +391,40 @@ Do not implement a deferred capability merely because its architecture exists. T
 feature spec must establish that the required decisions, contracts, security policy, and tests are
 approved.
 
-## 19. Final Agent Checklist
+## 19. Reference Intelligence and External Implementations
+
+External open-source repositories are optional engineering references, never architectural
+authorities or sources of NexoraXS canonical truth.
+
+The permanent reference encyclopedia lives outside this repository. When a user selects a
+reference feature for adoption:
+
+1. Identify the exact repository and stable feature record.
+2. Pin the reviewed revision with a commit SHA or tag.
+3. Verify the referenced behavior against executable source code.
+4. Treat the reference repository as read-only.
+5. Separate reusable behavior and UX from foreign branding, domain assumptions, data models,
+   authorization, tenancy, lifecycle, and infrastructure.
+6. Evaluate license obligations, dependency risks, security impact, and maintenance cost.
+7. Translate the selected behavior into NexoraXS architecture, ownership, contracts,
+   localization, accessibility, security, and testing requirements.
+8. Record the selected reference and evidence in the feature specification and implementation plan.
+9. Continue through the normal Spec Kit workflow:
+   `specify -> clarify -> plan -> tasks -> implement`.
+
+A reference implementation MUST NOT:
+
+- override a Freeze, Accepted ADR, Constitution rule, or canonical owner;
+- be copied blindly;
+- introduce another repository's tenant, organization, role, permission, lifecycle, or domain
+  model as NexoraXS truth;
+- authorize implementation merely because the feature exists externally; or
+- bypass an unresolved NexoraXS decision.
+
+Repository-wide discovery and encyclopedia maintenance are not NexoraXS feature implementation and
+must occur in the dedicated reference-encyclopedia repository.
+
+## 20. Final Agent Checklist
 
 Before writing or approving code, answer:
 
@@ -406,7 +439,9 @@ Before writing or approving code, answer:
 8. Are security, privacy, Audit, and observability testable?
 9. Are Arabic/English, RTL/LTR, and accessibility testable?
 10. Are contracts backward-compatible and documentation synchronized?
-11. Do `spec.md`, `plan.md`, and `tasks.md` pass the Constitution Checks?
+11. When an external reference is selected, is it revision-pinned, source-verified, license-checked,
+    and adapted without importing foreign canonical assumptions?
+12. Do `spec.md`, `plan.md`, and `tasks.md` pass the Constitution Checks?
 
 If any answer is unclear because architecture is missing or contradictory, stop the affected work
 and report the exact sources. Do not invent the answer.

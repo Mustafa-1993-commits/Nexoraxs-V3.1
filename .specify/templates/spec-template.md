@@ -5,6 +5,26 @@
 **Status**: Draft  
 **Input**: User description: "$ARGUMENTS"
 
+## Selected Reference Evidence *(complete when an external reference is selected)*
+
+> External implementations are engineering references only. They do not override NexoraXS
+> architecture, canonical ownership, contracts, tenancy, security, lifecycle, localization, or
+> accessibility requirements.
+
+- **Reference repository**: [repository name or N/A]
+- **Reference feature ID**: [stable encyclopedia ID or N/A]
+- **Reference revision**: [commit SHA/tag/date reviewed or N/A]
+- **Observed behavior being adopted**:
+  - [behavior 1]
+  - [behavior 2]
+- **Explicitly excluded behavior**:
+  - [foreign branding/domain assumptions/data model/authorization/lifecycle/etc.]
+- **Source evidence**:
+  - `[path/to/primary/file]`
+  - `[path/to/supporting/file]`
+- **License and attribution impact**: [N/A or obligations]
+- **NexoraXS adaptation statement**: [How this behavior will comply with NexoraXS architecture and ownership]
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--

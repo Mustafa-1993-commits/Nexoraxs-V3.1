@@ -71,6 +71,14 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T008 [P] Prepare Arabic/English, RTL/LTR, and accessibility foundations required by the plan
 - [ ] T009 Create contract/versioning or data-model foundations without crossing ownership boundaries
 
+### Reference Adaptation Tasks *(include only when an external reference was selected)*
+
+- [ ] TXXX Verify the selected reference files against the recorded repository revision
+- [ ] TXXX Map the selected behavior to NexoraXS target components, contracts, and owning domain
+- [ ] TXXX Document excluded foreign branding, domain, tenancy, authorization, lifecycle, and data-model assumptions
+- [ ] TXXX Validate external dependency, security, license, attribution, and maintenance impact
+- [ ] TXXX Create behavior-level acceptance tests before implementation begins
+
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
 ---
