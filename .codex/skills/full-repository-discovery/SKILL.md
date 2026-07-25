@@ -1,3 +1,8 @@
+---
+name: full-repository-discovery
+description: Build a complete, evidence-backed knowledge model and feature catalog for one registered local source repository. Use for initial or delta repository discovery only; do not select or implement features.
+---
+
 # Full Repository Discovery
 
 ## Purpose
