@@ -1,0 +1,100 @@
+catalog_version: 0.1
+repository:
+  id: null
+  canonical_name: null
+  local_path: null
+  source_url: null
+  pinned_discovered_sha: null
+  current_sha: null
+  discovery_state: Not Started
+  discovery_mode: initial
+  discovered_at: null
+rules:
+  complete_catalog_required: true
+  preselection_allowed: false
+  recommendation_allowed: false
+  verified_evidence_required: true
+features:
+  - id: EXAMPLE-FEATURE-001
+    canonical_name: Example Feature
+    aliases: []
+    repository_id: null
+    evidence_status: Unknown
+    classification: []
+    purpose: null
+    behavior:
+      states: []
+      workflows: []
+      success_paths: []
+      failure_paths: []
+      edge_cases: []
+    entry_points:
+      routes: []
+      screens: []
+      navigation_items: []
+      commands: []
+    frontend:
+      components: []
+      hooks: []
+      layouts: []
+      state: []
+      services: []
+      styles: []
+      assets: []
+    backend:
+      routes: []
+      controllers_or_handlers: []
+      services: []
+      models: []
+      migrations: []
+      policies_or_guards: []
+      jobs: []
+      events: []
+      listeners: []
+      commands: []
+      integrations: []
+    data_and_state:
+      persistence: []
+      cache: []
+      client_state: []
+      server_state: []
+    security_and_scope:
+      authentication: []
+      authorization: []
+      tenancy: []
+      rate_limits: []
+      sensitive_data: []
+    configuration:
+      environment_variables: []
+      config_keys: []
+      feature_flags: []
+    dependencies:
+      internal_features: []
+      internal_modules: []
+      external_packages: []
+      runtime_services: []
+    tests:
+      unit: []
+      integration: []
+      end_to_end: []
+      fixtures: []
+    source_evidence: []
+    reuse_assessment:
+      isolation: Unknown
+      complexity: Unknown
+      coupling_notes: []
+    license_impact:
+      status: Pending
+      notes: []
+    unknowns: []
+    contradictions: []
+    discovery_metadata:
+      discovered_sha: null
+      discovered_at: null
+      last_verified_at: null
+      stale: false
+coverage:
+  inspected_feature_classes: []
+  missing_feature_classes: []
+  known_gaps: []
+  decision: Partial
