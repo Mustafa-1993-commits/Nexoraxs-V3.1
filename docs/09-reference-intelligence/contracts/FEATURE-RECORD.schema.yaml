@@ -1,0 +1,130 @@
+schema_version: 0.1
+record_type: reference-feature
+required:
+  - id
+  - canonical_name
+  - repository_id
+  - evidence_status
+  - classification
+  - purpose
+  - source_evidence
+properties:
+  id:
+    description: Stable feature identifier unique across the reference catalog.
+    example: PLANE-UI-THEME-001
+  canonical_name:
+    description: Canonical feature name.
+  aliases:
+    type: list
+    description: Alternative names used by routes, UI labels, packages, or documentation.
+  repository_id:
+    description: Registered source repository inventory ID.
+  evidence_status:
+    enum:
+      - Verified
+      - Inferred
+      - Unknown
+      - Contradictory
+  classification:
+    type: list
+    allowed_examples:
+      - product
+      - ui
+      - interaction
+      - administration
+      - authentication
+      - security
+      - authorization
+      - tenancy
+      - data
+      - search
+      - analytics
+      - notification
+      - realtime
+      - integration
+      - operations
+      - developer-experience
+      - accessibility
+      - localization
+      - personalization
+  purpose:
+    description: What the feature or capability does and why it exists.
+  behavior:
+    states: []
+    workflows: []
+    success_paths: []
+    failure_paths: []
+    edge_cases: []
+  entry_points:
+    routes: []
+    screens: []
+    navigation_items: []
+    commands: []
+  frontend:
+    components: []
+    hooks: []
+    layouts: []
+    state: []
+    services: []
+    styles: []
+    assets: []
+  backend:
+    routes: []
+    controllers_or_handlers: []
+    services: []
+    models: []
+    migrations: []
+    policies_or_guards: []
+    jobs: []
+    events: []
+    listeners: []
+    commands: []
+    integrations: []
+  data_and_state:
+    persistence: []
+    cache: []
+    client_state: []
+    server_state: []
+  security_and_scope:
+    authentication: []
+    authorization: []
+    tenancy: []
+    rate_limits: []
+    sensitive_data: []
+  configuration:
+    environment_variables: []
+    config_keys: []
+    feature_flags: []
+  dependencies:
+    internal_features: []
+    internal_modules: []
+    external_packages: []
+    runtime_services: []
+  tests:
+    unit: []
+    integration: []
+    end_to_end: []
+    fixtures: []
+  source_evidence:
+    type: list
+    item_fields:
+      - path
+      - symbol_or_range
+      - evidence_kind
+      - claim_supported
+  reuse_assessment:
+    isolation:
+      enum: [High, Medium, Low, Unknown]
+    complexity:
+      enum: [Low, Medium, High, Unknown]
+    coupling_notes: []
+  license_impact:
+    status: Pending
+    notes: []
+  unknowns: []
+  contradictions: []
+  discovery_metadata:
+    discovered_sha: null
+    discovered_at: null
+    last_verified_at: null
+    stale: false
