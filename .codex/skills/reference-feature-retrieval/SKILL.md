@@ -1,3 +1,8 @@
+---
+name: reference-feature-retrieval
+description: Retrieve an already discovered feature from a user-selected source repository, validate its evidence and revision status, and prepare a reference package for Spec Kit without implementing it.
+---
+
 # Reference Feature Retrieval
 
 ## Purpose
