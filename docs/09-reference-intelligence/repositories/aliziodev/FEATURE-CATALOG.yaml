@@ -1,0 +1,1355 @@
+catalog_version: 0.1
+repository:
+  id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+  canonical_name: aliziodev/laravel-next-starter-kit
+  local_path: /home/mustafa/projects/aliziodev/laravel-next-starter-kit
+  source_url: https://github.com/aliziodev/laravel-next-starter-kit.git
+  pinned_discovered_sha: 1f1bc9681c1141802cc8125235195ff904c46e0c
+  current_sha: 1f1bc9681c1141802cc8125235195ff904c46e0c
+  discovery_state: Complete
+  discovery_mode: initial
+  discovered_at: "2026-07-26T01:05:23+03:00"
+rules:
+  complete_catalog_required: true
+  preselection_allowed: false
+  recommendation_allowed: false
+  verified_evidence_required: true
+
+x-repository-license: &repository_license
+  status: Reviewed
+  notes:
+    - Repository source is MIT licensed; preserve copyright and permission notices in substantial copies.
+    - Direct dependency license findings and limitations are recorded in LICENSE-REVIEW.md.
+x-discovery-metadata: &discovery_metadata
+  discovered_sha: 1f1bc9681c1141802cc8125235195ff904c46e0c
+  discovered_at: "2026-07-26T01:05:23+03:00"
+  last_verified_at: "2026-07-26T01:05:23+03:00"
+  stale: false
+
+features:
+  - id: ALNS-PLATFORM-001
+    canonical_name: Decoupled Laravel-Next Runtime
+    aliases: [headless starter topology]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, integration, operations]
+    purpose: Separates a Laravel authentication and data backend from a Next browser and server-rendered frontend.
+    entry_points: {routes: ["/", "/api/sanctum/[...path]"], screens: [], navigation_items: [], commands: ["composer run dev", "docker compose up"]}
+    dependencies: {internal_features: [ALNS-AUTH-001], internal_modules: [backend, web], external_packages: [laravel/framework, next, next-sanctum], runtime_services: [PHP-FPM, nginx, MySQL, Next]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: docker-compose.yml, symbol_or_range: services, evidence_kind: configuration, claim_supported: Defines the split frontend, backend, proxy, database, worker, and scheduler topology.}
+      - {path: "web/app/api/sanctum/[...path]/route.ts", symbol_or_range: exported HTTP handlers, evidence_kind: source, claim_supported: Connects the Next origin to the Laravel upstream.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Cross-runtime cookie and CSRF behavior is tightly coupled.]}
+    license_impact: *repository_license
+    unknowns: [Package-internal forwarding behavior was not available as tracked source.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-WEB-001
+    canonical_name: Auth-Aware Welcome Page
+    aliases: [starter landing page]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, ui]
+    purpose: Presents starter guidance and authentication-dependent navigation at the public root.
+    entry_points: {routes: ["/"], screens: [Welcome], navigation_items: [Dashboard, Log in, Register], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-002, ALNS-UI-016, ALNS-ASSET-001], internal_modules: [web/app/page.tsx], external_packages: [next], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/app/page.tsx, symbol_or_range: Home, evidence_kind: source, claim_supported: Renders auth-dependent navigation, starter resources, and an inline illustration.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Depends on the current-user helper and starter-specific content.]}
+    license_impact: *repository_license
+    unknowns: []
+    contradictions: [A residual Blade welcome template exists but is not the active root page.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-API-001
+    canonical_name: Status and Health Endpoints
+    aliases: [root status, up endpoint]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, operations]
+    purpose: Exposes a JSON application-status response and a framework health endpoint.
+    entry_points: {routes: ["GET /", "GET /up"], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [], internal_modules: [routes/web.php, bootstrap/app.php], external_packages: [laravel/framework], runtime_services: [PHP-FPM]}
+    tests: {unit: [], integration: [tests/Feature/ExampleTest.php], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: routes/web.php, symbol_or_range: "Route::get('/')", evidence_kind: source, claim_supported: Returns the application name and ok status as JSON.}
+      - {path: bootstrap/app.php, symbol_or_range: "health: '/up'", evidence_kind: configuration, claim_supported: Registers the framework health route.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: []}
+    license_impact: *repository_license
+    unknowns: [The /up response body and readiness depth were not runtime-verified.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-001
+    canonical_name: Same-Origin Sanctum Proxy
+    aliases: [Sanctum route proxy]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security, integration]
+    purpose: Keeps browser authentication and API traffic on the Next origin while forwarding to Laravel.
+    entry_points: {routes: ["/api/sanctum/[...path]"], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-PLATFORM-001], internal_modules: [web/app/api/sanctum, bootstrap/app.php], external_packages: [next-sanctum, laravel/sanctum], runtime_services: [Next, Laravel]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: "web/app/api/sanctum/[...path]/route.ts", symbol_or_range: "GET, POST, PUT, PATCH, DELETE", evidence_kind: source, claim_supported: Exposes the catch-all same-origin proxy for five HTTP methods.}
+      - {path: web/.env.example, symbol_or_range: SANCTUM_BASE_URL, evidence_kind: configuration, claim_supported: Uses a server-only Laravel upstream.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Depends on cookie, CSRF, origin, and package conventions across both runtimes.]}
+    license_impact: *repository_license
+    unknowns: [Exact next-sanctum forwarding and retry internals are external.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-002
+    canonical_name: Request-Cached SSR Auth Hydration
+    aliases: [server user hydration]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, data]
+    purpose: Supplies one server-authoritative user read per React render request and hydrates the auth provider.
+    entry_points: {routes: ["/dashboard", "/settings/*", "/login", "/register"], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-001], internal_modules: [web/lib/auth.ts, web/app/providers.tsx], external_packages: [react, next-sanctum], runtime_services: [Next, Laravel]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: []}
+    source_evidence:
+      - {path: web/lib/auth.ts, symbol_or_range: getUser, evidence_kind: source, claim_supported: Wraps the server user lookup in the React request cache.}
+      - {path: web/app/providers.tsx, symbol_or_range: Providers, evidence_kind: source, claim_supported: Initializes SanctumProvider from the server-projected user.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Bound to React Server Components and next-sanctum.]}
+    license_impact: *repository_license
+    unknowns: [The package transport implementation is external.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-003
+    canonical_name: Protected Routes and Safe Return Redirects
+    aliases: [auth route guard]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Guards protected pages and preserves only valid local post-login return paths.
+    entry_points: {routes: ["/dashboard", "/settings/*", "/login"], screens: [Login], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-002, ALNS-AUTH-007], internal_modules: [web/proxy.ts, "web/app/(app)/layout.tsx"], external_packages: [next, next-sanctum], runtime_services: [Next]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts, web/e2e/sessions.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/proxy.ts, symbol_or_range: proxy and config.matcher, evidence_kind: source, claim_supported: Performs optimistic cookie routing and preserves a local return route.}
+      - {path: "web/app/(auth)/login/page.tsx", symbol_or_range: safeRedirectPath, evidence_kind: source, claim_supported: Rejects protocol-relative and external redirect targets.}
+    reuse_assessment: {isolation: Low, complexity: Medium, coupling_notes: [Uses a stable cookie name plus an authoritative server lookup.]}
+    license_impact: *repository_license
+    unknowns: [Matcher behavior outside the declared exclusions lacks a dedicated test.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-004
+    canonical_name: User Registration
+    aliases: [sign up]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, product]
+    purpose: Creates a user with validated name, unique email, and confirmed hashed password.
+    entry_points: {routes: ["/register", "POST /register"], screens: [Register], navigation_items: [Register], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-001, ALNS-DATA-001], internal_modules: [app/Actions/Fortify/CreateNewUser.php], external_packages: [laravel/fortify, next-sanctum], runtime_services: [Laravel, database]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: app/Actions/Fortify/CreateNewUser.php, symbol_or_range: create, evidence_kind: source, claim_supported: Validates and persists the new user with a hashed password.}
+      - {path: "web/app/(auth)/register/register-form.tsx", symbol_or_range: RegisterForm, evidence_kind: source, claim_supported: Provides the registration form and error handling.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Coupled to Fortify and the User model.]}
+    license_impact: *repository_license
+    unknowns: [Package route internals are external.]
+    contradictions: [Email verification is not enforced after registration in the default configuration.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-005
+    canonical_name: Email/Password Login with Remember Me
+    aliases: [password login]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, product]
+    purpose: Establishes an authenticated session using email and password with optional remembrance.
+    entry_points: {routes: ["/login", "POST /login"], screens: [Login], navigation_items: [Log in], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-001, ALNS-AUTH-003], internal_modules: [FortifyServiceProvider, login-form.tsx], external_packages: [laravel/fortify, next-sanctum], runtime_services: [Laravel, database]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: "web/app/(auth)/login/login-form.tsx", symbol_or_range: LoginForm, evidence_kind: source, claim_supported: Submits email, password, and remember state and handles validation and 2FA continuation.}
+      - {path: app/Providers/FortifyServiceProvider.php, symbol_or_range: login rate limiter, evidence_kind: source, claim_supported: Limits login attempts by normalized email and IP.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Depends on Fortify, Sanctum, and session state.]}
+    license_impact: *repository_license
+    unknowns: [Remember-cookie duration follows external framework defaults.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-006
+    canonical_name: User Logout
+    aliases: [sign out]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, product]
+    purpose: Ends the current authenticated browser experience and returns the user to login.
+    entry_points: {routes: ["POST /logout"], screens: [User menu, Verify email], navigation_items: [Log out], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-001], internal_modules: [user-menu-content.tsx, verify-email/page.tsx], external_packages: [next-sanctum], runtime_services: [Next, Laravel]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/components/user-menu-content.tsx, symbol_or_range: handleLogout, evidence_kind: source, claim_supported: Logs out, routes to login, refreshes, and reports errors.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Depends on the auth provider and session endpoint.]}
+    license_impact: *repository_license
+    unknowns: [Exact server invalidation is package-owned.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-007
+    canonical_name: Expired or Revoked Session Recovery
+    aliases: [session-expiry recovery]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security, interaction]
+    purpose: Prevents stale protected UI and provides recovery feedback after session loss.
+    entry_points: {routes: ["/login?expired=1"], screens: [Protected shell, Login], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-002, ALNS-UI-008], internal_modules: [session-revalidator.tsx, session-expired-notice.tsx], external_packages: [next-sanctum, sonner], runtime_services: [Next, Laravel]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/sessions.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/components/session-revalidator.tsx, symbol_or_range: SessionRevalidator, evidence_kind: source, claim_supported: Rechecks auth on throttled focus and visibility events and redirects when missing.}
+      - {path: web/components/session-expired-notice.tsx, symbol_or_range: SessionExpiredNotice, evidence_kind: source, claim_supported: Shows a one-time expiry toast and cleans the URL.}
+    reuse_assessment: {isolation: Low, complexity: Medium, coupling_notes: [Coordinates provider refresh, document events, redirects, and toast state.]}
+    license_impact: *repository_license
+    unknowns: [Focus-triggered revalidation has no dedicated E2E assertion.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-008
+    canonical_name: Forgot-Password Request
+    aliases: [password reset link request]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, notification]
+    purpose: Requests a password-reset link while keeping successful copy neutral about account existence.
+    entry_points: {routes: ["/forgot-password", "POST /forgot-password"], screens: [Forgot password], navigation_items: [Forgot your password], commands: []}
+    dependencies: {internal_features: [ALNS-INTEGRATION-001], internal_modules: [forgot-password/page.tsx, FortifyServiceProvider], external_packages: [laravel/fortify, next-sanctum], runtime_services: [mailer]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: "web/app/(auth)/forgot-password/page.tsx", symbol_or_range: ForgotPasswordPage, evidence_kind: source, claim_supported: Submits the email and renders neutral success and error states.}
+      - {path: app/Providers/FortifyServiceProvider.php, symbol_or_range: ResetPassword::createUrlUsing, evidence_kind: source, claim_supported: Directs reset links to the SPA.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Requires Fortify's broker and a working mail transport.]}
+    license_impact: *repository_license
+    unknowns: [Live mail delivery was not exercised.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-009
+    canonical_name: Password Reset
+    aliases: [reset forgotten password]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Consumes a reset token and email to set a new confirmed password.
+    entry_points: {routes: ["/reset-password", "POST /reset-password"], screens: [Reset password], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-008, ALNS-DATA-001], internal_modules: [ResetUserPassword.php, reset-password/page.tsx], external_packages: [laravel/fortify, next-sanctum], runtime_services: [database]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: app/Actions/Fortify/ResetUserPassword.php, symbol_or_range: reset, evidence_kind: source, claim_supported: Validates confirmation and hashes the replacement password.}
+      - {path: "web/app/(auth)/reset-password/page.tsx", symbol_or_range: ResetPasswordPage, evidence_kind: source, claim_supported: Reads the token and email and submits the new password.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Uses framework password-broker state.]}
+    license_impact: *repository_license
+    unknowns: [Invalid and expired tokens share a generic UI error branch.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-010
+    canonical_name: Password Confirmation
+    aliases: [sensitive-action reauthentication]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Reauthenticates a signed-in user before sensitive security-management actions.
+    entry_points: {routes: ["/confirm-password", "POST /user/confirm-password"], screens: [Confirmation dialog, Confirm password], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-001], internal_modules: [require-password.tsx, confirm-password/page.tsx], external_packages: [laravel/fortify, next-sanctum], runtime_services: [session]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/2fa.spec.ts, web/e2e/passkey.spec.ts, web/e2e/sessions.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/components/require-password.tsx, symbol_or_range: RequirePassword, evidence_kind: source, claim_supported: Checks confirmation state and gates children behind a dialog.}
+      - {path: config/fortify.php, symbol_or_range: "middleware and password_timeout", evidence_kind: configuration, claim_supported: Applies the password-confirmation middleware and timeout.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Depends on Fortify confirmation session state.]}
+    license_impact: *repository_license
+    unknowns: []
+    contradictions: [Account deletion validates the current password in its own request rather than relying on this confirmation window.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-011
+    canonical_name: Password Update
+    aliases: [change password]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Changes an authenticated user's password after validating the current and confirmed replacement values.
+    entry_points: {routes: ["/settings/security", "PUT /user/password"], screens: [Security settings], navigation_items: [Security], commands: []}
+    dependencies: {internal_features: [ALNS-DATA-001], internal_modules: [UpdateUserPassword.php, security/page.tsx], external_packages: [laravel/fortify, next-sanctum], runtime_services: [database]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: app/Actions/Fortify/UpdateUserPassword.php, symbol_or_range: update, evidence_kind: source, claim_supported: Validates the current password and writes a hashed replacement.}
+      - {path: "web/app/(app)/settings/security/page.tsx", symbol_or_range: UpdatePasswordForm, evidence_kind: source, claim_supported: Provides the settings form and feedback states.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Coupled to Fortify and the User credential model.]}
+    license_impact: *repository_license
+    unknowns: [No direct password-update E2E is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-012
+    canonical_name: Profile Update
+    aliases: [name and email settings]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, authentication]
+    purpose: Updates the authenticated user's name and unique email.
+    entry_points: {routes: ["/settings/profile", "PUT /user/profile-information"], screens: [Profile settings], navigation_items: [Profile], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-002, ALNS-DATA-001], internal_modules: [UpdateUserProfileInformation.php, profile/page.tsx], external_packages: [laravel/fortify, next-sanctum], runtime_services: [database]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: app/Actions/Fortify/UpdateUserProfileInformation.php, symbol_or_range: update, evidence_kind: source, claim_supported: Validates and writes the user's name and unique email.}
+      - {path: "web/app/(app)/settings/profile/page.tsx", symbol_or_range: ProfilePage, evidence_kind: source, claim_supported: Hydrates and submits the profile form with validation feedback.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Bound to Fortify and the current User shape.]}
+    license_impact: *repository_license
+    unknowns: [Avatar is typed and displayed but is not editable or persisted by this feature.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-013
+    canonical_name: Dormant Email-Verification Flow
+    aliases: [email verification]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, notification, configuration]
+    purpose: Provides opt-in verification UI, signed callback handling, resend behavior, and SPA verification links.
+    entry_points: {routes: ["/verify-email", "/email/verify/[id]/[hash]"], screens: [Verify email, Verification callback], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-INTEGRATION-001], internal_modules: [email-verification.ts, verify-email pages], external_packages: [laravel/fortify, next-sanctum], runtime_services: [mailer]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/lib/email-verification.ts, symbol_or_range: MUST_VERIFY_EMAIL, evidence_kind: source, claim_supported: Defines the disabled-by-default frontend feature flag.}
+      - {path: app/Models/User.php, symbol_or_range: commented MustVerifyEmail implementation, evidence_kind: source, claim_supported: Shows that verification is not required by the default User model.}
+      - {path: "web/app/(auth)/email/verify/[id]/[hash]/page.tsx", symbol_or_range: VerifyEmailCallbackPage, evidence_kind: source, claim_supported: Handles the signed callback and recovery branches.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Activation requires coordinated frontend, model, Fortify, URL, and mail configuration.]}
+    license_impact: *repository_license
+    unknowns: [No verification E2E is present.]
+    contradictions: [The flow is shipped in source but inactive by default.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-014
+    canonical_name: TOTP Enrollment and Disable
+    aliases: [two-factor setup]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Enrolls and confirms a TOTP authenticator and permits an authenticated user to disable it.
+    entry_points: {routes: ["/settings/security", "POST /user/two-factor-authentication"], screens: [Security settings, Two-factor setup dialog], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-010, ALNS-AUTH-016, ALNS-DATA-001], internal_modules: [manage-two-factor.tsx, use-two-factor-auth.ts], external_packages: [laravel/fortify, input-otp], runtime_services: [database]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/2fa.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/components/manage-two-factor.tsx, symbol_or_range: ManageTwoFactor, evidence_kind: source, claim_supported: Orchestrates enable, confirmation, refresh, and disable actions.}
+      - {path: web/components/two-factor-setup-modal.tsx, symbol_or_range: TwoFactorSetupModal, evidence_kind: source, claim_supported: Fetches and presents QR and manual-key enrollment data and confirms a six-digit code.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Coupled to Fortify endpoints, confirmation state, encrypted user fields, and QR rendering.]}
+    license_impact: *repository_license
+    unknowns: [The server-produced QR SVG trust boundary was not runtime-inspected.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-015
+    canonical_name: TOTP or Recovery-Code Login Challenge
+    aliases: [two-factor challenge]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Completes a password login for a two-factor-enabled user using a current TOTP or recovery code.
+    entry_points: {routes: ["/two-factor-challenge", "POST /two-factor-challenge"], screens: [Two-factor challenge], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-005, ALNS-AUTH-016], internal_modules: [two-factor-challenge/page.tsx], external_packages: [laravel/fortify, input-otp, next-sanctum], runtime_services: [session]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/2fa.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: "web/app/(auth)/two-factor-challenge/page.tsx", symbol_or_range: TwoFactorChallengePage, evidence_kind: source, claim_supported: Toggles six-digit authenticator and recovery-code modes and submits the challenge.}
+      - {path: app/Providers/FortifyServiceProvider.php, symbol_or_range: two-factor rate limiter, evidence_kind: source, claim_supported: Applies the configured five-per-minute challenge limit.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Requires the pending Fortify login session and challenge endpoints.]}
+    license_impact: *repository_license
+    unknowns: [The recovery-code challenge branch lacks an E2E test.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-016
+    canonical_name: Two-Factor Recovery-Code Management
+    aliases: [2FA recovery codes]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Lists, conceals, copies, and regenerates recovery codes for an enrolled user.
+    entry_points: {routes: ["/settings/security"], screens: [Security settings], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-010, ALNS-AUTH-014], internal_modules: [two-factor-recovery-codes.tsx], external_packages: [laravel/fortify], runtime_services: [database, clipboard]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/components/two-factor-recovery-codes.tsx, symbol_or_range: TwoFactorRecoveryCodes, evidence_kind: source, claim_supported: Implements reveal, fetch, copy, and regeneration workflows with feedback.}
+      - {path: database/migrations/2026_06_27_001017_add_two_factor_columns_to_users_table.php, symbol_or_range: two_factor_recovery_codes, evidence_kind: migration, claim_supported: Persists encrypted recovery-code material on the user.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Coupled to Fortify security endpoints and sensitive clipboard behavior.]}
+    license_impact: *repository_license
+    unknowns: [The management workflow has no direct E2E test.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-017
+    canonical_name: Passkey Passwordless Sign-In
+    aliases: [WebAuthn login]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Authenticates a user from the login screen with a browser passkey.
+    entry_points: {routes: ["/login"], screens: [Login], navigation_items: [Log in with a passkey], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-001, ALNS-AUTH-003], internal_modules: [passkey-verify.tsx], external_packages: ["@laravel/passkeys", next-sanctum], runtime_services: [WebAuthn, database]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/passkey.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/components/passkey-verify.tsx, symbol_or_range: PasskeyVerify, evidence_kind: source, claim_supported: Detects support, invokes passkey authentication, and handles cancellation and errors.}
+      - {path: web/e2e/passkey.spec.ts, symbol_or_range: login with a passkey, evidence_kind: test, claim_supported: Exercises passwordless login with a virtual authenticator.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Requires coordinated RP, origin, secure-context, browser, and server credential behavior.]}
+    license_impact: *repository_license
+    unknowns: [Real-device and cross-browser behavior was not executed during discovery.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-018
+    canonical_name: Passkey Registration, Listing, and Removal
+    aliases: [passkey management]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, security]
+    purpose: Registers named passkeys and lists or removes only the current user's credentials.
+    entry_points: {routes: ["/settings/security", "GET /api/passkeys"], screens: [Security settings, Passkey dialog], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-010, ALNS-DATA-001], internal_modules: [PasskeyController.php, manage-passkeys.tsx], external_packages: ["@laravel/passkeys", next-sanctum], runtime_services: [WebAuthn, database]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/passkey.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: app/Http/Controllers/PasskeyController.php, symbol_or_range: index, evidence_kind: source, claim_supported: Returns a current-user-scoped safe, newest-first passkey list.}
+      - {path: web/components/manage-passkeys.tsx, symbol_or_range: ManagePasskeys, evidence_kind: source, claim_supported: Implements loading, empty, listing, registration, and removal UI states.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Coupled to package routes, credential schema, password confirmation, and WebAuthn.]}
+    license_impact: *repository_license
+    unknowns: [Removal is not covered by the E2E suite.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-019
+    canonical_name: Passkey Management Discovery
+    aliases: [well-known passkey endpoints]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [integration, authentication]
+    purpose: Publishes the account-management URL through a well-known passkey discovery document.
+    entry_points: {routes: ["GET /.well-known/passkey-endpoints"], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-018], internal_modules: [well-known route handler], external_packages: [next], runtime_services: [Next]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/app/.well-known/passkey-endpoints/route.ts, symbol_or_range: GET, evidence_kind: source, claim_supported: Returns the relative passkey-management URL as JSON.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [The advertised route must remain stable.]}
+    license_impact: *repository_license
+    unknowns: [No direct integration test is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-020
+    canonical_name: Current Authenticated User Projection
+    aliases: [current user API]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, authentication, data]
+    purpose: Returns the authenticated user projection used to hydrate frontend auth state.
+    entry_points: {routes: ["GET /api/user"], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-002, ALNS-DATA-001], internal_modules: [UserController.php], external_packages: [laravel/sanctum], runtime_services: [Laravel, database]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: []}
+    source_evidence:
+      - {path: routes/api.php, symbol_or_range: "Route::get('/user')", evidence_kind: source, claim_supported: Places the current-user endpoint behind auth:sanctum.}
+      - {path: app/Http/Controllers/UserController.php, symbol_or_range: show, evidence_kind: source, claim_supported: Returns the authenticated request user.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [The frontend depends on the User serialization shape.]}
+    license_impact: *repository_license
+    unknowns: [There is no explicit API resource or versioned response contract.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-021
+    canonical_name: Password-Confirmed Account Deletion
+    aliases: [delete account]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, security]
+    purpose: Permanently deletes the current account after request-level current-password validation.
+    entry_points: {routes: ["/settings/profile", "DELETE /api/account"], screens: [Profile settings, Deletion dialog], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-DATA-001], internal_modules: [AccountController.php, delete-user.tsx], external_packages: [laravel/framework, next-sanctum], runtime_services: [session, database]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: app/Http/Controllers/AccountController.php, symbol_or_range: destroy, evidence_kind: source, claim_supported: Validates the current password, revokes tokens, logs out, deletes the user, invalidates the session, and rotates CSRF.}
+      - {path: web/components/delete-user.tsx, symbol_or_range: DeleteUser, evidence_kind: source, claim_supported: Presents destructive confirmation and validation feedback.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Touches tokens, authentication, user persistence, session, and CSRF state.]}
+    license_impact: *repository_license
+    unknowns: [No deletion E2E is present.]
+    contradictions: [The README's Fortify confirmation-window wording differs from the request-level validation in executable source.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-AUTH-022
+    canonical_name: Personal Access Token Data Substrate
+    aliases: [Sanctum API token persistence]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [authentication, data]
+    purpose: Provides model and schema support for personal access tokens without a repository-defined issuance UI or API.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-DATA-001], internal_modules: [User.php, personal-access-token migration], external_packages: [laravel/sanctum], runtime_services: [database]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: database/migrations/2026_06_27_001300_create_personal_access_tokens_table.php, symbol_or_range: up, evidence_kind: migration, claim_supported: Defines token hashes, abilities, timestamps, and polymorphic ownership.}
+      - {path: app/Models/User.php, symbol_or_range: HasApiTokens, evidence_kind: source, claim_supported: Adds Sanctum token behavior to the User model.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Substrate is package-coupled and has no application issuance workflow.]}
+    license_impact: *repository_license
+    unknowns: [Token issuance, rotation, and management behavior are absent.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-SESSION-001
+    canonical_name: Browser Session Inventory
+    aliases: [device sessions]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [security, data, ui]
+    purpose: Lists the current user's persisted browser sessions with current-device and human-readable device metadata.
+    entry_points: {routes: ["/settings/security", "GET /api/sessions"], screens: [Security settings], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-DATA-002], internal_modules: [SessionController.php, manage-sessions.tsx], external_packages: [laravel/sanctum], runtime_services: [database sessions]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/sessions.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: app/Http/Controllers/SessionController.php, symbol_or_range: index, evidence_kind: source, claim_supported: Asserts the database driver and returns only current-user sessions with parsed device metadata.}
+      - {path: web/components/manage-sessions.tsx, symbol_or_range: ManageSessions, evidence_kind: source, claim_supported: Fetches and renders loading, error, empty, current, and other-session states.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Requires the database session driver and shared server/browser session identifiers.]}
+    license_impact: *repository_license
+    unknowns: [User-agent parsing fidelity was not tested across a broad device matrix.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-SESSION-002
+    canonical_name: Single Other-Session Revocation
+    aliases: [revoke device]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [security, interaction]
+    purpose: Revokes one selected session owned by the current user while protecting the current session.
+    entry_points: {routes: ["DELETE /api/sessions/{session}"], screens: [Security settings], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-SESSION-001], internal_modules: [SessionController.php, session-item.tsx], external_packages: [laravel/framework, next-sanctum], runtime_services: [database sessions]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: app/Http/Controllers/SessionController.php, symbol_or_range: destroy, evidence_kind: source, claim_supported: Rejects the current session and deletes only a matching current-user session.}
+      - {path: web/components/session-item.tsx, symbol_or_range: SessionItem, evidence_kind: source, claim_supported: Presents the per-session revocation action and feedback.}
+    reuse_assessment: {isolation: Low, complexity: Medium, coupling_notes: [Depends on database session IDs and ownership filtering.]}
+    license_impact: *repository_license
+    unknowns: [No direct single-revocation E2E is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-SESSION-003
+    canonical_name: Bulk Other-Session Revocation
+    aliases: [log out other browser sessions]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [security, interaction]
+    purpose: Revokes every other persisted session for the authenticated user while retaining the current one.
+    entry_points: {routes: ["DELETE /api/sessions/others"], screens: [Security settings, Confirmation dialog], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-010, ALNS-SESSION-001], internal_modules: [SessionController.php, manage-sessions.tsx], external_packages: [laravel/framework, next-sanctum], runtime_services: [database sessions]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/sessions.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: app/Http/Controllers/SessionController.php, symbol_or_range: destroyOthers, evidence_kind: source, claim_supported: Deletes all current-user sessions except the request session.}
+      - {path: web/e2e/sessions.spec.ts, symbol_or_range: revoke other browser sessions, evidence_kind: test, claim_supported: Verifies another browser context is expired and the current context remains active.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Coordinates sensitive-action confirmation, session persistence, and multi-context recovery.]}
+    license_impact: *repository_license
+    unknowns: []
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-001
+    canonical_name: Placeholder Dashboard
+    aliases: [dashboard]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [product, ui]
+    purpose: Provides an authenticated landing screen with skeleton-like placeholder panels.
+    entry_points: {routes: ["/dashboard"], screens: [Dashboard], navigation_items: [Dashboard], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-003, ALNS-UI-002], internal_modules: ["web/app/(app)/dashboard/page.tsx"], external_packages: [next], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: "web/app/(app)/dashboard/page.tsx", symbol_or_range: DashboardPage, evidence_kind: source, claim_supported: Renders three placeholder cards and a large placeholder panel.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Content is intentionally non-domain placeholder UI.]}
+    license_impact: *repository_license
+    unknowns: []
+    contradictions: [No operational dashboard metrics or workflows are implemented.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-002
+    canonical_name: Responsive Collapsible Sidebar Shell
+    aliases: [app sidebar shell]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, interaction, personalization]
+    purpose: Provides desktop collapse, mobile drawer behavior, keyboard toggle, persistent state, navigation, and a user footer for protected pages.
+    entry_points: {routes: ["/dashboard", "/settings/*"], screens: [Protected application shell], navigation_items: [Dashboard, Repository, Documentation], commands: []}
+    dependencies: {internal_features: [ALNS-UI-005, ALNS-UI-006, ALNS-UI-011], internal_modules: [app-sidebar.tsx, app-sidebar-header.tsx, ui/sidebar.tsx], external_packages: [radix-ui, lucide-react], runtime_services: [browser cookie storage]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: []}
+    source_evidence:
+      - {path: web/components/app-sidebar.tsx, symbol_or_range: AppSidebar, evidence_kind: source, claim_supported: Defines navigation groups, external links, branding, and the user footer.}
+      - {path: web/components/ui/sidebar.tsx, symbol_or_range: SidebarProvider and Sidebar, evidence_kind: source, claim_supported: Implements responsive, collapsible, keyboard-toggle, and cookie-persistence behavior.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [The generic primitive is reusable; navigation and brand composition are starter-specific.]}
+    license_impact: *repository_license
+    unknowns: [No responsive visual regression suite is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-003
+    canonical_name: Alternative Header and Auth Layouts
+    aliases: [header app layout, card auth layout, split auth layout]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, personalization]
+    purpose: Supplies alternate application-header and authentication-page compositions that are implemented but inactive in the current route tree.
+    entry_points: {routes: [], screens: [Dormant header shell, Dormant card auth layout, Dormant split auth layout], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-005, ALNS-ASSET-001], internal_modules: [app-header-layout.tsx, auth-card-layout.tsx, auth-split-layout.tsx], external_packages: [next, radix-ui], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/layouts/app/app-header-layout.tsx, symbol_or_range: AppHeaderLayout, evidence_kind: source, claim_supported: Implements an alternative header-based protected shell.}
+      - {path: web/layouts/auth/auth-card-layout.tsx, symbol_or_range: AuthCardLayout, evidence_kind: source, claim_supported: Implements a centered-card authentication composition.}
+      - {path: web/layouts/auth/auth-split-layout.tsx, symbol_or_range: AuthSplitLayout, evidence_kind: source, claim_supported: Implements a split-panel authentication composition.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Composition is reusable but imports current branding and user-menu components.]}
+    license_impact: *repository_license
+    unknowns: [Inactive layouts were not runtime-rendered.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-004
+    canonical_name: Settings Navigation
+    aliases: [settings tabs]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, interaction]
+    purpose: Provides nested navigation among profile, security, and appearance settings.
+    entry_points: {routes: ["/settings/profile", "/settings/security", "/settings/appearance"], screens: [Settings], navigation_items: [Profile, Security, Appearance], commands: []}
+    dependencies: {internal_features: [ALNS-UI-002], internal_modules: [web/layouts/settings/layout.tsx], external_packages: [next], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/2fa.spec.ts, web/e2e/passkey.spec.ts, web/e2e/sessions.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/layouts/settings/layout.tsx, symbol_or_range: SettingsLayout, evidence_kind: source, claim_supported: Defines and renders profile, security, and appearance navigation.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Route and label definitions are local to the settings section.]}
+    license_impact: *repository_license
+    unknowns: []
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-005
+    canonical_name: User Menu, Avatar, and Initials
+    aliases: [account menu]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, interaction]
+    purpose: Displays the current user's identity and provides settings and logout actions in shell variants.
+    entry_points: {routes: ["/settings/profile"], screens: [Sidebar footer, Header], navigation_items: [Settings, Log out], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-002, ALNS-AUTH-006, ALNS-UI-014], internal_modules: [nav-user.tsx, user-menu-content.tsx, user-info.tsx], external_packages: [radix-ui, next], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/components/user-menu-content.tsx, symbol_or_range: UserMenuContent, evidence_kind: source, claim_supported: Renders identity, settings navigation, and logout.}
+      - {path: web/components/user-info.tsx, symbol_or_range: UserInfo, evidence_kind: source, claim_supported: Renders avatar fallback initials, name, and email.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Depends on the current User projection and auth action.]}
+    license_impact: *repository_license
+    unknowns: [Avatar URLs are displayed but no upload or edit feature exists.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-006
+    canonical_name: Breadcrumb Navigation
+    aliases: [app breadcrumbs]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, accessibility]
+    purpose: Renders hierarchical page context in active header and sidebar layouts with responsive item hiding.
+    entry_points: {routes: ["/dashboard", "/settings/*"], screens: [Protected shell header], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-002, ALNS-UI-013], internal_modules: [breadcrumbs.tsx, app-sidebar-header.tsx], external_packages: [next, lucide-react], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/components/breadcrumbs.tsx, symbol_or_range: Breadcrumbs, evidence_kind: source, claim_supported: Renders linked and current breadcrumb items with responsive presentation.}
+      - {path: web/components/ui/breadcrumb.tsx, symbol_or_range: breadcrumb primitives, evidence_kind: source, claim_supported: Supplies semantic navigation, list, separator, and current-page elements.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Takes simple breadcrumb item input.]}
+    license_impact: *repository_license
+    unknowns: [No breadcrumb-specific accessibility test is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-007
+    canonical_name: Light, Dark, and System Appearance
+    aliases: [theme switcher]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, personalization, configuration]
+    purpose: Allows light, dark, or operating-system-derived appearance with class-based theme application.
+    entry_points: {routes: ["/settings/appearance"], screens: [Appearance settings], navigation_items: [Appearance], commands: []}
+    dependencies: {internal_features: [ALNS-UI-008], internal_modules: [appearance-tabs.tsx, providers.tsx, globals.css], external_packages: [next-themes, tailwindcss], runtime_services: [browser storage, matchMedia]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/components/appearance-tabs.tsx, symbol_or_range: AppearanceTabs, evidence_kind: source, claim_supported: Offers light, dark, and system theme choices.}
+      - {path: web/app/providers.tsx, symbol_or_range: ThemeProvider, evidence_kind: source, claim_supported: Configures class-based theme switching with system support.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Requires matching CSS color tokens and provider placement.]}
+    license_impact: *repository_license
+    unknowns: [No visual or persistence test is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-008
+    canonical_name: Themed Toast Feedback
+    aliases: [toast notifications]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, notification]
+    purpose: Provides globally mounted, theme-aware transient success and error feedback.
+    entry_points: {routes: [], screens: [Global provider], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-007], internal_modules: [providers.tsx, ui/sonner.tsx], external_packages: [sonner, next-themes], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/sessions.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/components/ui/sonner.tsx, symbol_or_range: Toaster, evidence_kind: source, claim_supported: Adapts toast icons and colors to the active theme.}
+      - {path: web/app/providers.tsx, symbol_or_range: Toaster mount, evidence_kind: source, claim_supported: Mounts toast feedback globally.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Thin adapter around Sonner and current theme state.]}
+    license_impact: *repository_license
+    unknowns: []
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-009
+    canonical_name: Password Reveal Control
+    aliases: [show password]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, interaction, accessibility]
+    purpose: Adds an accessible toggle for revealing or concealing password-field content.
+    entry_points: {routes: [], screens: [Password forms], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-012], internal_modules: [password-input.tsx], external_packages: [lucide-react, react], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/components/password-input.tsx, symbol_or_range: PasswordInput, evidence_kind: source, claim_supported: Toggles password input type and supplies dynamic accessible labels and icons.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Composes the shared input and button primitives.]}
+    license_impact: *repository_license
+    unknowns: [No direct keyboard or screen-reader test is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-010
+    canonical_name: Loading, Empty, Validation, and Error States
+    aliases: [async feedback patterns]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, interaction]
+    purpose: Provides repeated patterns for pending actions, empty collections, field validation, general failures, and recovery feedback.
+    entry_points: {routes: ["/login", "/register", "/settings/*"], screens: [Authentication and settings workflows], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-008, ALNS-UI-012], internal_modules: [auth pages, settings pages, management components], external_packages: [react, sonner], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: "web/app/(auth)/login/login-form.tsx", symbol_or_range: submitting and errors, evidence_kind: source, claim_supported: Disables submission, renders field errors, and reports invalid credentials.}
+      - {path: web/components/manage-passkeys.tsx, symbol_or_range: loading error and empty branches, evidence_kind: source, claim_supported: Implements collection loading, recovery, and empty states.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Patterns are repeated rather than centralized as one business capability.]}
+    license_impact: *repository_license
+    unknowns: [No systematic visual-state coverage exists.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-011
+    canonical_name: Overlay and Menu Primitive Suite
+    aliases: [dialog, dropdown, sheet, tooltip primitives]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, accessibility]
+    purpose: Supplies reusable overlays, dialogs, drawers, dropdown menus, tooltips, separators, and supporting focus-aware interactions.
+    entry_points: {routes: [], screens: [Reusable component layer], navigation_items: [], commands: []}
+    dependencies: {internal_features: [], internal_modules: [web/components/ui], external_packages: [radix-ui, lucide-react, react], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: []}
+    source_evidence:
+      - {path: web/components/ui/dialog.tsx, symbol_or_range: dialog exports, evidence_kind: source, claim_supported: Wraps accessible dialog primitives with overlay, content, title, description, and close affordance.}
+      - {path: web/components/ui/dropdown-menu.tsx, symbol_or_range: dropdown exports, evidence_kind: source, claim_supported: Wraps menu, submenu, checkbox, radio, label, separator, and shortcut primitives.}
+      - {path: web/components/ui/sheet.tsx, symbol_or_range: sheet exports, evidence_kind: source, claim_supported: Supplies side-aware drawer composition.}
+    reuse_assessment: {isolation: High, complexity: Medium, coupling_notes: [Generic presentation layer depends on Radix semantics and shared styling utilities.]}
+    license_impact: *repository_license
+    unknowns: [No isolated primitive test suite is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-012
+    canonical_name: Form and Control Primitive Suite
+    aliases: [button and input primitives]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, accessibility]
+    purpose: Supplies reusable buttons, text inputs, password inputs, checkbox, switch, OTP input, label, and field-error presentation.
+    entry_points: {routes: [], screens: [Reusable component layer], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-014], internal_modules: [web/components/ui, input-password.tsx, input-error.tsx], external_packages: [radix-ui, input-otp, class-variance-authority], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts, web/e2e/2fa.spec.ts], fixtures: []}
+    source_evidence:
+      - {path: web/components/ui/button.tsx, symbol_or_range: Button and buttonVariants, evidence_kind: source, claim_supported: Defines variant-driven reusable buttons.}
+      - {path: web/components/ui/input.tsx, symbol_or_range: Input, evidence_kind: source, claim_supported: Defines the styled input foundation.}
+      - {path: web/components/ui/input-otp.tsx, symbol_or_range: OTP exports, evidence_kind: source, claim_supported: Provides accessible OTP grouping and slot presentation.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Generic presentation primitives with shared token dependencies.]}
+    license_impact: *repository_license
+    unknowns: [No isolated component tests are present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-013
+    canonical_name: Navigation and Display Primitive Suite
+    aliases: [breadcrumb, card, avatar, skeleton primitives]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, accessibility]
+    purpose: Supplies reusable breadcrumb, card, avatar, skeleton, collapsible, and separator presentation foundations.
+    entry_points: {routes: [], screens: [Reusable component layer], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-014], internal_modules: [web/components/ui], external_packages: [radix-ui, lucide-react], runtime_services: []}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: []}
+    source_evidence:
+      - {path: web/components/ui/breadcrumb.tsx, symbol_or_range: breadcrumb exports, evidence_kind: source, claim_supported: Defines semantic breadcrumb display primitives.}
+      - {path: web/components/ui/card.tsx, symbol_or_range: card exports, evidence_kind: source, claim_supported: Defines composable card regions.}
+      - {path: web/components/ui/avatar.tsx, symbol_or_range: avatar exports, evidence_kind: source, claim_supported: Defines image, fallback, and badge-capable identity presentation.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Generic presentation primitives share theme tokens.]}
+    license_impact: *repository_license
+    unknowns: [No isolated component tests are present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-014
+    canonical_name: Presentation Utility Hooks and Formatters
+    aliases: [class merge, initials, device parsing, mobile breakpoint]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui]
+    purpose: Supplies shared class merging, initials extraction, user-agent presentation, relative time, and responsive breakpoint helpers.
+    entry_points: {routes: [], screens: [Reusable utility layer], navigation_items: [], commands: []}
+    dependencies: {internal_features: [], internal_modules: [web/lib/utils.ts, web/hooks/use-initials.tsx, web/lib/user-agent.ts, web/lib/relative-time.ts, web/hooks/use-mobile.ts], external_packages: [clsx, tailwind-merge, react], runtime_services: [matchMedia]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/lib/utils.ts, symbol_or_range: cn, evidence_kind: source, claim_supported: Combines conditional classes and resolves Tailwind conflicts.}
+      - {path: web/lib/user-agent.ts, symbol_or_range: describeAgent and detectDeviceName, evidence_kind: source, claim_supported: Produces display-oriented browser and platform values.}
+      - {path: web/lib/relative-time.ts, symbol_or_range: timeAgo, evidence_kind: source, claim_supported: Formats English relative time and handles missing or invalid input.}
+      - {path: web/hooks/use-mobile.ts, symbol_or_range: useIsMobile, evidence_kind: source, claim_supported: Tracks the configured mobile breakpoint.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Helpers are presentation-oriented and have few dependencies.]}
+    license_impact: *repository_license
+    unknowns: [No unit tests cover formatting or user-agent edge cases.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-015
+    canonical_name: Code-Level Accessibility Baseline
+    aliases: [semantic and keyboard baseline]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [accessibility, ui]
+    purpose: Establishes semantic labels, focus-visible styling, keyboard interaction, visually hidden text, and accessible primitive composition in code.
+    entry_points: {routes: ["all frontend routes"], screens: [Shared UI and feature components], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-006, ALNS-UI-009, ALNS-UI-011, ALNS-UI-012, ALNS-UI-013], internal_modules: [web/components], external_packages: [radix-ui, tailwindcss], runtime_services: [browser accessibility tree]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/components/ui/dialog.tsx, symbol_or_range: DialogTitle DialogDescription and close sr-only text, evidence_kind: source, claim_supported: Preserves dialog naming and a text alternative for the close action.}
+      - {path: web/components/password-input.tsx, symbol_or_range: toggle aria-label, evidence_kind: source, claim_supported: Names the password-visibility action dynamically.}
+      - {path: web/components/ui/sidebar.tsx, symbol_or_range: keyboard shortcut and SheetTitle, evidence_kind: source, claim_supported: Provides keyboard toggling and names the mobile navigation dialog.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Baseline is distributed across primitives and feature components.]}
+    license_impact: *repository_license
+    unknowns: [No automated or manual accessibility audit record is present.]
+    contradictions: [Code evidence is a baseline and not proof of conformance.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-I18N-001
+    canonical_name: English-Only Locale Baseline
+    aliases: [default locale configuration]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [localization, configuration]
+    purpose: Configures English locale, left-to-right root markup, and English browser-side date formatting without a translation system.
+    entry_points: {routes: ["all frontend routes"], screens: [Root document], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-UI-014], internal_modules: [web/app/layout.tsx, config/app.php, web/lib/relative-time.ts], external_packages: [next, Intl], runtime_services: [browser locale APIs]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/app/layout.tsx, symbol_or_range: html lang and metadata, evidence_kind: source, claim_supported: Sets the document language to English and provides English metadata.}
+      - {path: config/app.php, symbol_or_range: locale fallback_locale faker_locale, evidence_kind: configuration, claim_supported: Defaults backend locale behavior to English.}
+      - {path: web/lib/relative-time.ts, symbol_or_range: Intl.RelativeTimeFormat, evidence_kind: source, claim_supported: Uses explicit English relative-time formatting.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [English assumptions appear in configuration, markup, static copy, and formatters.]}
+    license_impact: *repository_license
+    unknowns: [No translation catalogs, locale switcher, RTL logic, or locale tests exist.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DATA-001
+    canonical_name: User and Credential Persistence
+    aliases: [authentication data model]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [data, authentication]
+    purpose: Persists users, password-reset tokens, TOTP material, personal access tokens, and passkey credentials.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan migrate"]}
+    dependencies: {internal_features: [ALNS-AUTH-004, ALNS-AUTH-009, ALNS-AUTH-014, ALNS-AUTH-018, ALNS-AUTH-022], internal_modules: [User.php, database/migrations], external_packages: [laravel/framework, laravel/sanctum, "@laravel/passkeys"], runtime_services: [relational database]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: [UserFactory, DatabaseSeeder, E2eSeeder]}
+    source_evidence:
+      - {path: database/migrations/0001_01_01_000000_create_users_table.php, symbol_or_range: up, evidence_kind: migration, claim_supported: Defines users and password-reset-token persistence.}
+      - {path: database/migrations/2026_06_27_001017_add_two_factor_columns_to_users_table.php, symbol_or_range: up, evidence_kind: migration, claim_supported: Adds TOTP and recovery-code fields.}
+      - {path: database/migrations/2026_06_27_043932_create_passkeys_table.php, symbol_or_range: up, evidence_kind: migration, claim_supported: Defines user-owned passkey credential persistence.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Credential fields and lifecycle are distributed across framework and package contracts.]}
+    license_impact: *repository_license
+    unknowns: [Package-defined credential serialization and cryptographic internals were not present in tracked source.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DATA-002
+    canonical_name: Database Session Persistence
+    aliases: [session table]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [data, security]
+    purpose: Stores browser sessions in a relational table with optional user ownership, IP address, user agent, payload, and last activity.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan migrate"]}
+    dependencies: {internal_features: [ALNS-SESSION-001, ALNS-SESSION-002, ALNS-SESSION-003], internal_modules: [session migration, config/session.php], external_packages: [laravel/framework], runtime_services: [relational database]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/sessions.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: database/migrations/0001_01_01_000000_create_users_table.php, symbol_or_range: sessions table, evidence_kind: migration, claim_supported: Defines persisted session ownership, network, agent, payload, and activity fields.}
+      - {path: config/session.php, symbol_or_range: driver connection table cookie and security keys, evidence_kind: configuration, claim_supported: Configures the database-backed session behavior and cookie controls.}
+    reuse_assessment: {isolation: Low, complexity: Medium, coupling_notes: [Application session-management features require the database driver and schema.]}
+    license_impact: *repository_license
+    unknowns: [Production retention and cleanup policy are not repository-defined beyond framework configuration.]
+    contradictions: [README wording overstates database sessions as a universal SPA authentication requirement.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DATA-003
+    canonical_name: Database Cache and Lock Substrate
+    aliases: [cache and lock tables]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [data, operations]
+    purpose: Provides database tables and configurable stores for cache values and distributed locks.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan migrate"]}
+    dependencies: {internal_features: [], internal_modules: [cache migration, config/cache.php], external_packages: [laravel/framework], runtime_services: [database or alternate cache backend]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: database/migrations/0001_01_01_000001_create_cache_table.php, symbol_or_range: up, evidence_kind: migration, claim_supported: Defines cache and cache-lock tables.}
+      - {path: config/cache.php, symbol_or_range: stores, evidence_kind: configuration, claim_supported: Configures array, database, file, Memcached, Redis, DynamoDB, and null stores.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Substrate follows Laravel cache contracts.]}
+    license_impact: *repository_license
+    unknowns: [No application-defined cache keys or cache behavior tests exist.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DATA-004
+    canonical_name: Queue, Batch, and Failure Persistence
+    aliases: [queue tables]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [data, operations]
+    purpose: Provides persistent tables and configuration for queued jobs, job batches, and failed jobs.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan queue:work"]}
+    dependencies: {internal_features: [ALNS-OPS-005], internal_modules: [jobs migration, config/queue.php], external_packages: [laravel/framework], runtime_services: [database or alternate queue backend]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: database/migrations/0001_01_01_000002_create_jobs_table.php, symbol_or_range: up, evidence_kind: migration, claim_supported: Defines jobs, batches, and failed-jobs persistence.}
+      - {path: config/queue.php, symbol_or_range: connections batching and failed, evidence_kind: configuration, claim_supported: Configures sync, database, Beanstalkd, SQS, and Redis queue drivers.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Infrastructure is present without repository-defined application job classes.]}
+    license_impact: *repository_license
+    unknowns: [No application job, retry policy, or dead-letter operational workflow is defined.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DATA-005
+    canonical_name: Configurable Relational Database Backends
+    aliases: [database connection matrix]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [data, configuration]
+    purpose: Configures SQLite, MySQL, MariaDB, PostgreSQL, and SQL Server connection profiles while defaulting local and Compose environments differently.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan migrate"]}
+    dependencies: {internal_features: [ALNS-DATA-001, ALNS-DATA-002, ALNS-DATA-003, ALNS-DATA-004], internal_modules: [config/database.php, environment examples], external_packages: [laravel/framework], runtime_services: [SQLite, MySQL, MariaDB, PostgreSQL, SQL Server]}
+    tests: {unit: [], integration: [tests/Feature/ExampleTest.php], end_to_end: ["web/e2e/*.spec.ts"], fixtures: []}
+    source_evidence:
+      - {path: config/database.php, symbol_or_range: connections, evidence_kind: configuration, claim_supported: Defines the supported relational connection profiles and Redis clients.}
+      - {path: .env.example, symbol_or_range: DB_CONNECTION, evidence_kind: configuration, claim_supported: Defaults local setup to SQLite.}
+      - {path: .env.docker.example, symbol_or_range: DB_CONNECTION through DB_PASSWORD, evidence_kind: configuration, claim_supported: Configures Compose for MySQL.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Schema is portable in intent, but only SQLite CI and MySQL Compose are evidenced.]}
+    license_impact: *repository_license
+    unknowns: [MariaDB, PostgreSQL, and SQL Server paths are configuration-only and untested here.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DATA-006
+    canonical_name: Configurable Filesystem Backends
+    aliases: [local public and S3 disks]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [data, configuration]
+    purpose: Configures local-private, public-local, and S3-compatible filesystem disks.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan storage:link"]}
+    dependencies: {internal_features: [], internal_modules: [config/filesystems.php], external_packages: [laravel/framework], runtime_services: [local filesystem, S3-compatible object storage]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: config/filesystems.php, symbol_or_range: disks and links, evidence_kind: configuration, claim_supported: Defines local, public, and S3 disks and the public storage link.}
+      - {path: .env.example, symbol_or_range: FILESYSTEM_DISK and AWS keys, evidence_kind: configuration, claim_supported: Exposes filesystem and S3 environment settings.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [No application feature currently writes files.]}
+    license_impact: *repository_license
+    unknowns: [No upload, download, authorization, or retention workflow is implemented or tested.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-INTEGRATION-001
+    canonical_name: Auth Mail Transport and SPA Links
+    aliases: [password and verification email integration]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [integration, notification]
+    purpose: Configures pluggable mail transports and rewrites password-reset and verification links to Next routes.
+    entry_points: {routes: ["/reset-password", "/email/verify/[id]/[hash]"], screens: [], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-AUTH-008, ALNS-AUTH-009, ALNS-AUTH-013], internal_modules: [config/mail.php, FortifyServiceProvider], external_packages: [laravel/framework, laravel/fortify], runtime_services: [log mailer, SMTP, SES, Postmark, Resend, sendmail]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: config/mail.php, symbol_or_range: mailers, evidence_kind: configuration, claim_supported: Configures SMTP, SES, Postmark, Resend, sendmail, log, array, failover, and round-robin mailers.}
+      - {path: app/Providers/FortifyServiceProvider.php, symbol_or_range: verification and reset URL callbacks, evidence_kind: source, claim_supported: Builds SPA-facing signed verification and reset URLs.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Link integrity depends on frontend URL, signing, route shape, broker tokens, and mail delivery.]}
+    license_impact: *repository_license
+    unknowns: [No live mail-delivery or signed-link E2E is present.]
+    contradictions: [The Compose worker comment attributes auth emails to the worker, but no repository-defined queued notification or job is present.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-OPS-001
+    canonical_name: Local Setup and Three-Process Development
+    aliases: [composer setup and dev scripts]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, operations]
+    purpose: Automates local backend setup and runs the PHP server, queue listener, log viewer, and Next development server together.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["composer run setup", "composer run dev", "composer run test", "pnpm --dir web dev"]}
+    dependencies: {internal_features: [ALNS-OPS-005], internal_modules: [composer.json, package.json], external_packages: [composer, pnpm, concurrently], runtime_services: [PHP, Node.js, database]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: composer.json, symbol_or_range: scripts.setup scripts.dev scripts.test, evidence_kind: manifest, claim_supported: Defines environment setup, migration, frontend install/build, concurrent development, and backend test workflows.}
+      - {path: package.json, symbol_or_range: scripts, evidence_kind: manifest, claim_supported: Delegates root frontend commands into the web workspace.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Assumes local PHP, Composer, Node, pnpm, and database tooling.]}
+    license_impact: *repository_license
+    unknowns: [Scripts were inspected but not executed because dependency directories were absent and the source had to remain read-only.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-OPS-002
+    canonical_name: One-Command Compose Topology
+    aliases: [Docker Compose deployment]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [operations, configuration]
+    purpose: Defines a container topology for the public Next frontend, internal nginx/PHP backend, MySQL, queue worker, and scheduler.
+    entry_points: {routes: ["host 3000 -> frontend"], screens: [], navigation_items: [], commands: ["docker compose up --build"]}
+    dependencies: {internal_features: [ALNS-PLATFORM-001, ALNS-OPS-003, ALNS-OPS-004, ALNS-OPS-005], internal_modules: [docker-compose.yml, docker], external_packages: [Docker Compose], runtime_services: [frontend, nginx, PHP-FPM, MySQL, queue worker, scheduler]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: docker-compose.yml, symbol_or_range: services networks volumes, evidence_kind: configuration, claim_supported: Defines service images, commands, dependencies, health checks, volumes, and the internal network.}
+      - {path: docker/nginx/default.conf, symbol_or_range: server and locations, evidence_kind: configuration, claim_supported: Serves Laravel static files and forwards PHP execution to PHP-FPM.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Service health, shared volumes, environment, and internal hostnames are interdependent.]}
+    license_impact: *repository_license
+    unknowns: [The topology was not launched during read-only discovery.]
+    contradictions: [Only the frontend is intentionally published to the host; the Laravel root is internal in Compose.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-OPS-003
+    canonical_name: Shared App-Key, Migration, and Cache Bootstrap
+    aliases: [PHP container entrypoint]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [operations, security]
+    purpose: Coordinates a shared application key, dependency availability, database readiness, migrations, writable paths, and config caching before PHP processes start.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["docker/php/entrypoint.sh <process>"]}
+    dependencies: {internal_features: [ALNS-DATA-005, ALNS-OPS-002], internal_modules: [docker/php/entrypoint.sh], external_packages: [PHP, Composer, Docker], runtime_services: [shared volume, MySQL]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: docker/php/entrypoint.sh, symbol_or_range: entire entrypoint, evidence_kind: source, claim_supported: Elects one bootstrap process, creates or reads the shared key, waits for dependencies, migrates, caches config, and starts the requested process.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Coordinates state across three PHP containers through shared volumes and database readiness.]}
+    license_impact: *repository_license
+    unknowns: [Concurrent startup and failure recovery were not runtime-tested.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-OPS-004
+    canonical_name: Standalone Non-Root Next Container
+    aliases: [frontend production image]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [operations, security]
+    purpose: Builds a production Next standalone bundle and runs it as an unprivileged user.
+    entry_points: {routes: ["container port 3000"], screens: [], navigation_items: [], commands: ["docker build -f web/Dockerfile ."]}
+    dependencies: {internal_features: [ALNS-PLATFORM-001], internal_modules: [web/Dockerfile, web/next.config.ts], external_packages: [Node.js, pnpm, next], runtime_services: [container runtime]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/Dockerfile, symbol_or_range: deps builder runner stages, evidence_kind: configuration, claim_supported: Uses a multi-stage build and an unprivileged nextjs user to run the standalone server.}
+      - {path: web/next.config.ts, symbol_or_range: output standalone and outputFileTracingRoot, evidence_kind: configuration, claim_supported: Produces the standalone deployment artifact from the monorepo root.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Build context and tracing root assume the repository layout.]}
+    license_impact: *repository_license
+    unknowns: [The production image was not built during discovery.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-OPS-005
+    canonical_name: Queue Worker and Scheduler Processes
+    aliases: [background process topology]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [operations, developer-experience]
+    purpose: Runs Laravel queue and schedule processes in local development and dedicated Compose services.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan queue:listen", "php artisan queue:work", "php artisan schedule:work"]}
+    dependencies: {internal_features: [ALNS-DATA-004, ALNS-OPS-002], internal_modules: [composer.json, docker-compose.yml, routes/console.php], external_packages: [laravel/framework], runtime_services: [queue backend, scheduler process]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: docker-compose.yml, symbol_or_range: queue and scheduler services, evidence_kind: configuration, claim_supported: Runs dedicated queue:work and schedule:work containers.}
+      - {path: composer.json, symbol_or_range: scripts.dev, evidence_kind: manifest, claim_supported: Runs queue:listen alongside the local server, logs, and frontend.}
+      - {path: routes/console.php, symbol_or_range: schedule inspection, evidence_kind: source, claim_supported: Contains no repository-defined scheduled task.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Process infrastructure is present but application automation is absent.]}
+    license_impact: *repository_license
+    unknowns: [No repository-defined job, event, listener, or scheduled application task exists.]
+    contradictions: [A Compose comment describes auth-email work although the source defines no queued notification or job.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-OPS-006
+    canonical_name: Logging and Health Instrumentation Baseline
+    aliases: [operational diagnostics baseline]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [operations, configuration]
+    purpose: Configures framework logging channels, a development log viewer, JSON error rendering, service health checks, and the framework health endpoint.
+    entry_points: {routes: ["/up"], screens: [], navigation_items: [], commands: ["php artisan pail --timeout=0"]}
+    dependencies: {internal_features: [ALNS-API-001, ALNS-OPS-001, ALNS-OPS-002], internal_modules: [config/logging.php, bootstrap/app.php, docker-compose.yml], external_packages: [laravel/framework, laravel/pail], runtime_services: [stderr, files, syslog, Slack webhook]}
+    tests: {unit: [], integration: [tests/Feature/ExampleTest.php], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: config/logging.php, symbol_or_range: channels, evidence_kind: configuration, claim_supported: Configures stack, single, daily, Slack, Papertrail, stderr, syslog, errorlog, null, and emergency logging.}
+      - {path: bootstrap/app.php, symbol_or_range: health and exception rendering, evidence_kind: configuration, claim_supported: Registers /up and forces JSON rendering for API or JSON requests.}
+      - {path: docker-compose.yml, symbol_or_range: service healthchecks, evidence_kind: configuration, claim_supported: Defines database, backend, and frontend health checks.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Provides a framework baseline, not a full metrics or tracing stack.]}
+    license_impact: *repository_license
+    unknowns: [No metrics, tracing, alerting, correlation-ID convention, or production log validation is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-001
+    canonical_name: Backend Pest/PHPUnit Smoke Harness
+    aliases: [backend test harness]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience]
+    purpose: Provides Pest and PHPUnit bootstrap, environment isolation, architecture checks, and minimal unit and feature smoke tests.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["composer run test", "php artisan test"]}
+    dependencies: {internal_features: [ALNS-API-001], internal_modules: [tests, phpunit.xml], external_packages: [pestphp/pest, pestphp/pest-plugin-laravel, phpunit], runtime_services: [SQLite in-memory]}
+    tests: {unit: [tests/Unit/ExampleTest.php], integration: [tests/Feature/ExampleTest.php, tests/ArchTest.php], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: tests/Pest.php, symbol_or_range: test bootstrap, evidence_kind: test, claim_supported: Binds feature tests to the Laravel TestCase and declares project expectations.}
+      - {path: phpunit.xml, symbol_or_range: suites and environment, evidence_kind: configuration, claim_supported: Defines unit and feature suites with isolated test environment settings.}
+      - {path: tests/Feature/ExampleTest.php, symbol_or_range: root status test, evidence_kind: test, claim_supported: Smoke-tests the root response.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Harness is generic and coverage is intentionally minimal.]}
+    license_impact: *repository_license
+    unknowns: [Tests were not run because vendor dependencies were absent and installing them would modify the read-only source.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-002
+    canonical_name: Full-Stack Playwright Harness
+    aliases: [browser E2E harness]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience]
+    purpose: Starts Laravel and Next development servers, resets deterministic fixtures, and runs Chromium end-to-end scenarios with trace and screenshot retention.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["pnpm --dir web exec playwright test"]}
+    dependencies: {internal_features: [ALNS-OPS-001, ALNS-DEV-008], internal_modules: [web/playwright.config.ts, web/e2e/global-setup.ts], external_packages: ["@playwright/test"], runtime_services: [Chromium, Laravel dev server, Next dev server, SQLite]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/playwright.config.ts, symbol_or_range: defineConfig, evidence_kind: configuration, claim_supported: Configures global setup, Chromium, retries, artifacts, and two dependent development servers.}
+      - {path: web/e2e/global-setup.ts, symbol_or_range: globalSetup, evidence_kind: test, claim_supported: Resets the database and runs the deterministic E2E seeder.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Assumes repository-relative commands, ports, URLs, and database reset semantics.]}
+    license_impact: *repository_license
+    unknowns: [The E2E suite was not executed during read-only discovery.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-003
+    canonical_name: Authentication E2E Suite
+    aliases: [auth browser tests]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, authentication]
+    purpose: Specifies browser behavior for registration, login success and failure, logout, and expired-session feedback.
+    entry_points: {routes: ["/register", "/login", "/dashboard"], screens: [Registration and login], navigation_items: [], commands: ["playwright test e2e/auth.spec.ts"]}
+    dependencies: {internal_features: [ALNS-AUTH-003, ALNS-AUTH-004, ALNS-AUTH-005, ALNS-AUTH-006, ALNS-AUTH-007, ALNS-DEV-002], internal_modules: [web/e2e/auth.spec.ts], external_packages: ["@playwright/test"], runtime_services: [Chromium, Laravel, Next]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/auth.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/e2e/auth.spec.ts, symbol_or_range: Authentication suite, evidence_kind: test, claim_supported: Covers registration, valid and invalid login, logout, and expiry notice workflows.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Selectors and expected copy are coupled to current auth screens.]}
+    license_impact: *repository_license
+    unknowns: [No forgot-password, password-reset, password-update, profile-update, or deletion E2E is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-004
+    canonical_name: TOTP E2E Suite
+    aliases: [two-factor browser tests]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, security]
+    purpose: Specifies TOTP enrollment, password-confirmed management, and authenticator-code login behavior in Chromium.
+    entry_points: {routes: ["/settings/security", "/two-factor-challenge"], screens: [Security settings, Two-factor challenge], navigation_items: [], commands: ["playwright test e2e/2fa.spec.ts"]}
+    dependencies: {internal_features: [ALNS-AUTH-014, ALNS-AUTH-015, ALNS-DEV-002], internal_modules: [web/e2e/2fa.spec.ts], external_packages: ["@playwright/test", otpauth], runtime_services: [Chromium, Laravel, Next]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/2fa.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/e2e/2fa.spec.ts, symbol_or_range: Two-factor authentication suite, evidence_kind: test, claim_supported: Enrolls a seeded user, derives a TOTP from the shown secret, and completes challenge login.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Coupled to UI copy, manual secret rendering, seeded credentials, TOTP timing, and Fortify routes.]}
+    license_impact: *repository_license
+    unknowns: [Recovery-code challenge and recovery-code management are not covered.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-005
+    canonical_name: Passkey E2E Suite
+    aliases: [WebAuthn browser tests]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, security]
+    purpose: Specifies passkey registration, list display, and passwordless login using a Chromium virtual authenticator.
+    entry_points: {routes: ["/settings/security", "/login"], screens: [Security settings, Login], navigation_items: [], commands: ["playwright test e2e/passkey.spec.ts"]}
+    dependencies: {internal_features: [ALNS-AUTH-017, ALNS-AUTH-018, ALNS-DEV-002], internal_modules: [web/e2e/passkey.spec.ts], external_packages: ["@playwright/test", Chrome DevTools Protocol], runtime_services: [Chromium virtual authenticator, Laravel, Next]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/passkey.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/e2e/passkey.spec.ts, symbol_or_range: Passkeys suite, evidence_kind: test, claim_supported: Creates a virtual authenticator, registers a named credential, verifies listing, logs out, and signs in with the passkey.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Relies on Chromium CDP, current UI copy, package routes, and secure-context assumptions.]}
+    license_impact: *repository_license
+    unknowns: [Removal, multiple credentials, non-Chromium browsers, and physical authenticators are untested.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-006
+    canonical_name: Browser-Session E2E Suite
+    aliases: [device-session browser tests]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, security]
+    purpose: Specifies session inventory, current-device detection, bulk revocation across browser contexts, and expiry feedback.
+    entry_points: {routes: ["/settings/security", "/login"], screens: [Security settings, Login], navigation_items: [], commands: ["playwright test e2e/sessions.spec.ts"]}
+    dependencies: {internal_features: [ALNS-SESSION-001, ALNS-SESSION-003, ALNS-AUTH-007, ALNS-DEV-002], internal_modules: [web/e2e/sessions.spec.ts], external_packages: ["@playwright/test"], runtime_services: [two Chromium contexts, database sessions, Laravel, Next]}
+    tests: {unit: [], integration: [], end_to_end: [web/e2e/sessions.spec.ts], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: web/e2e/sessions.spec.ts, symbol_or_range: Browser Sessions suite, evidence_kind: test, claim_supported: Creates two contexts, verifies session display, revokes other sessions, and checks expiry recovery.}
+    reuse_assessment: {isolation: Low, complexity: High, coupling_notes: [Requires database-backed sessions, multi-context timing, and current selectors.]}
+    license_impact: *repository_license
+    unknowns: [Single selected-session revocation is not covered.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-007
+    canonical_name: CI Test, Lint, and Format Gates
+    aliases: [GitHub Actions quality gates]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, operations]
+    purpose: Runs backend tests, browser tests, PHP formatting checks, frontend linting, and frontend formatting checks on pushes and pull requests.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: [GitHub Actions]}
+    dependencies: {internal_features: [ALNS-DEV-001, ALNS-DEV-002], internal_modules: [.github/workflows], external_packages: [GitHub Actions, Composer, pnpm, Playwright, Pint, ESLint, Prettier], runtime_services: [GitHub-hosted Ubuntu runners]}
+    tests: {unit: [tests/Unit/ExampleTest.php], integration: [tests/Feature/ExampleTest.php], end_to_end: ["web/e2e/*.spec.ts"], fixtures: [E2eSeeder]}
+    source_evidence:
+      - {path: .github/workflows/tests.yml, symbol_or_range: jobs, evidence_kind: configuration, claim_supported: Runs Laravel tests and Playwright browser tests with dependency caching and Chromium installation.}
+      - {path: .github/workflows/lint.yml, symbol_or_range: jobs, evidence_kind: configuration, claim_supported: Runs Pint, ESLint, and Prettier gates.}
+    reuse_assessment: {isolation: Medium, complexity: Medium, coupling_notes: [Commands and paths assume the current backend-root and web-subdirectory layout.]}
+    license_impact: *repository_license
+    unknowns: [Historical workflow results were not inspected, and local execution was intentionally skipped.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-008
+    canonical_name: User Factories and Deterministic Seeders
+    aliases: [test identity fixtures]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience, data]
+    purpose: Generates users for development and creates repeatable identities for full-stack browser tests.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan db:seed", "php artisan db:seed --class=E2eSeeder"]}
+    dependencies: {internal_features: [ALNS-DATA-001, ALNS-DEV-002], internal_modules: [UserFactory.php, DatabaseSeeder.php, E2eSeeder.php], external_packages: [fakerphp/faker, laravel/framework], runtime_services: [database]}
+    tests: {unit: [], integration: [], end_to_end: ["web/e2e/*.spec.ts"], fixtures: [UserFactory, DatabaseSeeder, E2eSeeder]}
+    source_evidence:
+      - {path: database/factories/UserFactory.php, symbol_or_range: definition and states, evidence_kind: fixture, claim_supported: Produces default users plus unverified and 2FA states.}
+      - {path: database/seeders/E2eSeeder.php, symbol_or_range: run, evidence_kind: fixture, claim_supported: Creates deterministic standard, two-factor, passkey, and session-test users.}
+      - {path: web/e2e/global-setup.ts, symbol_or_range: globalSetup, evidence_kind: test, claim_supported: Migrates fresh and invokes the deterministic E2E seeder.}
+    reuse_assessment: {isolation: Medium, complexity: Low, coupling_notes: [Fixture identities and passwords are intentionally tied to current tests.]}
+    license_impact: *repository_license
+    unknowns: [Seeder credentials must never be treated as production secrets.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-DEV-009
+    canonical_name: Inspire Console Command
+    aliases: [quote command]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [developer-experience]
+    purpose: Registers the standard Laravel closure command that prints a random inspirational quote.
+    entry_points: {routes: [], screens: [], navigation_items: [], commands: ["php artisan inspire"]}
+    dependencies: {internal_features: [], internal_modules: [routes/console.php], external_packages: [laravel/framework], runtime_services: [CLI]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: routes/console.php, symbol_or_range: "Artisan::command('inspire')", evidence_kind: source, claim_supported: Registers and describes the quote-printing console command.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Standalone framework example command.]}
+    license_impact: *repository_license
+    unknowns: [No command test is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-UI-016
+    canonical_name: External Learning and Repository Navigation
+    aliases: [starter resource links]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui, integration]
+    purpose: Links users from public and authenticated shells to Laravel, Next, and starter-repository learning resources.
+    entry_points: {routes: ["/", "/dashboard", "/settings/*"], screens: [Welcome page, Application sidebar, Alternative header], navigation_items: [Documentation, Repository, Learn, Deploy now], commands: []}
+    dependencies: {internal_features: [ALNS-WEB-001, ALNS-UI-002, ALNS-UI-003], internal_modules: [web/app/page.tsx, app-sidebar.tsx, app-header.tsx], external_packages: [next], runtime_services: [external websites]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/app/page.tsx, symbol_or_range: resource and deploy links, evidence_kind: source, claim_supported: Links to Laravel, Next, and Laravel Cloud resources.}
+      - {path: web/components/app-sidebar.tsx, symbol_or_range: footerNavItems, evidence_kind: source, claim_supported: Links to the source repository and Laravel documentation from the app shell.}
+      - {path: web/components/app-header.tsx, symbol_or_range: right-side external actions, evidence_kind: source, claim_supported: Provides matching repository and documentation actions in the alternate header.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [URLs and labels are starter-specific configuration constants.]}
+    license_impact: *repository_license
+    unknowns: [External destination availability was not validated.]
+    contradictions: [The header search affordance adjacent to these links is visual-only and does not implement search.]
+    discovery_metadata: *discovery_metadata
+
+  - id: ALNS-ASSET-001
+    canonical_name: Branding and Static Asset Set
+    aliases: [application logos, favicons, starter illustration]
+    repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    evidence_status: Verified
+    classification: [ui]
+    purpose: Supplies reusable application marks, a logo icon, favicon variants, generic SVG assets, and a starter welcome illustration.
+    entry_points: {routes: ["/favicon.ico", "/icon.svg"], screens: [Welcome page, Authentication layouts, Application shell], navigation_items: [], commands: []}
+    dependencies: {internal_features: [ALNS-WEB-001, ALNS-UI-002, ALNS-UI-003], internal_modules: [app-logo.tsx, app-logo-icon.tsx, static assets], external_packages: [react], runtime_services: [browser]}
+    tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+    source_evidence:
+      - {path: web/components/app-logo.tsx, symbol_or_range: AppLogo, evidence_kind: source, claim_supported: Composes the application icon and starter name for shell branding.}
+      - {path: web/components/app-logo-icon.tsx, symbol_or_range: AppLogoIcon, evidence_kind: source, claim_supported: Defines the compact inline application icon.}
+      - {path: web/app/favicon.ico, symbol_or_range: complete file, evidence_kind: asset, claim_supported: Supplies the application favicon.}
+      - {path: web/public/file.svg, symbol_or_range: complete file, evidence_kind: asset, claim_supported: Represents the tracked generic public SVG asset set.}
+      - {path: web/app/page.tsx, symbol_or_range: inline illustration SVG, evidence_kind: source, claim_supported: Embeds the large theme-aware welcome illustration.}
+    reuse_assessment: {isolation: High, complexity: Low, coupling_notes: [Brand assets can carry foreign identity and must be treated separately from behavioral reuse.]}
+    license_impact: *repository_license
+    unknowns: [No separate trademark grant or third-party asset provenance file is present.]
+    contradictions: []
+    discovery_metadata: *discovery_metadata
+
+coverage:
+  inspected_feature_classes:
+    - product
+    - ui
+    - interaction
+    - administration
+    - authentication
+    - security
+    - authorization
+    - tenancy
+    - data
+    - search
+    - analytics
+    - notification
+    - realtime
+    - integration
+    - operations
+    - developer-experience
+    - accessibility
+    - localization
+    - personalization
+  missing_feature_classes: []
+  known_gaps:
+    - Dependency directories were absent, so package internals and runtime execution were not treated as verified.
+    - Tests and containers were not run because installing dependencies or generating runtime state would modify the read-only source repository.
+    - These are evidence limitations, not uninspected repository areas; exact unknowns are recorded in UNKNOWNS.md.
+  decision: Complete
