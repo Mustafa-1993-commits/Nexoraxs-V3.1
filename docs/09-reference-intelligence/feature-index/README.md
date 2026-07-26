@@ -401,3 +401,228 @@ All records below are `Verified`, current at the pinned revision, and governed b
 | `BOXYHQ-OPS-004` | Build, Start, and Database Schema Lifecycle | `implemented` | deployment, operations, data |
 | `BOXYHQ-OPS-005` | Dry-Run Team Deletion Maintenance Command | `implemented` | operations, tenancy, security |
 | `BOXYHQ-OPS-006` | Stripe Catalog Maintenance Command | `implemented` | operations, billing, integration |
+
+
+## SRC-KIRANISM
+
+- **Repository:** `Kiranism/next-shadcn-dashboard-starter`
+- **Historical registration alias:** `SRC-KIRANISM-SHADCN` (unused before this discovery)
+- **Pinned revision:** `06e83c0b0e937f98184b343b92756ae0cadd7c92`
+- **Discovery state:** Complete
+- **Lifecycle / understanding:** `KNOWLEDGE_READY`; `0 / 208 (0.0)`
+- **Repository evidence:** [profile](../repositories/kiranism/REPOSITORY-PROFILE.md), [catalog](../repositories/kiranism/FEATURE-CATALOG.md), [machine catalog](../repositories/kiranism/FEATURE-CATALOG.yaml), [evidence manifest](../repositories/kiranism/EVIDENCE-MANIFEST.md), [license review](../repositories/kiranism/LICENSE-REVIEW.md), [coverage decision](../repositories/kiranism/COVERAGE-REPORT.md), [unknowns and exclusions](../repositories/kiranism/UNKNOWNS.md)
+- **Adoption history:** None recorded. Indexing does not select or recommend a feature.
+
+All records below are evidence-backed at the pinned revision. `partial`, `substrate/seam`, and `configuration-only`
+records are intentionally not represented as production-complete behavior.
+
+| Feature ID | Canonical name | Classification | Implementation state |
+|---|---|---|---|
+| `KIRANISM-PLATFORM-001` | Single-Package Next.js Dashboard Application | product, operations, developer-experience | `implemented` |
+| `KIRANISM-PLATFORM-002` | Next.js App Router and Route-Segment Composition | architecture, ui, developer-experience | `implemented` |
+| `KIRANISM-PLATFORM-003` | Server and Client Component Partition | architecture, data, reusable-internal | `implemented` |
+| `KIRANISM-PLATFORM-004` | Feature-Oriented Source Organization | developer-experience, reusable-internal | `implemented` |
+| `KIRANISM-PLATFORM-005` | Root Provider Composition | architecture, ui, data, authentication | `implemented` |
+| `KIRANISM-PLATFORM-006` | Configurable Remote Image Allowlist | configuration, security, ui | `configuration-only` |
+| `KIRANISM-PLATFORM-007` | Feature Cleanup Utility | developer-experience, automation, reusable-internal | `implemented` |
+| `KIRANISM-PLATFORM-008` | Radix-to-Base UI Migration Record | developer-experience, migration, reusable-internal | `configuration-only` |
+| `KIRANISM-PLATFORM-009` | Bundled Agent Skill Distribution | developer-experience, automation, reusable-internal | `implemented` |
+| `KIRANISM-PLATFORM-010` | English-Only Runtime Baseline | localization, configuration, ui | `implemented` |
+| `KIRANISM-SHELL-001` | Protected Dashboard Shell Composition | ui, navigation, authentication | `implemented` |
+| `KIRANISM-SHELL-002` | Cookie-Backed Sidebar Open State | ui, personalization, data | `implemented` |
+| `KIRANISM-SHELL-003` | Expanded, Collapsed, and Off-Canvas Sidebar | ui, interaction, responsive | `implemented` |
+| `KIRANISM-SHELL-004` | Mobile Sheet Navigation | ui, navigation, responsive, accessibility | `implemented` |
+| `KIRANISM-SHELL-005` | Keyboard Sidebar Toggle | ui, interaction, accessibility | `implemented` |
+| `KIRANISM-SHELL-006` | Sticky Dashboard Header | ui, layout, navigation | `implemented` |
+| `KIRANISM-SHELL-007` | Responsive Page Container | ui, layout, reusable-internal | `implemented` |
+| `KIRANISM-SHELL-008` | Contextual Information Sidebar | ui, interaction, responsive, reusable-internal | `implemented` |
+| `KIRANISM-SHELL-009` | Page Information Content Registry | ui, configuration, developer-experience | `implemented` |
+| `KIRANISM-SHELL-010` | Route Progress Indicator | ui, feedback, navigation | `implemented` |
+| `KIRANISM-SHELL-011` | Overscroll and Horizontal Overflow Control | ui, responsive, layout | `implemented` |
+| `KIRANISM-SHELL-012` | Dashboard Search Control Placement | ui, responsive, navigation | `implemented` |
+| `KIRANISM-NAV-001` | Grouped Navigation Configuration | navigation, configuration, reusable-internal | `implemented` |
+| `KIRANISM-NAV-002` | Nested Navigation Sections | navigation, ui, interaction | `implemented` |
+| `KIRANISM-NAV-003` | Exact-Path Active Navigation State | navigation, ui | `implemented` |
+| `KIRANISM-NAV-004` | Client-Side Organization Navigation Filter | navigation, authorization, tenancy | `implemented` |
+| `KIRANISM-NAV-005` | Client-Side Role and Permission Navigation Filter | navigation, authorization, security | `implemented` |
+| `KIRANISM-NAV-006` | Plan and Feature Navigation Seam | navigation, authorization, configuration | `partial` |
+| `KIRANISM-NAV-007` | Shared Sidebar and Command Navigation Source | navigation, reusable-internal | `implemented` |
+| `KIRANISM-NAV-008` | Command Palette Navigation | navigation, search, interaction, accessibility | `implemented` |
+| `KIRANISM-NAV-009` | Navigation Keyboard Shortcuts | navigation, interaction, accessibility | `implemented` |
+| `KIRANISM-NAV-010` | Path-Derived Breadcrumb Fallback | navigation, ui, responsive | `implemented` |
+| `KIRANISM-THEME-001` | Light, Dark, and System Color Modes | ui, personalization, theme | `implemented` |
+| `KIRANISM-THEME-002` | Ten Named Design Palettes | ui, personalization, theme, reusable-internal | `implemented` |
+| `KIRANISM-THEME-003` | Per-Palette Light and Dark Tokens | ui, theme, reusable-internal | `implemented` |
+| `KIRANISM-THEME-004` | Server-Validated Active Theme Hydration | ui, theme, data, security | `implemented` |
+| `KIRANISM-THEME-005` | Persistent Palette Selection | ui, theme, personalization, data | `implemented` |
+| `KIRANISM-THEME-006` | Palette Selector Control | ui, theme, accessibility | `implemented` |
+| `KIRANISM-THEME-007` | Animated Theme Mode Toggle | ui, theme, interaction | `implemented` |
+| `KIRANISM-THEME-008` | Command Palette Theme Actions | ui, theme, navigation, interaction | `implemented` |
+| `KIRANISM-THEME-009` | Multi-Font Theme Registry | ui, theme, assets | `implemented` |
+| `KIRANISM-THEME-010` | Global Scrollbar and Base-UI Motion Styling | ui, theme, interaction | `implemented` |
+| `KIRANISM-UI-001` | Disclosure Primitive Suite | ui, interaction, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-UI-002` | Dialog and Confirmation Primitive Suite | ui, interaction, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-UI-003` | Menu and Contextual Overlay Primitive Suite | ui, interaction, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-UI-004` | Command and Navigation Primitive Suite | ui, navigation, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-UI-005` | Button and Selection Primitive Suite | ui, forms, interaction, reusable-internal | `implemented` |
+| `KIRANISM-UI-006` | Text and Choice Input Primitive Suite | ui, forms, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-UI-007` | Card, Frame, and Alert Display Suite | ui, feedback, reusable-internal | `implemented` |
+| `KIRANISM-UI-008` | Avatar and User Identity Presentation | ui, authentication, reusable-internal | `implemented` |
+| `KIRANISM-UI-009` | Tabs and Calendar Primitive Suite | ui, forms, interaction, reusable-internal | `implemented` |
+| `KIRANISM-UI-010` | Scrollable and Resizable Layout Primitives | ui, layout, responsive, reusable-internal | `implemented` |
+| `KIRANISM-UI-011` | Loading and Progress Feedback Primitives | ui, feedback, reusable-internal | `implemented` |
+| `KIRANISM-UI-012` | File Preview Composite | ui, forms, interaction, reusable-internal | `implemented` |
+| `KIRANISM-UI-013` | Chart Primitive Suite | ui, analytics, reusable-internal | `implemented` |
+| `KIRANISM-UI-014` | Specialized Kanban and Notification Primitives | ui, interaction, notification, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-001` | Reusable TanStack Data Table | ui, data, search, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-002` | URL-Synchronized Table State | data, search, navigation, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-003` | Manual Server-Mode Table Control | data, search, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-004` | Debounced Text and Throttled Range Filters | search, interaction, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-005` | Validated Multi-Column Sort Parser | data, security, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-006` | Sortable Column Header | ui, search, interaction, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-007` | Faceted Select and Multi-Select Filter | ui, search, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-008` | Date and Date-Range Filter | ui, search, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-009` | Numeric Slider Filter | ui, search, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-010` | Configurable Table Toolbar | ui, search, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-011` | Column Visibility Control | ui, personalization, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-012` | Pagination and Selection Summary | ui, data, interaction, reusable-internal | `implemented` |
+| `KIRANISM-TABLE-013` | Sticky Header, Horizontal Scroll, and Empty State | ui, responsive, feedback | `implemented` |
+| `KIRANISM-TABLE-014` | Data Table Skeleton and Filter Reset | ui, feedback, search, reusable-internal | `implemented` |
+| `KIRANISM-FORM-001` | Typed TanStack Form Composition | forms, data, reusable-internal | `implemented` |
+| `KIRANISM-FORM-002` | Typed Field Path Accessor | forms, developer-experience, reusable-internal | `implemented` |
+| `KIRANISM-FORM-003` | Text and Numeric Field Wrapper | forms, ui, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-FORM-004` | Textarea Field Wrapper | forms, ui, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-FORM-005` | Select Field Wrapper | forms, ui, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-FORM-006` | Boolean Field Wrappers | forms, ui, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-FORM-007` | Radio and Slider Field Wrappers | forms, ui, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-FORM-008` | File Upload Field Wrapper | forms, ui, data, reusable-internal | `partial` |
+| `KIRANISM-FORM-009` | Comprehensive Input Showcase | forms, ui, developer-experience | `implemented` |
+| `KIRANISM-FORM-010` | Zod Schema and Field-Level Validation | forms, data, security, reusable-internal | `implemented` |
+| `KIRANISM-FORM-011` | Async, Debounced, and Linked Validation Patterns | forms, interaction, developer-experience | `implemented` |
+| `KIRANISM-FORM-012` | Nested Object and Dynamic Array Forms | forms, data, developer-experience | `implemented` |
+| `KIRANISM-FORM-013` | Multi-Step Product Wizard | forms, workflow, interaction | `implemented` |
+| `KIRANISM-FORM-014` | Sheet and Dialog Form Patterns | forms, ui, interaction | `implemented` |
+| `KIRANISM-FORM-015` | Accessible Error Focus and Submission State | forms, accessibility, feedback, reusable-internal | `implemented` |
+| `KIRANISM-DASH-001` | Parallel Analytics Overview | product, analytics, ui | `implemented` |
+| `KIRANISM-DASH-002` | Overview KPI Cards | product, analytics, ui | `implemented` |
+| `KIRANISM-DASH-003` | Area Trend Chart | analytics, ui, reusable-internal | `implemented` |
+| `KIRANISM-DASH-004` | Bar Trend Chart | analytics, ui, reusable-internal | `implemented` |
+| `KIRANISM-DASH-005` | Pie Distribution Chart | analytics, ui, reusable-internal | `implemented` |
+| `KIRANISM-DASH-006` | Recent Sales List | analytics, ui | `implemented` |
+| `KIRANISM-DASH-007` | Per-Region Analytics Loading States | analytics, ui, feedback | `implemented` |
+| `KIRANISM-DASH-008` | Per-Region Analytics Error States | analytics, ui, feedback, observability | `implemented` |
+| `KIRANISM-DASH-009` | External Pokémon Query Demonstration | data, integration, ui, developer-experience | `implemented` |
+| `KIRANISM-DASH-010` | Icon Registry Showcase | ui, assets, developer-experience | `implemented` |
+| `KIRANISM-PRODUCT-001` | Product Listing Screen | product, ui, data | `implemented` |
+| `KIRANISM-PRODUCT-002` | Product Search, Category Filter, Sort, and Pagination | product, search, data | `implemented` |
+| `KIRANISM-PRODUCT-003` | Product Create and Edit Form | product, forms, workflow | `partial` |
+| `KIRANISM-PRODUCT-004` | Product Detail Prefetch and Missing-Record Recovery | product, data, feedback | `implemented` |
+| `KIRANISM-PRODUCT-005` | In-Memory Product CRUD | product, data, developer-experience | `partial` |
+| `KIRANISM-PRODUCT-006` | Product Query Keys and Mutation Invalidation | product, data, reusable-internal | `implemented` |
+| `KIRANISM-PRODUCT-007` | Product Delete Confirmation and Toast Feedback | product, interaction, feedback | `implemented` |
+| `KIRANISM-PRODUCT-008` | Product Image Selection Without Persistence | product, forms, data | `partial` |
+| `KIRANISM-USER-001` | User Listing Screen | product, ui, data | `implemented` |
+| `KIRANISM-USER-002` | User Search, Role Filter, Sort, and Pagination | product, search, data | `implemented` |
+| `KIRANISM-USER-003` | User Create and Edit Sheet | product, forms, workflow, ui | `implemented` |
+| `KIRANISM-USER-004` | In-Memory User CRUD | product, data, developer-experience | `partial` |
+| `KIRANISM-USER-005` | User Query Keys and Mutation Invalidation | product, data, reusable-internal | `implemented` |
+| `KIRANISM-USER-006` | User Delete Confirmation and Toast Feedback | product, interaction, feedback | `implemented` |
+| `KIRANISM-USER-007` | Demo User Role and Status Presentation | product, ui, data | `implemented` |
+| `KIRANISM-KANBAN-001` | Responsive Kanban Board | product, ui, workflow, responsive | `implemented` |
+| `KIRANISM-KANBAN-002` | Column Reordering | product, workflow, interaction | `implemented` |
+| `KIRANISM-KANBAN-003` | Task Reordering and Cross-Column Movement | product, workflow, interaction | `implemented` |
+| `KIRANISM-KANBAN-004` | Mouse, Touch, and Keyboard Drag Sensors | product, interaction, accessibility | `implemented` |
+| `KIRANISM-KANBAN-005` | Accessible Drag Announcements | product, accessibility, interaction | `implemented` |
+| `KIRANISM-KANBAN-006` | Board-Bounded Drag Motion | product, interaction, reusable-internal | `implemented` |
+| `KIRANISM-KANBAN-007` | New Backlog Task Dialog | product, forms, workflow | `partial` |
+| `KIRANISM-KANBAN-008` | Process-Local Kanban Store | product, data, state-management | `partial` |
+| `KIRANISM-CHAT-001` | Responsive Messenger Layout | product, ui, responsive | `implemented` |
+| `KIRANISM-CHAT-002` | Conversation Search and Selection | product, search, interaction | `implemented` |
+| `KIRANISM-CHAT-003` | Message Thread Presentation | product, ui, accessibility | `implemented` |
+| `KIRANISM-CHAT-004` | Keyboard Message Composer | product, forms, interaction, accessibility | `implemented` |
+| `KIRANISM-CHAT-005` | Local Attachment Metadata | product, data, forms | `partial` |
+| `KIRANISM-CHAT-006` | Quick Reply Chips | product, interaction, ui | `implemented` |
+| `KIRANISM-CHAT-007` | Simulated Contact Auto-Replies | product, workflow, automation | `partial` |
+| `KIRANISM-CHAT-008` | Unread Conversation Counters | product, notification, state-management | `implemented` |
+| `KIRANISM-CHAT-009` | Accessible Thread Motion and Live Updates | product, accessibility, interaction | `implemented` |
+| `KIRANISM-NOTIFY-001` | Header Notification Center | product, notification, ui | `implemented` |
+| `KIRANISM-NOTIFY-002` | Tabbed Notification Screen | product, notification, ui | `implemented` |
+| `KIRANISM-NOTIFY-003` | Notification Read State | product, notification, state-management | `implemented` |
+| `KIRANISM-NOTIFY-004` | Notification Action Routing | product, notification, navigation | `implemented` |
+| `KIRANISM-NOTIFY-005` | Notification Empty States | product, notification, feedback | `implemented` |
+| `KIRANISM-NOTIFY-006` | Reusable Notification Action Cards | notification, ui, interaction, reusable-internal | `implemented` |
+| `KIRANISM-NOTIFY-007` | Process-Local Notification Store | notification, data, state-management | `partial` |
+| `KIRANISM-AUTH-001` | Clerk Application Provider | authentication, integration, ui | `implemented` |
+| `KIRANISM-AUTH-002` | Clerk Sign-In Screen | authentication, ui | `implemented` |
+| `KIRANISM-AUTH-003` | Clerk Sign-Up Screen | authentication, ui, integration | `implemented` |
+| `KIRANISM-AUTH-004` | Auth Entry Redirect | authentication, navigation | `implemented` |
+| `KIRANISM-AUTH-005` | Session-Aware Root Redirect | authentication, navigation | `implemented` |
+| `KIRANISM-AUTH-006` | Dashboard Route Protection | authentication, security, authorization | `implemented` |
+| `KIRANISM-AUTH-007` | Dashboard Redirect Guard | authentication, navigation | `implemented` |
+| `KIRANISM-AUTH-008` | Clerk User Profile Surface | authentication, account, ui | `implemented` |
+| `KIRANISM-AUTH-009` | Clerk Sign-Out Action | authentication, account, ui | `implemented` |
+| `KIRANISM-AUTH-010` | Organization Listing and Creation Surface | tenancy, account, administration, ui | `implemented` |
+| `KIRANISM-AUTH-011` | Active Organization Switcher | tenancy, account, navigation, ui | `implemented` |
+| `KIRANISM-AUTH-012` | Organization Team Profile Surface | tenancy, administration, account, ui | `implemented` |
+| `KIRANISM-AUTH-013` | Organization Billing and Pro-Plan Surfaces | tenancy, billing, authorization, ui | `implemented` |
+| `KIRANISM-DATA-001` | SSR/Browser Query Client Lifecycle | data, cache, reusable-internal | `implemented` |
+| `KIRANISM-DATA-002` | Pending Query Dehydration | data, cache, reusable-internal | `implemented` |
+| `KIRANISM-DATA-003` | Global Query Provider and Devtools | data, developer-experience, ui | `implemented` |
+| `KIRANISM-DATA-004` | Typed URL Search Parameter Cache | data, navigation, search, reusable-internal | `implemented` |
+| `KIRANISM-DATA-005` | Process-Local Faker Data Seeds | data, developer-experience, testing | `partial` |
+| `KIRANISM-DATA-006` | Zustand Client Stores | data, state-management, reusable-internal | `partial` |
+| `KIRANISM-DATA-007` | Service-Layer Backend Replacement Seam | data, integration, reusable-internal | `substrate/seam` |
+| `KIRANISM-DATA-008` | Generic JSON API Client Seam | data, integration, reusable-internal | `substrate/seam` |
+| `KIRANISM-DATA-009` | No Durable Application Persistence | data, operations, security | `partial` |
+| `KIRANISM-API-001` | Product Collection API | api, data, integration | `partial` |
+| `KIRANISM-API-002` | Product Item API | api, data, integration | `partial` |
+| `KIRANISM-API-003` | User Collection API | api, data, integration | `partial` |
+| `KIRANISM-API-004` | User Item API | api, data, integration | `partial` |
+| `KIRANISM-API-005` | Direct Product/User Service Consumption | api, data, architecture | `implemented` |
+| `KIRANISM-API-006` | PokeAPI Integration | api, integration, data | `implemented` |
+| `KIRANISM-API-007` | GitHub Repository Star Integration | api, integration, ui | `partial` |
+| `KIRANISM-API-008` | Sentry Monitoring Tunnel | api, observability, integration | `configuration-only` |
+| `KIRANISM-SEC-001` | Dashboard-Only Middleware Protection Boundary | security, authentication, authorization | `partial` |
+| `KIRANISM-SEC-002` | Unprotected Mutable Demo APIs | security, api, authorization | `partial` |
+| `KIRANISM-SEC-003` | Unvalidated API JSON Bodies | security, api, data | `partial` |
+| `KIRANISM-SEC-004` | Client Navigation Visibility Is Not Authorization | security, authorization, navigation | `implemented` |
+| `KIRANISM-SEC-005` | Organization-Scoped Billing UI Guard | security, tenancy, billing | `implemented` |
+| `KIRANISM-SEC-006` | Theme Cookie Security Attributes | security, data, personalization | `implemented` |
+| `KIRANISM-SEC-007` | Sentry Full Trace and Default PII Capture | security, privacy, observability | `configuration-only` |
+| `KIRANISM-SEC-008` | Production Console Removal and Image Host Restriction | security, operations, configuration | `configuration-only` |
+| `KIRANISM-QUALITY-001` | Global Error Capture | quality, observability, feedback | `implemented` |
+| `KIRANISM-QUALITY-002` | Custom Not-Found Recovery | quality, ui, feedback, navigation | `implemented` |
+| `KIRANISM-QUALITY-003` | Mutation Failure Toasts | quality, feedback, product | `implemented` |
+| `KIRANISM-QUALITY-004` | Code-Level Accessibility Baseline | quality, accessibility, ui | `implemented` |
+| `KIRANISM-QUALITY-005` | Reduced-Motion Chat Behavior | quality, accessibility, interaction | `implemented` |
+| `KIRANISM-QUALITY-006` | Accessibility-Aware Lint Configuration | quality, accessibility, developer-experience | `configuration-only` |
+| `KIRANISM-QUALITY-007` | No Repository Test Harness | quality, testing, developer-experience | `partial` |
+| `KIRANISM-DEV-001` | Strict TypeScript Configuration | developer-experience, quality | `configuration-only` |
+| `KIRANISM-DEV-002` | Oxlint Static Analysis | developer-experience, quality, accessibility | `configuration-only` |
+| `KIRANISM-DEV-003` | Oxfmt and Tailwind Class Sorting | developer-experience, quality, ui | `configuration-only` |
+| `KIRANISM-DEV-004` | Staged-File Formatting Hook | developer-experience, quality, automation | `configuration-only` |
+| `KIRANISM-DEV-005` | Pre-Push Build Hook | developer-experience, quality, automation | `configuration-only` |
+| `KIRANISM-DEV-006` | Bun Lockfile and Frozen Container Installs | developer-experience, build, operations | `configuration-only` |
+| `KIRANISM-DEV-007` | Post-Install Cleanup Guidance | developer-experience, automation | `implemented` |
+| `KIRANISM-DEV-008` | Shadcn Base Nova Configuration | developer-experience, ui, reusable-internal | `configuration-only` |
+| `KIRANISM-DEV-009` | Repository Dashboard Agent Skill | developer-experience, automation, reusable-internal | `implemented` |
+| `KIRANISM-DEV-010` | TanStack Form and Query Agent Skills | developer-experience, automation, reusable-internal | `implemented` |
+| `KIRANISM-DEV-011` | Next, Shadcn, and Design Agent Skills | developer-experience, automation, reusable-internal | `implemented` |
+| `KIRANISM-OPS-001` | Development, Build, and Start Commands | operations, build, developer-experience | `configuration-only` |
+| `KIRANISM-OPS-002` | Node 22 Runtime Baseline | operations, build | `configuration-only` |
+| `KIRANISM-OPS-003` | Non-Root Node Standalone Container | operations, deployment, security | `implemented` |
+| `KIRANISM-OPS-004` | Non-Root Bun Standalone Container | operations, deployment, security | `implemented` |
+| `KIRANISM-OPS-005` | Conditional Standalone Build Output | operations, deployment, configuration | `configuration-only` |
+| `KIRANISM-OPS-006` | Browser, Node, and Edge Sentry Instrumentation | operations, observability, integration | `configuration-only` |
+| `KIRANISM-OPS-007` | Sentry Build Integration and Source Maps | operations, observability, build | `configuration-only` |
+| `KIRANISM-OPS-008` | Environment Template | operations, configuration, security | `configuration-only` |
+| `KIRANISM-ASSET-001` | Shared Tabler Icon Registry | assets, ui, reusable-internal | `implemented` |
+| `KIRANISM-ASSET-002` | Dashboard Screenshot and Vendor Marks | assets, ui | `implemented` |
+| `KIRANISM-ASSET-003` | Public Robots Policy | assets, operations, security | `configuration-only` |
+| `KIRANISM-ASSET-004` | Public LLM Repository Guide | assets, developer-experience, documentation | `configuration-only` |
+| `KIRANISM-UI-015` | Contextual Information Button | ui, interaction, accessibility, reusable-internal | `implemented` |
+| `KIRANISM-UI-016` | Reusable React State, Timing, Media, and Ref Utilities | ui, interaction, responsive, reusable-internal | `implemented` |
+| `KIRANISM-NAV-011` | Alternative Sidebar Composite Substrates | navigation, ui, reusable-internal | `substrate/seam` |
+| `KIRANISM-AUTH-014` | Dormant Mock Authentication Form Substrate | authentication, ui, forms, developer-experience | `substrate/seam` |
+| `KIRANISM-QUALITY-008` | Form Card Loading Skeleton Substrate | quality, ui, feedback, reusable-internal | `substrate/seam` |
+| `KIRANISM-ASSET-005` | GitHub CTA and Cached Star Button | assets, ui, integration, reusable-internal | `implemented` |

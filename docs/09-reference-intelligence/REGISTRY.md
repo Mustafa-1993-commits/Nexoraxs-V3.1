@@ -39,12 +39,14 @@ A repository may enter **Complete** only after the coverage report passes. A rep
 | SRC-ALIZIODEV-LARAVEL-NEXT-STARTER | `/home/mustafa/projects/aliziodev/laravel-next-starter-kit` | Source repository | Complete |
 | SRC-BOXYHQ | `/home/mustafa/projects/BoxyHQ` | Source repository | Complete |
 | SRC-HR-NEXT-NEXORAXS | `/home/mustafa/projects/hr-next-nexoraxs` | Source repository | Not Started |
-| SRC-KIRANISM-SHADCN | `/home/mustafa/projects/Kiranism-Shadcn` | Source repository | Not Started |
+| SRC-KIRANISM | `/home/mustafa/projects/Kiranism-Shadcn/Kiranism-Shadcn` | Source repository | Complete |
 | SRC-NEXORAXS-V2 | `/home/mustafa/projects/nexoraxs-v2` | Source repository | Not Started |
 | SRC-PLANE | `/home/mustafa/projects/Plane` | Source repository | Complete |
 | SRC-STUDIO-ADMIN | `/home/mustafa/projects/studio-admin` | Source repository | Not Started |
 
 `/home/mustafa/projects/aliziodev` is a container directory, not a source repository. Every repository placed beneath it must be registered separately.
+
+`/home/mustafa/projects/Kiranism-Shadcn` is likewise a container directory. `/home/mustafa/projects/Kiranism-Shadcn/Kiranism-Shadcn` is its registered Git root. The former unstarted ID `SRC-KIRANISM-SHADCN` is a historical registration alias for `SRC-KIRANISM`; no prior feature or evidence record used it.
 
 ## Classification Rules
 
