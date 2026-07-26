@@ -1000,3 +1000,279 @@ All records below are `Verified` and current at the pinned revision. Partial, su
 | `HRNEXT-WORKSPACE-007` | Tenure Desk Workspace | ui, navigation, administration | `implemented` |
 | `HRNEXT-WORKSPACE-008` | Payroll Desk Workspace | ui, navigation, administration | `implemented` |
 | `HRNEXT-WORKSPACE-009` | Tax & Benefits Desk Workspace | ui, navigation, administration | `implemented` |
+
+## SRC-STUDIO-ADMIN
+
+- **Repository:** `arhamkhnz/next-shadcn-admin-dashboard`
+- **Pinned revision:** `cf132a360b1cb32b5e7a855e499d259eeb8cf1a0`
+- **Discovery state:** Complete
+- **Reference lifecycle:** `KNOWLEDGE_READY`; understanding coverage `0 / 261 (0.0)`
+- **Repository evidence:** [profile](../repositories/studio-admin/REPOSITORY-PROFILE.md), [catalog](../repositories/studio-admin/FEATURE-CATALOG.md), [machine catalog](../repositories/studio-admin/FEATURE-CATALOG.yaml), [evidence manifest](../repositories/studio-admin/EVIDENCE-MANIFEST.md), [license review](../repositories/studio-admin/LICENSE-REVIEW.md), [coverage decision](../repositories/studio-admin/COVERAGE-REPORT.md), [unknowns and exclusions](../repositories/studio-admin/UNKNOWNS.md)
+- **Adoption history:** None recorded. Indexing does not select or recommend a feature.
+
+All records below are `Verified`, current at the pinned revision, and governed by the repository evidence links above.
+Partial and substrate/seam records do not represent complete backend or production capabilities.
+
+| Feature ID | Canonical name | Implementation status | Classification |
+|---|---|---|---|
+| `STUDIO-ADMIN-PLATFORM-001` | Single-Package Next.js Dashboard Application | `implemented` | architecture, product, developer-experience |
+| `STUDIO-ADMIN-PLATFORM-002` | Next.js App Router Segment Composition | `implemented` | architecture, ui, navigation |
+| `STUDIO-ADMIN-PLATFORM-003` | Server and Client Component Partition | `implemented` | architecture, ui, developer-experience |
+| `STUDIO-ADMIN-PLATFORM-004` | Static Root Provider Composition | `implemented` | architecture, ui, state |
+| `STUDIO-ADMIN-PLATFORM-005` | Root and Dashboard Default Redirects | `implemented` | navigation, product |
+| `STUDIO-ADMIN-PLATFORM-006` | Package-Backed Application Metadata | `configuration-only` | configuration, ui |
+| `STUDIO-ADMIN-PLATFORM-007` | React Compiler and Production Console Removal | `configuration-only` | configuration, developer-experience, operations |
+| `STUDIO-ADMIN-PLATFORM-008` | Disabled Request Proxy Seam | `substrate/seam` | architecture, security, configuration |
+| `STUDIO-ADMIN-PLATFORM-009` | English-Only Root Locale Baseline | `configuration-only` | localization, ui, configuration |
+| `STUDIO-ADMIN-PLATFORM-010` | Thirty-Two Page Route Surface | `implemented` | product, navigation, ui |
+| `STUDIO-ADMIN-SHELL-001` | Responsive Dashboard Application Shell | `implemented` | ui, navigation, responsive |
+| `STUDIO-ADMIN-SHELL-002` | Desktop Collapsible Sidebar | `implemented` | ui, navigation, interaction |
+| `STUDIO-ADMIN-SHELL-003` | Mobile Sidebar Sheet | `implemented` | ui, navigation, responsive, accessibility |
+| `STUDIO-ADMIN-SHELL-004` | Sidebar Variant Selection | `implemented` | ui, personalization, configuration |
+| `STUDIO-ADMIN-SHELL-005` | Sidebar Collapse Strategy Selection | `implemented` | ui, personalization, configuration |
+| `STUDIO-ADMIN-SHELL-006` | Server-Hydrated Sidebar State Cookie | `implemented` | ui, state, personalization |
+| `STUDIO-ADMIN-SHELL-007` | Sidebar Keyboard Toggle | `implemented` | interaction, accessibility, navigation |
+| `STUDIO-ADMIN-SHELL-008` | Sticky or Scrolling Header Preference | `implemented` | ui, personalization, configuration |
+| `STUDIO-ADMIN-SHELL-009` | Centered or Full-Width Content Preference | `implemented` | ui, personalization, responsive |
+| `STUDIO-ADMIN-SHELL-010` | Per-Page Full-Bleed Content Escape | `implemented` | ui, layout, reusable-internal |
+| `STUDIO-ADMIN-SHELL-011` | Responsive Dashboard Header Controls | `implemented` | ui, responsive, navigation |
+| `STUDIO-ADMIN-SHELL-012` | Static Account Persona Switcher | `partial` | ui, interaction, administration |
+| `STUDIO-ADMIN-SHELL-013` | Sidebar User Menu | `partial` | ui, navigation, administration |
+| `STUDIO-ADMIN-SHELL-014` | Sidebar Support Card | `partial` | ui, navigation, reusable-internal |
+| `STUDIO-ADMIN-SHELL-015` | Standalone Chat Shell | `implemented` | ui, navigation, responsive |
+| `STUDIO-ADMIN-SHELL-016` | Standalone Mail Shell | `implemented` | ui, navigation, responsive |
+| `STUDIO-ADMIN-SHELL-017` | Breakpoint Detection Hooks | `implemented` | ui, responsive, reusable-internal |
+| `STUDIO-ADMIN-NAV-001` | Grouped Sidebar Navigation Configuration | `implemented` | navigation, configuration, reusable-internal |
+| `STUDIO-ADMIN-NAV-002` | Nested Navigation Parents | `implemented` | navigation, ui, interaction |
+| `STUDIO-ADMIN-NAV-003` | Path-Based Active Navigation State | `implemented` | navigation, ui |
+| `STUDIO-ADMIN-NAV-004` | Collapsed Navigation Dropdown Fallback | `implemented` | navigation, ui, responsive |
+| `STUDIO-ADMIN-NAV-005` | New and Soon Navigation Badges | `implemented` | navigation, ui |
+| `STUDIO-ADMIN-NAV-006` | Disabled Navigation Presentation | `partial` | navigation, ui, accessibility |
+| `STUDIO-ADMIN-NAV-007` | New-Tab Authentication Navigation | `implemented` | navigation, interaction |
+| `STUDIO-ADMIN-NAV-008` | Command Navigation Palette | `implemented` | navigation, search, interaction, accessibility |
+| `STUDIO-ADMIN-NAV-009` | Command/Ctrl+J Search Shortcut | `implemented` | navigation, search, accessibility |
+| `STUDIO-ADMIN-NAV-010` | Search Recommendations and Empty State | `implemented` | navigation, search, ui |
+| `STUDIO-ADMIN-NAV-011` | Disabled and Coming-Soon Search Exclusion | `implemented` | navigation, search, configuration |
+| `STUDIO-ADMIN-NAV-012` | Dormant Secondary and Document Navigation Modules | `substrate/seam` | navigation, reusable-internal |
+| `STUDIO-ADMIN-NAV-013` | Dashboard Chat and Mail Preview Handoffs | `implemented` | navigation, ui, interaction |
+| `STUDIO-ADMIN-THEME-001` | Light Dark and System Theme Modes | `implemented` | ui, personalization, configuration |
+| `STUDIO-ADMIN-THEME-002` | Pre-Hydration Preference Boot | `implemented` | ui, performance, personalization |
+| `STUDIO-ADMIN-THEME-003` | System Theme Change Subscription | `implemented` | ui, personalization, interaction |
+| `STUDIO-ADMIN-THEME-004` | Four Selectable Theme Presets | `implemented` | ui, personalization, design-system |
+| `STUDIO-ADMIN-THEME-005` | Generated Theme Preset Registry | `implemented` | developer-experience, configuration, design-system |
+| `STUDIO-ADMIN-THEME-006` | Eighteen Selectable Font Families | `implemented` | ui, personalization, design-system |
+| `STUDIO-ADMIN-THEME-007` | Typed Preference Registry | `implemented` | configuration, state, reusable-internal |
+| `STUDIO-ADMIN-THEME-008` | Preference Value Validation and Fallback | `implemented` | configuration, state, security |
+| `STUDIO-ADMIN-THEME-009` | Client Cookie Preference Persistence | `implemented` | state, personalization, data |
+| `STUDIO-ADMIN-THEME-010` | Server Cookie Persistence Adapter | `substrate/seam` | state, data, reusable-internal |
+| `STUDIO-ADMIN-THEME-011` | Local Storage Persistence Adapter | `substrate/seam` | state, data, reusable-internal |
+| `STUDIO-ADMIN-THEME-012` | DOM Attribute Preference Application | `implemented` | ui, state, design-system |
+| `STUDIO-ADMIN-THEME-013` | Zustand Preference Store | `implemented` | state, ui, reusable-internal |
+| `STUDIO-ADMIN-THEME-014` | Restore-Defaults Control | `implemented` | ui, personalization, interaction |
+| `STUDIO-ADMIN-THEME-015` | Theme Cycle Control | `implemented` | ui, personalization, accessibility |
+| `STUDIO-ADMIN-THEME-016` | Semantic CSS Variable Token System | `implemented` | ui, design-system, reusable-internal |
+| `STUDIO-ADMIN-THEME-017` | Preset-Aware Shadow Overrides | `implemented` | ui, design-system |
+| `STUDIO-ADMIN-THEME-018` | Theme and Layout Control Panel | `implemented` | ui, personalization, configuration |
+| `STUDIO-ADMIN-AUTH-001` | Two Login Screen Layouts | `partial` | authentication, ui, product |
+| `STUDIO-ADMIN-AUTH-002` | Login Form Validation | `implemented` | authentication, ui, forms |
+| `STUDIO-ADMIN-AUTH-003` | Remember-Me Presentation | `partial` | authentication, ui, forms |
+| `STUDIO-ADMIN-AUTH-004` | Two Registration Screen Layouts | `partial` | authentication, ui, product |
+| `STUDIO-ADMIN-AUTH-005` | Registration Form Validation | `implemented` | authentication, ui, forms |
+| `STUDIO-ADMIN-AUTH-006` | Google Sign-In Button Substrate | `substrate/seam` | authentication, integration, ui |
+| `STUDIO-ADMIN-AUTH-007` | Unauthorized Access Screen | `implemented` | authorization, ui, navigation |
+| `STUDIO-ADMIN-AUTH-008` | Authentication Request Guard Seam | `substrate/seam` | authentication, security, configuration |
+| `STUDIO-ADMIN-AUTH-009` | Toast-Only Credential Submission Demo | `partial` | authentication, ui, notification |
+| `STUDIO-ADMIN-AUTH-010` | Authentication UI Auto-Complete Semantics | `implemented` | authentication, accessibility, forms |
+| `STUDIO-ADMIN-ADMIN-001` | Static User Directory | `partial` | administration, ui, data |
+| `STUDIO-ADMIN-ADMIN-002` | User Full-Text Table Search | `implemented` | administration, search, ui |
+| `STUDIO-ADMIN-ADMIN-003` | User Role Team Status and Workspace Filters | `implemented` | administration, search, ui |
+| `STUDIO-ADMIN-ADMIN-004` | User Sorting Pagination and Row Selection | `implemented` | administration, ui, interaction |
+| `STUDIO-ADMIN-ADMIN-005` | User Status and Team Presentation | `implemented` | administration, ui |
+| `STUDIO-ADMIN-ADMIN-006` | User Action Menu Substrate | `substrate/seam` | administration, ui, workflow |
+| `STUDIO-ADMIN-ADMIN-007` | User Add Export Customize and View Controls | `substrate/seam` | administration, ui, integration |
+| `STUDIO-ADMIN-ADMIN-008` | Static Roles and Permissions Directory | `partial` | administration, authorization, data |
+| `STUDIO-ADMIN-ADMIN-009` | Role Search and Type Owner Status Filters | `implemented` | administration, authorization, search |
+| `STUDIO-ADMIN-ADMIN-010` | Role Sorting Pagination and Selection | `implemented` | administration, authorization, interaction |
+| `STUDIO-ADMIN-ADMIN-011` | Role Review Alert | `implemented` | administration, authorization, ui |
+| `STUDIO-ADMIN-ADMIN-012` | System-Role Edit Restrictions in UI | `partial` | administration, authorization, ui |
+| `STUDIO-ADMIN-ADMIN-013` | Role Action Menu Substrate | `substrate/seam` | administration, authorization, workflow |
+| `STUDIO-ADMIN-ADMIN-014` | Permission Sets and Access Reviews Tab Substrate | `substrate/seam` | administration, authorization, ui |
+| `STUDIO-ADMIN-ADMIN-015` | Organization and Workspace Labels Without Tenancy Boundary | `partial` | administration, tenancy, data |
+| `STUDIO-ADMIN-DASH-001` | Default Dashboard Metric Cards | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-002` | Default Performance Overview Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-003` | Default Subscriber Overview Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-004` | Default Recent Customers Table | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-005` | CRM KPI Cards | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-006` | CRM Opportunities Table | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-007` | CRM Pipeline Activity Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-008` | CRM Task Reminder Panel | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-009` | Finance Overview KPIs | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-010` | Finance Income Breakdown | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-011` | Finance Transactions Overview | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-012` | Finance Upcoming Transactions | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-013` | Finance Wallet Summary | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-014` | Finance Balance Distribution | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-015` | Finance Quick Actions | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-016` | Finance Notification Card | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-017` | Analytics KPI Strip | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-018` | Analytics Date and Comparison Toolbar | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-019` | Analytics Realtime Visitors Visualization | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-020` | Analytics Traffic Quality Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-021` | Analytics Top Traffic Sources | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-022` | Analytics Top Pages Table | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-023` | Productivity Summary Cards | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-024` | Productivity Focus Card | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-025` | Productivity Calendar Panel | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-026` | Productivity Task List | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-027` | Productivity Projects Panel | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-028` | Productivity Quick Actions | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-029` | Productivity Recent Notes | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-030` | Productivity Weekly Summary | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-031` | Productivity Motivational Quote | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-032` | E-Commerce KPI Strip | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-033` | E-Commerce Recent Orders Table | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-034` | E-Commerce Store Traffic Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-035` | E-Commerce Traffic Sources | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-036` | E-Commerce Inventory Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-037` | E-Commerce Top Products | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-038` | E-Commerce Customer Reviews | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-039` | Academy KPI Cards | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-040` | Academy Class Schedule | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-041` | Academy Assignment Status | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-042` | Academy Upcoming Events | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-043` | Academy Performance Highlights | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-044` | Infrastructure Grouped Environments | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-045` | Infrastructure Health and Resource Table | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-046` | Infrastructure Status Header | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-047` | Legacy Default KPI Cards | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-048` | Legacy Default Visitor Chart | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-049` | Legacy Proposal Sections Table | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-050` | Legacy Proposal Inline Edit Demo | `partial` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-051` | Legacy CRM Overview Cards | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-052` | Legacy CRM Insight Charts | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-053` | Legacy CRM Operational Panels | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-054` | Legacy CRM Recent Leads Table | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-055` | Legacy Finance KPI Suite | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-056` | Legacy Finance Cash-Flow and Spending Charts | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-057` | Legacy Analytics Risk Overview | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-058` | Legacy Analytics Forecast vs Target | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-059` | Legacy Analytics Coverage Triage | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-060` | Legacy Analytics Revenue Risk Ledger | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-DASH-061` | Legacy Analytics Manager Action Queue | `implemented` | analytics, ui, product |
+| `STUDIO-ADMIN-WORKFLOW-001` | Month Week and Day Calendar Views | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-002` | Calendar Previous Today and Next Navigation | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-003` | Calendar Event Count and Range Summary | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-004` | Calendar Source Selector Presentation | `partial` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-005` | Calendar Add-Event Substrate | `substrate/seam` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-006` | Reusable FullCalendar Theme Adapter | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-007` | Five-Column Kanban Board | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-008` | Kanban Cross-Column Task Movement | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-009` | Kanban Column Reordering | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-010` | Kanban Pointer Touch and Keyboard Sensors | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-011` | Kanban Drag Cancel Rollback | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-012` | Kanban Task Detail Cards | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-013` | Kanban Alternate View Controls | `partial` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-014` | Kanban Search Filter Sort and Create Substrate | `substrate/seam` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-015` | Static Task Table | `partial` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-016` | Task Title Search | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-017` | Task Status and Priority Facets | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-018` | Task Table Selection Sorting Visibility and Pagination | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-019` | Task Row Action Substrate | `substrate/seam` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-020` | Responsive Shipment Master-Detail | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-021` | Shipment Status and Cargo Details | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-022` | Shipment Route Map | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-023` | Infrastructure and Shipment Static Domain Types | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-024` | Live Invoice Form Preview | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-025` | Invoice Client Selector | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-026` | Invoice Reference and Date Fields | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-027` | Invoice Line Item Add Remove and Reorder | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-028` | Invoice Tax and Discount Controls | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-029` | Invoice Amount Calculation Utilities | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-030` | Letter Invoice Preview and Scaling | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-031` | Browser Invoice Printing | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-032` | Invoice Print Styles | `implemented` | workflow, ui, interaction |
+| `STUDIO-ADMIN-WORKFLOW-033` | Invoice Payment and Business Tab Substrate | `substrate/seam` | workflow, ui, interaction |
+| `STUDIO-ADMIN-COMM-001` | Static Mailbox Dataset | `partial` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-002` | Mail Folder and Label Sidebar | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-003` | Mail Pinned and Inbox Groups | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-004` | Mail Selection Store | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-005` | Desktop Resizable Mail Panels | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-006` | Mobile Mail Detail Drawer | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-007` | Mail Message Reader | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-008` | Mail Search Presentation | `partial` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-009` | Mail Action Substrate | `substrate/seam` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-010` | Static Chat Conversation Dataset | `partial` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-011` | Chat Channel and View Sidebar | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-012` | Chat Conversation Selection Store | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-013` | Chat Conversation List Tabs | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-014` | Responsive Chat Thread Navigation | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-015` | Chat Message Timeline and Reactions | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-016` | Reply and Internal Note Composer | `partial` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-017` | Chat Contact Profile | `implemented` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-COMM-018` | Chat Action Substrate | `substrate/seam` | collaboration, ui, interaction |
+| `STUDIO-ADMIN-UI-001` | Base Form Control Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-002` | Structured Field and Input Group Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-003` | Dialog Sheet Drawer and Alert Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-004` | Menu and Popover Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-005` | Accordion Collapsible Tabs and Toggle Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-006` | Navigation and Wayfinding Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-007` | Command and Combobox Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-008` | Table and Item Presentation Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-009` | Card Badge Avatar and Alert Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-010` | Chart Composition Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-011` | Calendar and Date Range Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-012` | Carousel Resizable and Scroll Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-013` | Feedback State Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-014` | Tooltip Keyboard and Marker Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-015` | Messaging Presentation Suite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-016` | Layout and Media Primitives | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-017` | Tokenized Variant Composition | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-018` | Simple Icon Adapter | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-UI-019` | Date Range Picker Composite | `implemented` | ui, reusable-internal, design-system |
+| `STUDIO-ADMIN-DATA-001` | Embedded Screen Fixture Architecture | `partial` | data, architecture, developer-experience |
+| `STUDIO-ADMIN-DATA-002` | Zod-Validated Demo Row Schemas | `implemented` | data, validation, reusable-internal |
+| `STUDIO-ADMIN-DATA-003` | TanStack Table State Architecture | `implemented` | data, ui, reusable-internal |
+| `STUDIO-ADMIN-DATA-004` | Process-Local Zustand Selection Stores | `implemented` | data, state, reusable-internal |
+| `STUDIO-ADMIN-DATA-005` | Cookie Utility Boundary | `implemented` | data, state, reusable-internal |
+| `STUDIO-ADMIN-DATA-006` | Mail Panel Layout Cookie | `implemented` | data, state, personalization |
+| `STUDIO-ADMIN-DATA-007` | Derived Invoice Calculation Model | `implemented` | data, workflow, reusable-internal |
+| `STUDIO-ADMIN-DATA-008` | Local-State-Only Kanban Model | `partial` | data, workflow, state |
+| `STUDIO-ADMIN-DATA-009` | Preference Storage Strategy Abstraction | `implemented` | data, state, reusable-internal |
+| `STUDIO-ADMIN-DATA-010` | No Durable Application Data Store | `configuration-only` | data, architecture, operations |
+| `STUDIO-ADMIN-INTEGRATION-001` | World Atlas CDN Map Integration | `implemented` | integration, ui, data |
+| `STUDIO-ADMIN-INTEGRATION-002` | GitHub Repository Link | `implemented` | integration, navigation, ui |
+| `STUDIO-ADMIN-INTEGRATION-003` | Google Font Delivery | `implemented` | integration, ui, design-system |
+| `STUDIO-ADMIN-INTEGRATION-004` | Simple Icons Brand Asset Integration | `implemented` | integration, ui, assets |
+| `STUDIO-ADMIN-SECURITY-001` | No Active Authentication Enforcement | `configuration-only` | security, authentication, architecture |
+| `STUDIO-ADMIN-SECURITY-002` | No Server Authorization or RBAC Enforcement | `configuration-only` | security, authorization, administration |
+| `STUDIO-ADMIN-SECURITY-003` | Validated Preference Allowlist | `implemented` | security, configuration, state |
+| `STUDIO-ADMIN-SECURITY-004` | Preference and Sidebar Cookie Limitations | `partial` | security, data, state |
+| `STUDIO-ADMIN-SECURITY-005` | Production Console Removal | `configuration-only` | security, operations, configuration |
+| `STUDIO-ADMIN-SECURITY-006` | External Map Fetch Error Containment | `implemented` | security, integration, resilience |
+| `STUDIO-ADMIN-SECURITY-007` | Credential Toast Exposure | `partial` | security, authentication, ui |
+| `STUDIO-ADMIN-A11Y-001` | Code-Level Focus and Semantic Control Baseline | `implemented` | accessibility, ui, reusable-internal |
+| `STUDIO-ADMIN-A11Y-002` | Screen-Reader-Only Labels | `implemented` | accessibility, ui |
+| `STUDIO-ADMIN-A11Y-003` | Keyboard-Operable Sidebar and Command Palette | `implemented` | accessibility, navigation, interaction |
+| `STUDIO-ADMIN-A11Y-004` | Keyboard-Operable Kanban Drag | `implemented` | accessibility, workflow, interaction |
+| `STUDIO-ADMIN-A11Y-005` | Responsive Overlay Naming | `implemented` | accessibility, responsive, ui |
+| `STUDIO-ADMIN-A11Y-006` | Chart Accessibility Layer Configuration | `implemented` | accessibility, analytics, ui |
+| `STUDIO-ADMIN-A11Y-007` | Reduced-Motion Handling Absent | `configuration-only` | accessibility, ui, configuration |
+| `STUDIO-ADMIN-A11Y-008` | LTR-Oriented English UI Baseline | `configuration-only` | accessibility, localization, ui |
+| `STUDIO-ADMIN-DEV-001` | Strict TypeScript No-Emit Configuration | `configuration-only` | developer-experience, testing, configuration |
+| `STUDIO-ADMIN-DEV-002` | Biome Lint Format and Assist Configuration | `configuration-only` | developer-experience, testing, configuration |
+| `STUDIO-ADMIN-DEV-003` | UI and Calendar Biome Exclusions | `configuration-only` | developer-experience, testing, configuration |
+| `STUDIO-ADMIN-DEV-004` | Tailwind CSS v4 PostCSS Pipeline | `configuration-only` | developer-experience, ui, build |
+| `STUDIO-ADMIN-DEV-005` | shadcn Radix Nova Generator Configuration | `configuration-only` | developer-experience, ui, design-system |
+| `STUDIO-ADMIN-DEV-006` | npm Lockfile Dependency Pinning | `configuration-only` | developer-experience, build, operations |
+| `STUDIO-ADMIN-DEV-007` | Pre-Commit Theme Generation and Lint-Staged Gate | `implemented` | developer-experience, testing, automation |
+| `STUDIO-ADMIN-DEV-008` | Theme Preset Code Generator | `implemented` | developer-experience, automation, design-system |
+| `STUDIO-ADMIN-DEV-009` | Next Development Build and Start Commands | `configuration-only` | developer-experience, build, operations |
+| `STUDIO-ADMIN-DEV-010` | Quality Check and Auto-Fix Commands | `configuration-only` | developer-experience, testing |
+| `STUDIO-ADMIN-DEV-011` | Path Alias Architecture | `configuration-only` | developer-experience, architecture |
+| `STUDIO-ADMIN-DEV-012` | Contributor and Agent Guidance | `configuration-only` | developer-experience, documentation |
+| `STUDIO-ADMIN-DEV-013` | No Project Test Harness | `configuration-only` | testing, developer-experience |
+| `STUDIO-ADMIN-DEV-014` | No CI/CD Workflow | `configuration-only` | testing, operations, developer-experience |
+| `STUDIO-ADMIN-OPS-001` | Standard Next.js Process Lifecycle | `configuration-only` | operations, deployment, build |
+| `STUDIO-ADMIN-OPS-002` | No Tracked Deployment Manifest | `configuration-only` | operations, deployment |
+| `STUDIO-ADMIN-OPS-003` | No Health Telemetry or Observability Runtime | `configuration-only` | operations, security, analytics |
+| `STUDIO-ADMIN-OPS-004` | No Queue Job Scheduler or Realtime Transport | `configuration-only` | operations, automation, realtime |
