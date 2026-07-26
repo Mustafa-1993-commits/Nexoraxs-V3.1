@@ -1,0 +1,363 @@
+schema_version: 0.1.0
+object_type: reference-knowledge-object
+identity:
+  knowledge_object_id: RKO-SRC-SYNTHETIC-FIXTURE-SCHEDULED-REPORT-DELIVERY
+  capability_id: CAP-SYNTHETIC-SCHEDULED-REPORT-DELIVERY
+  repository_id: SRC-SYNTHETIC-FIXTURE
+  repository_name: Synthetic Fixture Repository
+  repository_slug: synthetic-repository
+  pinned_sha: "1111111111111111111111111111111111111111"
+  capability_name: Scheduled Report Delivery
+  canonical_aliases: [scheduled reports, asynchronous report delivery]
+  related_feature_ids: [SYNTH-JOB-001]
+  generated_at: "2026-07-26T12:09:25+03:00"
+  updated_at: "2026-07-26T12:09:25+03:00"
+  state: UNDERSTOOD
+  staleness:
+    status: CURRENT
+    checked_at: "2026-07-26T12:09:25+03:00"
+    reasons: []
+  fixture: true
+  supersedes: null
+business:
+  purpose:
+    - claim_id: BUS-001
+      statement: An authorized workspace member can schedule report generation and receive a private expiring download link.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  problem_solved: []
+  actors:
+    - claim_id: BUS-002
+      statement: The actors are a workspace member and a report worker.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  user_journeys:
+    - claim_id: BUS-003
+      statement: The member creates a schedule and later receives a link after background generation.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  business_rules:
+    - claim_id: BUS-004
+      statement: A paused schedule does not enqueue due work.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  invariants:
+    - claim_id: BUS-005
+      statement: Generated artifacts remain private.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  defaults: []
+  configuration: []
+  limitations:
+    - claim_id: BUS-006
+      statement: Realtime and webhook behavior are not part of the synthetic capability.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+workflow:
+  entry_points:
+    - claim_id: WF-001
+      statement: The flow starts when a member submits a report schedule.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  commands_actions: []
+  lifecycle: []
+  states:
+    - claim_id: WF-002
+      statement: The defined states are ACTIVE, PAUSED, RUNNING, SUCCEEDED, and FAILED.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  transitions: []
+  guards:
+    - claim_id: WF-003
+      statement: Membership and report access guard schedule creation.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  failure_paths:
+    - claim_id: WF-004
+      statement: Generation failure retains failure metadata and does not expose a public object URL.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  sequence_flow:
+    - claim_id: WF-005
+      statement: Validation precedes persistence, scheduling, queued generation, private storage, and notification.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+authorization_tenancy:
+  scopes:
+    - claim_id: AUTH-001
+      statement: Schedules and artifacts are scoped to one fictional workspace.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  roles: []
+  permissions:
+    - claim_id: AUTH-002
+      statement: The member must have report-view permission.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  membership_checks:
+    - claim_id: AUTH-003
+      statement: Workspace membership is checked before schedule creation.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  ownership: []
+  isolation_boundaries:
+    - claim_id: AUTH-004
+      statement: Workspace scope is preserved through background generation.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+      notes: [The fixture requires workspace scope but does not specify transport mechanics.]
+  public_private_boundaries:
+    - claim_id: AUTH-005
+      statement: The artifact is private and accessed through an expiring link.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+data:
+  models_entities:
+    - claim_id: DATA-001
+      statement: The definition implies schedule, generation, artifact, and notification records.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+  fields: []
+  relationships: []
+  constraints: []
+  indexes: []
+  persistence:
+    - claim_id: DATA-002
+      statement: The schedule and failure metadata are persisted.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  cache: []
+  soft_deletion: []
+  retention: []
+  object_storage:
+    - claim_id: DATA-003
+      statement: Generated report artifacts use private object storage.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+backend:
+  routes_endpoints: []
+  controllers_handlers: []
+  services_use_cases: []
+  policies_guards:
+    - claim_id: BE-001
+      statement: Authorization and schedule validation occur before persistence.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  events: []
+  listeners: []
+  jobs:
+    - claim_id: BE-002
+      statement: Due schedules enqueue background report generation.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  schedulers:
+    - claim_id: BE-003
+      statement: A scheduler detects due active schedules.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+  notifications:
+    - claim_id: BE-004
+      statement: Successful generation notifies the requesting member with an expiring link.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  webhooks: []
+  realtime: []
+frontend:
+  pages_routes: []
+  layouts: []
+  components: []
+  forms:
+    - claim_id: FE-001
+      statement: A schedule submission interaction is required, but exact form components are unspecified.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+  stores_state: []
+  hooks_services: []
+  interaction_patterns: []
+  loading_empty_error_states:
+    - claim_id: FE-002
+      statement: Permission, validation, running, success, and failure feedback are required by the workflow.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+  accessibility: []
+  localization: []
+dependencies_relationships:
+  upstream_dependencies:
+    - claim_id: DEP-001
+      statement: The capability depends on membership, report access, scheduling, queue, private storage, and notification boundaries.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  downstream_dependents: []
+  related_capabilities: []
+  integration_points: []
+  extension_seams: []
+  feature_flags: []
+quality:
+  tests:
+    - claim_id: QUAL-001
+      statement: Required test concerns include permission denial, validation, retry behavior, private storage, and notification delivery.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  fixtures: []
+  observability: []
+  logs: []
+  metrics: []
+  security_controls:
+    - claim_id: QUAL-002
+      statement: Workspace isolation and private artifact access are required security controls.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  known_gaps:
+    - claim_id: QUAL-003
+      statement: Retry counts, retention, route syntax, framework, logs, metrics, accessibility, and localization are not specified.
+      status: Unknown
+      confidence: High
+      evidence_refs: []
+  contradictions: []
+  unknowns: []
+reuse_adaptation:
+  mode: UNDERSTAND
+  conceptual_reuse_value:
+    - claim_id: REUSE-001
+      statement: The fixture demonstrates conceptual separation of scheduling, generation, storage, and notification.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+  coupling:
+    - claim_id: REUSE-002
+      statement: The capability is coupled to authorization, scheduling, queue, storage, and notification boundaries.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  isolation_difficulty: []
+  migration_complexity: []
+  implementation_risks:
+    - claim_id: REUSE-003
+      statement: Losing tenant context or storage privacy across the queue boundary is an implementation risk.
+      status: Inferred
+      confidence: Medium
+      evidence_refs: [SYN-E-001]
+  license_impact:
+    - claim_id: LIC-001
+      statement: The synthetic fixture data declares CC0-1.0 and contains no external source code.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  prohibited_reuse:
+    - claim_id: LIC-002
+      statement: The fixture does not authorize copying from any real source repository.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+  independent_reimplementation_notes:
+    - claim_id: REUSE-004
+      statement: Any NexoraXS design requires a separate explicit ADAPT request and authoritative governance review.
+      status: Verified
+      confidence: High
+      evidence_refs: [SYN-E-001]
+evidence:
+  discovery_evidence_ids: []
+  records:
+    - evidence_id: SYN-E-001
+      kind: synthetic-fixture
+      path: docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml
+      symbol_or_range: complete synthetic capability definition
+      line_range: null
+      blob_sha: null
+      discovery_evidence_id: null
+      claim_ids:
+        - BUS-001
+        - BUS-002
+        - BUS-003
+        - BUS-004
+        - BUS-005
+        - BUS-006
+        - WF-001
+        - WF-002
+        - WF-003
+        - WF-004
+        - WF-005
+        - AUTH-001
+        - AUTH-002
+        - AUTH-003
+        - AUTH-004
+        - AUTH-005
+        - DATA-001
+        - DATA-002
+        - DATA-003
+        - BE-001
+        - BE-002
+        - BE-003
+        - BE-004
+        - FE-001
+        - FE-002
+        - DEP-001
+        - QUAL-001
+        - QUAL-002
+        - REUSE-001
+        - REUSE-002
+        - REUSE-003
+        - LIC-001
+        - LIC-002
+        - REUSE-004
+      status: Verified
+      confidence: High
+section_tracking:
+  - {artifact: OVERVIEW.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: BUSINESS-RULES.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: WORKFLOW.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: AUTHORIZATION-TENANCY.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: DATA-MODEL.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: BACKEND-FLOW.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: FRONTEND-FLOW.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: DEPENDENCIES.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: QUALITY-SECURITY.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: REUSE-LICENSE.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+  - {artifact: EVIDENCE.md, state: CURRENT, source_paths: [docs/09-reference-intelligence/fixtures/synthetic-repository/source/CAPABILITY.yaml], evidence_refs: [SYN-E-001], evidence_fingerprint: synthetic-fixture-v1, verified_at: "2026-07-26T12:09:25+03:00"}
+relationships:
+  - relationship_id: SYN-REL-001
+    subject: RKO-SRC-SYNTHETIC-FIXTURE-SCHEDULED-REPORT-DELIVERY
+    predicate: belongs_to
+    object: CAP-SYNTHETIC-SCHEDULED-REPORT-DELIVERY
+    status: Verified
+    evidence_refs: [SYN-E-001]
+  - relationship_id: SYN-REL-002
+    subject: CAP-SYNTHETIC-SCHEDULED-REPORT-DELIVERY
+    predicate: depends_on
+    object: SYNTH-JOB-001
+    status: Verified
+    evidence_refs: [SYN-E-001]
+  - relationship_id: SYN-REL-003
+    subject: SYNTH-JOB-001
+    predicate: persisted_by
+    object: synthetic-private-object-storage
+    status: Verified
+    evidence_refs: [SYN-E-001]

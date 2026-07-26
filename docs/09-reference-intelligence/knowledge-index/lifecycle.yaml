@@ -1,0 +1,47 @@
+schema_version: 0.1.0
+index_type: reference-lifecycle
+updated_at: "2026-07-26T12:09:25+03:00"
+repositories:
+  - repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
+    state: KNOWLEDGE_READY
+    cataloged_feature_count: 68
+    understood_feature_count: 0
+    understanding_coverage: 0.0
+    stale_knowledge_count: 0
+  - repository_id: SRC-PLANE
+    state: KNOWLEDGE_READY
+    cataloged_feature_count: 161
+    understood_feature_count: 0
+    understanding_coverage: 0.0
+    stale_knowledge_count: 0
+  - repository_id: SRC-BOXYHQ
+    state: NEW
+    cataloged_feature_count: 0
+    understood_feature_count: 0
+    understanding_coverage: null
+    stale_knowledge_count: 0
+  - repository_id: SRC-HR-NEXT-NEXORAXS
+    state: NEW
+    cataloged_feature_count: 0
+    understood_feature_count: 0
+    understanding_coverage: null
+    stale_knowledge_count: 0
+  - repository_id: SRC-KIRANISM-SHADCN
+    state: NEW
+    cataloged_feature_count: 0
+    understood_feature_count: 0
+    understanding_coverage: null
+    stale_knowledge_count: 0
+  - repository_id: SRC-NEXORAXS-V2
+    state: NEW
+    cataloged_feature_count: 0
+    understood_feature_count: 0
+    understanding_coverage: null
+    stale_knowledge_count: 0
+  - repository_id: SRC-STUDIO-ADMIN
+    state: NEW
+    cataloged_feature_count: 0
+    understood_feature_count: 0
+    understanding_coverage: null
+    stale_knowledge_count: 0
+capabilities: []
