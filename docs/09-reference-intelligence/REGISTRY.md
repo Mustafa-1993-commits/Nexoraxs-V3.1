@@ -196,6 +196,12 @@ docs/09-reference-intelligence/
 
 Each repository directory stores its complete, evidence-backed knowledge model. The directory must not be treated as a feature-specific workspace.
 
+## On-Demand Reference Knowledge
+
+Repository Discovery remains the complete inventory layer. Deeper capability analysis is lazy and follows the additive [On-Demand Reference Knowledge Architecture](REFERENCE-KNOWLEDGE-ARCHITECTURE.md).
+
+Understanding state and coverage are tracked separately in the [Reference Knowledge Lifecycle](REFERENCE-LIFECYCLE.md) and [knowledge indexes](knowledge-index/README.md). Discovery `Complete` does not mean `FULLY_UNDERSTOOD`, and no Reference Knowledge Object is generated merely because a feature is cataloged.
+
 ## Adoption Boundary
 
 Only after a repository has been fully discovered may individual capabilities or features be selected as implementation references.
@@ -220,6 +226,7 @@ Local Source Repository
 → Complete Feature Catalog
 → Cross-Repository Search and User Selection
 → Reference Feature Retrieval
+→ Deep Understanding on demand when required
 → Selected Reference Evidence
 → /speckit.specify
 → /speckit.clarify

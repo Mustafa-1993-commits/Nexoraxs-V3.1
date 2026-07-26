@@ -1,0 +1,28 @@
+fixture: true
+repository_id: SRC-SYNTHETIC-FIXTURE
+pinned_sha: "1111111111111111111111111111111111111111"
+feature_id: SYNTH-JOB-001
+capability: Scheduled Report Delivery
+purpose: Allow a workspace member to schedule a report and receive a private download link after background generation.
+actors:
+  - workspace member
+  - report worker
+workflow:
+  - validate schedule and report access
+  - persist schedule
+  - enqueue generation when due
+  - store generated artifact privately
+  - notify requesting member with an expiring link
+states: [ACTIVE, PAUSED, RUNNING, SUCCEEDED, FAILED]
+failure_behavior:
+  - retain failure metadata
+  - do not expose a public object URL
+security:
+  - require workspace membership and report-view permission
+  - scope schedules and artifacts to one workspace
+quality:
+  - cover permission denial, schedule validation, worker retry, private storage, and notification delivery
+limitations:
+  - no realtime behavior
+  - no webhook behavior
+license: CC0-1.0 synthetic fixture data

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reference Feature Retrieval"
+  short_description: "Retrieve catalog or current deep reference knowledge"
+  default_prompt: "Use $reference-feature-retrieval to retrieve a cataloged feature or its current evidence-backed deep knowledge."

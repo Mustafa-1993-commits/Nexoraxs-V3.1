@@ -1,0 +1,206 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://nexoraxs.local/schemas/reference-knowledge-index.schema.yaml
+title: Reference Knowledge Index
+oneOf:
+  - $ref: '#/$defs/knowledge_objects_index'
+  - $ref: '#/$defs/capabilities_index'
+  - $ref: '#/$defs/aliases_index'
+  - $ref: '#/$defs/relationships_index'
+  - $ref: '#/$defs/lifecycle_index'
+  - $ref: '#/$defs/stale_index'
+$defs:
+  base:
+    type: object
+    required: [schema_version, index_type, updated_at]
+    properties:
+      schema_version:
+        type: string
+        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+      index_type:
+        type: string
+      updated_at:
+        type: string
+        format: date-time
+  repository_state:
+    enum: [NEW, DISCOVERED, CATALOGED, KNOWLEDGE_READY, PARTIALLY_UNDERSTOOD, FULLY_UNDERSTOOD]
+  capability_state:
+    enum: [CATALOGED, ANALYSIS_REQUIRED, UNDERSTANDING_IN_PROGRESS, UNDERSTOOD, STALE, SUPERSEDED, BLOCKED]
+  relationship_predicate:
+    enum:
+      - depends_on
+      - used_by
+      - belongs_to
+      - contains
+      - emits
+      - consumes
+      - secured_by
+      - configured_by
+      - rendered_by
+      - persisted_by
+      - scheduled_by
+      - integrated_with
+      - related_to
+  knowledge_objects_index:
+    allOf:
+      - $ref: '#/$defs/base'
+      - type: object
+        additionalProperties: false
+        required: [schema_version, index_type, updated_at, repositories]
+        properties:
+          schema_version: {type: string}
+          index_type: {const: repository-knowledge-objects}
+          updated_at: {type: string, format: date-time}
+          repositories:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [repository_id, repository_slug, pinned_sha, knowledge_objects]
+              properties:
+                repository_id: {type: string, minLength: 1}
+                repository_slug: {type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'}
+                pinned_sha: {type: string, pattern: '^[0-9a-f]{40}$'}
+                knowledge_objects:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required: [knowledge_object_id, capability_id, path, state, stale]
+                    properties:
+                      knowledge_object_id: {type: string, pattern: '^RKO-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                      capability_id: {type: string, pattern: '^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                      path: {type: string, minLength: 1}
+                      state: {$ref: '#/$defs/capability_state'}
+                      stale: {type: boolean}
+  capabilities_index:
+    allOf:
+      - $ref: '#/$defs/base'
+      - type: object
+        additionalProperties: false
+        required: [schema_version, index_type, updated_at, records]
+        properties:
+          schema_version: {type: string}
+          index_type: {const: canonical-capabilities}
+          updated_at: {type: string, format: date-time}
+          records: {type: array}
+  aliases_index:
+    allOf:
+      - $ref: '#/$defs/base'
+      - type: object
+        additionalProperties: false
+        required: [schema_version, index_type, updated_at, aliases]
+        properties:
+          schema_version: {type: string}
+          index_type: {const: capability-aliases}
+          updated_at: {type: string, format: date-time}
+          aliases:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [alias, normalized_alias, capability_ids]
+              properties:
+                alias: {type: string, minLength: 1}
+                normalized_alias: {type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'}
+                capability_ids:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items: {type: string, pattern: '^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+  relationships_index:
+    allOf:
+      - $ref: '#/$defs/base'
+      - type: object
+        additionalProperties: false
+        required: [schema_version, index_type, updated_at, relationships]
+        properties:
+          schema_version: {type: string}
+          index_type: {const: reference-relationships}
+          updated_at: {type: string, format: date-time}
+          relationships:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [relationship_id, subject, predicate, object, repository_id, knowledge_object_ids, evidence_refs, status]
+              properties:
+                relationship_id: {type: string, pattern: '^REL-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                subject: {type: string, minLength: 1}
+                predicate: {$ref: '#/$defs/relationship_predicate'}
+                object: {type: string, minLength: 1}
+                repository_id: {type: [string, 'null']}
+                knowledge_object_ids:
+                  type: array
+                  uniqueItems: true
+                  items: {type: string, pattern: '^RKO-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                evidence_refs:
+                  type: array
+                  uniqueItems: true
+                  items: {type: string}
+                status: {enum: [Verified, Inferred, Unknown, Contradictory]}
+  lifecycle_index:
+    allOf:
+      - $ref: '#/$defs/base'
+      - type: object
+        additionalProperties: false
+        required: [schema_version, index_type, updated_at, repositories, capabilities]
+        properties:
+          schema_version: {type: string}
+          index_type: {const: reference-lifecycle}
+          updated_at: {type: string, format: date-time}
+          repositories:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [repository_id, state, cataloged_feature_count, understood_feature_count, understanding_coverage, stale_knowledge_count]
+              properties:
+                repository_id: {type: string, minLength: 1}
+                state: {$ref: '#/$defs/repository_state'}
+                cataloged_feature_count: {type: integer, minimum: 0}
+                understood_feature_count: {type: integer, minimum: 0}
+                understanding_coverage: {type: [number, 'null'], minimum: 0, maximum: 1}
+                stale_knowledge_count: {type: integer, minimum: 0}
+          capabilities:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [capability_id, repository_id, knowledge_object_id, state, stale]
+              properties:
+                capability_id: {type: string, pattern: '^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                repository_id: {type: string, minLength: 1}
+                knowledge_object_id: {type: [string, 'null']}
+                state: {$ref: '#/$defs/capability_state'}
+                stale: {type: boolean}
+  stale_index:
+    allOf:
+      - $ref: '#/$defs/base'
+      - type: object
+        additionalProperties: false
+        required: [schema_version, index_type, updated_at, records]
+        properties:
+          schema_version: {type: string}
+          index_type: {const: stale-reference-knowledge}
+          updated_at: {type: string, format: date-time}
+          records:
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required: [knowledge_object_id, repository_id, capability_id, stale_since, reasons, affected_sections, required_action]
+              properties:
+                knowledge_object_id: {type: string, pattern: '^RKO-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                repository_id: {type: string, minLength: 1}
+                capability_id: {type: string, pattern: '^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$'}
+                stale_since: {type: string, format: date-time}
+                reasons:
+                  type: array
+                  minItems: 1
+                  items: {type: string}
+                affected_sections:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items: {type: string}
+                required_action: {enum: [REFRESH_AFFECTED_SECTIONS, REFRESH_COMPLETE_OBJECT, DELTA_DISCOVERY, BLOCK]}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reference Capability Comparison"
+  short_description: "Compare capability evidence across repositories"
+  default_prompt: "Use $reference-capability-comparison to compare one capability across discovered repositories without adapting it."

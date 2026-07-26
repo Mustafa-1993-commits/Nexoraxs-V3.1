@@ -4,6 +4,8 @@ This directory will contain only features verified by Repository Discovery from 
 
 A folder name or repository presence does not prove a feature role. Every indexed feature must use a stable feature ID and link to its pinned source revision, executable evidence, license review, discovery report, explicit exclusions, and any later NexoraXS adoption history.
 
+Cross-repository semantic capabilities and lazy Reference Knowledge Objects are indexed separately in the [Reference Knowledge indexes](../knowledge-index/README.md). This feature index remains authoritative for stable repository feature IDs.
+
 ## SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
 
 - **Repository:** `aliziodev/laravel-next-starter-kit`

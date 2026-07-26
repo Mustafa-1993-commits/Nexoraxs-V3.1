@@ -1,59 +1,75 @@
 ---
 name: reference-feature-retrieval
-description: Retrieve an already discovered feature from a user-selected source repository, validate its evidence and revision status, and prepare a reference package for Spec Kit without implementing it.
+description: Retrieve authoritative catalog data or a selected-reference evidence package from an already discovered repository, and route deep implementation questions to current on-demand Reference Knowledge Objects. Use for feature lookup, selected reference handoff, or deep retrieval; preserve stable feature IDs, handle ambiguity and staleness, and never implement or adapt NexoraXS.
 ---
 
 # Reference Feature Retrieval
 
 ## Purpose
 
-Retrieve an already discovered feature from a known source repository after the user explicitly selects it.
-
-Example selection:
-
-> Use the Theme System from Plane.
-
-This skill prepares verified reference evidence for a later Spec Kit handoff. It does not perform implementation.
+Retrieve an already discovered feature from a known source repository. Preserve the existing Selected Reference Evidence contract while adding lazy routing to Reference Knowledge Objects for questions deeper than the catalog.
 
 ## Inputs
 
 - Registered source repository ID or name.
-- Stable feature ID or unambiguous feature name.
-- Optional target NexoraXS concern for context.
+- Stable feature ID, unambiguous feature name, or semantic capability request.
+- Request depth: catalog-only, selected-reference handoff, or deep implementation question.
+- Optional target NexoraXS concern for compatibility questions only.
 
 ## Preconditions
 
-1. The repository has an existing discovery workspace.
-2. The feature exists in `FEATURE-CATALOG.md` and `FEATURE-CATALOG.yaml`.
-3. The feature record has source evidence.
-4. The pinned discovered revision and stale status are known.
-5. The user selected the repository and feature. Do not silently substitute another source.
+1. The repository is registered.
+2. The repository has an authoritative discovery workspace and machine catalog.
+3. The pinned revision, evidence, license, coverage, unknowns, and stale status are known.
+4. Selected-reference output requires explicit user selection; never silently substitute a source.
 
-## Required Behavior
+If discovery is missing, stop and request `full-repository-discovery`.
 
-1. Resolve the exact repository and stable feature ID.
-2. Load the repository profile, feature record, evidence manifest, dependency map, license review, coverage report, unknowns, and change-detection record.
-3. Validate that the local source revision still matches the pinned discovered revision.
-4. Report whether the knowledge is current, partial, contradictory, or stale.
-5. Retrieve linked source files, symbols, routes, screens, components, hooks, state, services, APIs, backend handlers, models, migrations, jobs, events, integrations, tests, configuration, permissions, tenancy behavior, and dependencies.
-6. Identify missing evidence, unresolved dependencies, and license constraints.
-7. Produce a Selected Reference Evidence package suitable for `/speckit.specify`.
-8. Preserve explicit adopted and excluded behavior.
+## Route by Request Depth
 
-## Prohibited Behavior
+### Catalog-Only
 
-- Do not implement the feature.
-- Do not edit the source repository.
-- Do not copy source code automatically.
-- Do not silently choose a different repository or feature.
-- Do not bypass NexoraXS architecture or governance.
-- Do not hide license, security, tenancy, or dependency impact.
-- Do not present stale knowledge as current.
-- Do not infer that visual similarity authorizes copying.
+For list, lookup, summary, purpose, classification, or entry-point questions:
 
-## Required Output
+1. resolve exact feature IDs, canonical names, and aliases;
+2. return authoritative catalog fields and discovery evidence links;
+3. do not inspect original source;
+4. do not create a Reference Knowledge Object.
 
-Produce a concise selected-reference record containing:
+### Ambiguous Capability
+
+When multiple catalog records or aliases match:
+
+1. return candidate repository, feature ID, canonical name, classification, and match reason;
+2. ask the user to choose;
+3. stop before deep source inspection.
+
+### Deep Implementation Question
+
+For end-to-end workflow, authorization, tenancy, data model, backend/frontend, job, realtime, integration, failure, quality, or security questions:
+
+1. read `.codex/skills/repository-deep-understanding/SKILL.md`;
+2. find a current object in `knowledge-index/knowledge-objects.yaml`;
+3. validate and retrieve it when current;
+4. invoke the deep-understanding workflow when missing;
+5. refresh only affected sections when stale;
+6. return the current object findings in `UNDERSTAND` mode.
+
+Never route a deep question to ADAPT.
+
+### Selected Reference Evidence
+
+When the user explicitly selects a repository feature for later Spec Kit use:
+
+1. resolve the exact repository and stable feature ID;
+2. load profile, catalog record, evidence manifest, dependency map, license review, coverage report, unknowns, and change detection;
+3. validate the local source revision against the pin;
+4. use a current Reference Knowledge Object when the handoff requires fields beyond the catalog;
+5. produce the backward-compatible Selected Reference Evidence package.
+
+## Selected Reference Evidence Output
+
+Keep these fields:
 
 - selected repository ID and name;
 - stable feature ID and canonical name;
@@ -73,33 +89,38 @@ Produce a concise selected-reference record containing:
 - NexoraXS compatibility questions;
 - readiness for Spec Kit handoff.
 
-## Stale Knowledge Handling
+“Adopted behavior” records the user’s explicit selection for specification consideration; it is not an approved design or implementation.
 
-When the current SHA differs from the pinned discovered SHA:
+## Stale Handling
 
-1. Do not continue as if the catalog is current.
-2. Read `CHANGE-DETECTION.md`.
-3. Identify whether changed files may affect the selected feature.
-4. Require delta discovery when impact is possible or unknown.
-5. Allow retrieval only with a clear stale warning when evidence proves the changes are unrelated.
+When current source, catalog, or object evidence differs:
+
+1. read repository `CHANGE-DETECTION.md`;
+2. identify affected feature IDs and object sections;
+3. require delta discovery when catalog impact is possible or unknown;
+4. refresh only isolated affected object sections after catalog authority is current;
+5. allow retrieval with a stale warning only when evidence proves the requested records are unaffected.
+
+Never present stale knowledge as current.
+
+## Prohibited Behavior
+
+- Do not implement or adapt the feature.
+- Do not edit a source repository.
+- Do not copy source code.
+- Do not silently choose a repository or feature.
+- Do not bypass NexoraXS architecture or governance.
+- Do not hide license, security, tenancy, dependency, unknown, or contradiction impact.
+- Do not infer that visual or conceptual similarity authorizes copying.
 
 ## Spec Kit Boundary
 
-The normal handoff is:
-
 ```text
 User selects repository feature
-→ Reference Feature Retrieval
-→ Selected Reference Evidence
-→ /speckit.specify
-→ /speckit.clarify
-→ /speckit.plan
-→ /speckit.tasks
-→ /speckit.implement in Nexoraxs-V3.1
+  -> Reference Feature Retrieval
+  -> current catalog and optional Reference Knowledge Object
+  -> Selected Reference Evidence
+  -> /speckit.specify
 ```
 
-This skill ends before `/speckit.specify` and does not create runtime code.
-
-## Authority Boundary
-
-The source implementation is reference evidence, not NexoraXS authority. `Nexoraxs-V3.1` remains authoritative for governance, Constitution, architecture, domain ownership, tenancy, security, product behavior, and implementation decisions.
+This skill ends before Spec Kit and does not create runtime code. The source remains reference evidence; NexoraXS remains authoritative.

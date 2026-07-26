@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Deep Understanding"
+  short_description: "Build capability knowledge from evidence on demand"
+  default_prompt: "Use $repository-deep-understanding to explain a discovered capability end to end from pinned source evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reference Capability Adaptation"
+  short_description: "Propose governed independent NexoraXS adaptations"
+  default_prompt: "Use $reference-capability-adaptation to propose an independent NexoraXS design from current reference knowledge objects."

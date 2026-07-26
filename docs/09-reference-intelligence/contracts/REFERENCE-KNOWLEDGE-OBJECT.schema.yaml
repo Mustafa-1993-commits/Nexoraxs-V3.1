@@ -1,0 +1,411 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://nexoraxs.local/schemas/reference-knowledge-object.schema.yaml
+title: Reference Knowledge Object
+type: object
+additionalProperties: false
+required:
+  - schema_version
+  - object_type
+  - identity
+  - business
+  - workflow
+  - authorization_tenancy
+  - data
+  - backend
+  - frontend
+  - dependencies_relationships
+  - quality
+  - reuse_adaptation
+  - evidence
+  - section_tracking
+  - relationships
+properties:
+  schema_version:
+    type: string
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+  object_type:
+    const: reference-knowledge-object
+  identity:
+    type: object
+    additionalProperties: false
+    required:
+      - knowledge_object_id
+      - capability_id
+      - repository_id
+      - repository_name
+      - repository_slug
+      - pinned_sha
+      - capability_name
+      - canonical_aliases
+      - related_feature_ids
+      - generated_at
+      - updated_at
+      - state
+      - staleness
+      - fixture
+    properties:
+      knowledge_object_id:
+        type: string
+        pattern: '^RKO-[A-Z0-9]+(?:-[A-Z0-9]+)*$'
+      capability_id:
+        type: string
+        pattern: '^CAP-[A-Z0-9]+(?:-[A-Z0-9]+)*$'
+      repository_id:
+        type: string
+        minLength: 1
+      repository_name:
+        type: string
+        minLength: 1
+      repository_slug:
+        type: string
+        pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+      pinned_sha:
+        type: string
+        pattern: '^[0-9a-f]{40}$'
+      capability_name:
+        type: string
+        minLength: 1
+      canonical_aliases:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+      related_feature_ids:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+      generated_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      state:
+        $ref: '#/$defs/capability_state'
+      staleness:
+        type: object
+        additionalProperties: false
+        required: [status, checked_at, reasons]
+        properties:
+          status:
+            enum: [CURRENT, STALE]
+          checked_at:
+            type: string
+            format: date-time
+          reasons:
+            type: array
+            items:
+              type: string
+      fixture:
+        type: boolean
+      supersedes:
+        type: [string, 'null']
+        pattern: '^RKO-[A-Z0-9]+(?:-[A-Z0-9]+)*$'
+  business:
+    type: object
+    additionalProperties: false
+    required: [purpose, problem_solved, actors, user_journeys, business_rules, invariants, defaults, configuration, limitations]
+    properties:
+      purpose: {$ref: '#/$defs/claim_list'}
+      problem_solved: {$ref: '#/$defs/claim_list'}
+      actors: {$ref: '#/$defs/claim_list'}
+      user_journeys: {$ref: '#/$defs/claim_list'}
+      business_rules: {$ref: '#/$defs/claim_list'}
+      invariants: {$ref: '#/$defs/claim_list'}
+      defaults: {$ref: '#/$defs/claim_list'}
+      configuration: {$ref: '#/$defs/claim_list'}
+      limitations: {$ref: '#/$defs/claim_list'}
+  workflow:
+    type: object
+    additionalProperties: false
+    required: [entry_points, commands_actions, lifecycle, states, transitions, guards, failure_paths, sequence_flow]
+    properties:
+      entry_points: {$ref: '#/$defs/claim_list'}
+      commands_actions: {$ref: '#/$defs/claim_list'}
+      lifecycle: {$ref: '#/$defs/claim_list'}
+      states: {$ref: '#/$defs/claim_list'}
+      transitions: {$ref: '#/$defs/claim_list'}
+      guards: {$ref: '#/$defs/claim_list'}
+      failure_paths: {$ref: '#/$defs/claim_list'}
+      sequence_flow: {$ref: '#/$defs/claim_list'}
+  authorization_tenancy:
+    type: object
+    additionalProperties: false
+    required: [scopes, roles, permissions, membership_checks, ownership, isolation_boundaries, public_private_boundaries]
+    properties:
+      scopes: {$ref: '#/$defs/claim_list'}
+      roles: {$ref: '#/$defs/claim_list'}
+      permissions: {$ref: '#/$defs/claim_list'}
+      membership_checks: {$ref: '#/$defs/claim_list'}
+      ownership: {$ref: '#/$defs/claim_list'}
+      isolation_boundaries: {$ref: '#/$defs/claim_list'}
+      public_private_boundaries: {$ref: '#/$defs/claim_list'}
+  data:
+    type: object
+    additionalProperties: false
+    required: [models_entities, fields, relationships, constraints, indexes, persistence, cache, soft_deletion, retention, object_storage]
+    properties:
+      models_entities: {$ref: '#/$defs/claim_list'}
+      fields: {$ref: '#/$defs/claim_list'}
+      relationships: {$ref: '#/$defs/claim_list'}
+      constraints: {$ref: '#/$defs/claim_list'}
+      indexes: {$ref: '#/$defs/claim_list'}
+      persistence: {$ref: '#/$defs/claim_list'}
+      cache: {$ref: '#/$defs/claim_list'}
+      soft_deletion: {$ref: '#/$defs/claim_list'}
+      retention: {$ref: '#/$defs/claim_list'}
+      object_storage: {$ref: '#/$defs/claim_list'}
+  backend:
+    type: object
+    additionalProperties: false
+    required: [routes_endpoints, controllers_handlers, services_use_cases, policies_guards, events, listeners, jobs, schedulers, notifications, webhooks, realtime]
+    properties:
+      routes_endpoints: {$ref: '#/$defs/claim_list'}
+      controllers_handlers: {$ref: '#/$defs/claim_list'}
+      services_use_cases: {$ref: '#/$defs/claim_list'}
+      policies_guards: {$ref: '#/$defs/claim_list'}
+      events: {$ref: '#/$defs/claim_list'}
+      listeners: {$ref: '#/$defs/claim_list'}
+      jobs: {$ref: '#/$defs/claim_list'}
+      schedulers: {$ref: '#/$defs/claim_list'}
+      notifications: {$ref: '#/$defs/claim_list'}
+      webhooks: {$ref: '#/$defs/claim_list'}
+      realtime: {$ref: '#/$defs/claim_list'}
+  frontend:
+    type: object
+    additionalProperties: false
+    required: [pages_routes, layouts, components, forms, stores_state, hooks_services, interaction_patterns, loading_empty_error_states, accessibility, localization]
+    properties:
+      pages_routes: {$ref: '#/$defs/claim_list'}
+      layouts: {$ref: '#/$defs/claim_list'}
+      components: {$ref: '#/$defs/claim_list'}
+      forms: {$ref: '#/$defs/claim_list'}
+      stores_state: {$ref: '#/$defs/claim_list'}
+      hooks_services: {$ref: '#/$defs/claim_list'}
+      interaction_patterns: {$ref: '#/$defs/claim_list'}
+      loading_empty_error_states: {$ref: '#/$defs/claim_list'}
+      accessibility: {$ref: '#/$defs/claim_list'}
+      localization: {$ref: '#/$defs/claim_list'}
+  dependencies_relationships:
+    type: object
+    additionalProperties: false
+    required: [upstream_dependencies, downstream_dependents, related_capabilities, integration_points, extension_seams, feature_flags]
+    properties:
+      upstream_dependencies: {$ref: '#/$defs/claim_list'}
+      downstream_dependents: {$ref: '#/$defs/claim_list'}
+      related_capabilities: {$ref: '#/$defs/claim_list'}
+      integration_points: {$ref: '#/$defs/claim_list'}
+      extension_seams: {$ref: '#/$defs/claim_list'}
+      feature_flags: {$ref: '#/$defs/claim_list'}
+  quality:
+    type: object
+    additionalProperties: false
+    required: [tests, fixtures, observability, logs, metrics, security_controls, known_gaps, contradictions, unknowns]
+    properties:
+      tests: {$ref: '#/$defs/claim_list'}
+      fixtures: {$ref: '#/$defs/claim_list'}
+      observability: {$ref: '#/$defs/claim_list'}
+      logs: {$ref: '#/$defs/claim_list'}
+      metrics: {$ref: '#/$defs/claim_list'}
+      security_controls: {$ref: '#/$defs/claim_list'}
+      known_gaps: {$ref: '#/$defs/claim_list'}
+      contradictions: {$ref: '#/$defs/claim_list'}
+      unknowns: {$ref: '#/$defs/claim_list'}
+  reuse_adaptation:
+    type: object
+    additionalProperties: false
+    required: [mode, conceptual_reuse_value, coupling, isolation_difficulty, migration_complexity, implementation_risks, license_impact, prohibited_reuse, independent_reimplementation_notes]
+    properties:
+      mode:
+        const: UNDERSTAND
+      conceptual_reuse_value: {$ref: '#/$defs/claim_list'}
+      coupling: {$ref: '#/$defs/claim_list'}
+      isolation_difficulty: {$ref: '#/$defs/claim_list'}
+      migration_complexity: {$ref: '#/$defs/claim_list'}
+      implementation_risks: {$ref: '#/$defs/claim_list'}
+      license_impact: {$ref: '#/$defs/claim_list'}
+      prohibited_reuse: {$ref: '#/$defs/claim_list'}
+      independent_reimplementation_notes: {$ref: '#/$defs/claim_list'}
+  evidence:
+    type: object
+    additionalProperties: false
+    required: [discovery_evidence_ids, records]
+    properties:
+      discovery_evidence_ids:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          minLength: 1
+      records:
+        type: array
+        minItems: 1
+        items:
+          $ref: '#/$defs/evidence_record'
+  section_tracking:
+    type: array
+    minItems: 11
+    maxItems: 11
+    items:
+      $ref: '#/$defs/section_tracking'
+  relationships:
+    type: array
+    items:
+      $ref: '#/$defs/relationship'
+$defs:
+  capability_state:
+    enum: [CATALOGED, ANALYSIS_REQUIRED, UNDERSTANDING_IN_PROGRESS, UNDERSTOOD, STALE, SUPERSEDED, BLOCKED]
+  evidence_status:
+    enum: [Verified, Inferred, Unknown, Contradictory]
+  confidence:
+    enum: [High, Medium, Low]
+  claim:
+    type: object
+    additionalProperties: false
+    required: [claim_id, statement, status, confidence, evidence_refs]
+    properties:
+      claim_id:
+        type: string
+        pattern: '^[A-Z][A-Z0-9-]+$'
+      statement:
+        type: string
+        minLength: 1
+      status:
+        $ref: '#/$defs/evidence_status'
+      confidence:
+        $ref: '#/$defs/confidence'
+      evidence_refs:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          pattern: '^[A-Z][A-Z0-9-]+$'
+      notes:
+        type: array
+        items:
+          type: string
+    allOf:
+      - if:
+          properties:
+            status:
+              const: Verified
+        then:
+          properties:
+            evidence_refs:
+              minItems: 1
+  claim_list:
+    type: array
+    items:
+      $ref: '#/$defs/claim'
+  evidence_record:
+    type: object
+    additionalProperties: false
+    required: [evidence_id, kind, path, symbol_or_range, claim_ids, status, confidence]
+    properties:
+      evidence_id:
+        type: string
+        pattern: '^[A-Z][A-Z0-9-]+$'
+      kind:
+        enum: [source, discovery, test, configuration, migration, runtime, synthetic-fixture]
+      path:
+        type: string
+        minLength: 1
+      symbol_or_range:
+        type: string
+        minLength: 1
+      line_range:
+        type: [string, 'null']
+      blob_sha:
+        type: [string, 'null']
+        pattern: '^[0-9a-f]{40}$'
+      discovery_evidence_id:
+        type: [string, 'null']
+      claim_ids:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+          pattern: '^[A-Z][A-Z0-9-]+$'
+      status:
+        $ref: '#/$defs/evidence_status'
+      confidence:
+        $ref: '#/$defs/confidence'
+  section_tracking:
+    type: object
+    additionalProperties: false
+    required: [artifact, state, source_paths, evidence_refs, evidence_fingerprint, verified_at]
+    properties:
+      artifact:
+        enum:
+          - OVERVIEW.md
+          - BUSINESS-RULES.md
+          - WORKFLOW.md
+          - AUTHORIZATION-TENANCY.md
+          - DATA-MODEL.md
+          - BACKEND-FLOW.md
+          - FRONTEND-FLOW.md
+          - DEPENDENCIES.md
+          - QUALITY-SECURITY.md
+          - REUSE-LICENSE.md
+          - EVIDENCE.md
+      state:
+        enum: [CURRENT, STALE, BLOCKED]
+      source_paths:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+      evidence_refs:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+      evidence_fingerprint:
+        type: string
+        minLength: 1
+      verified_at:
+        type: string
+        format: date-time
+  relationship:
+    type: object
+    additionalProperties: false
+    required: [relationship_id, subject, predicate, object, status, evidence_refs]
+    properties:
+      relationship_id:
+        type: string
+        pattern: '^[A-Z][A-Z0-9-]+$'
+      subject:
+        type: string
+        minLength: 1
+      predicate:
+        $ref: '#/$defs/relationship_predicate'
+      object:
+        type: string
+        minLength: 1
+      status:
+        $ref: '#/$defs/evidence_status'
+      evidence_refs:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+  relationship_predicate:
+    enum:
+      - depends_on
+      - used_by
+      - belongs_to
+      - contains
+      - emits
+      - consumes
+      - secured_by
+      - configured_by
+      - rendered_by
+      - persisted_by
+      - scheduled_by
+      - integrated_with
+      - related_to
