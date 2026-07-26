@@ -260,3 +260,144 @@ All records below are `Verified`, current at the pinned revision, and governed b
 | `PLANE-DEV-011` | Container Release and Feature-Preview Pipelines | deployment, operations, developer-experience |
 | `PLANE-DEV-012` | Localization Sync and Type Generation Tooling | localization, developer-experience, testing |
 | `PLANE-DEV-013` | Django Administration and Maintenance Commands | developer-experience, administration, operations |
+
+## SRC-BOXYHQ
+
+- **Repository:** `boxyhq/saas-starter-kit`
+- **Pinned revision:** `abc9b686823cbfb4973c79bc36fea37a3244be6c`
+- **Discovery state:** Complete
+- **Reference lifecycle:** `KNOWLEDGE_READY`; understanding coverage `0 / 127 (0.0)`
+- **Repository evidence:** [profile](../repositories/boxyhq/REPOSITORY-PROFILE.md), [catalog](../repositories/boxyhq/FEATURE-CATALOG.md), [machine catalog](../repositories/boxyhq/FEATURE-CATALOG.yaml), [evidence manifest](../repositories/boxyhq/EVIDENCE-MANIFEST.md), [license review](../repositories/boxyhq/LICENSE-REVIEW.md), [coverage decision](../repositories/boxyhq/COVERAGE-REPORT.md), [unknowns and exclusions](../repositories/boxyhq/UNKNOWNS.md)
+- **Adoption history:** None recorded. Indexing does not select or recommend a feature.
+
+All records below are `Verified`, current at the pinned revision, and governed by the repository evidence links above.
+
+| Feature ID | Canonical name | Implementation status | Classification |
+|---|---|---|---|
+| `BOXYHQ-PLATFORM-001` | Single-Package Full-Stack Next.js Application | `implemented` | product, developer-experience, operations |
+| `BOXYHQ-PLATFORM-002` | Public and Session-Protected Route Partition | `implemented` | authentication, security, architecture |
+| `BOXYHQ-PLATFORM-003` | Environment-Driven Provider and Team Feature Gates | `implemented` | configuration, authentication, administration |
+| `BOXYHQ-PLATFORM-004` | Embedded or Hosted Jackson Adapter Boundary | `substrate/seam` | integration, reusable-internal, configuration |
+| `BOXYHQ-PLATFORM-005` | Layered Page, API, OAuth, SCIM, and Webhook Surfaces | `implemented` | architecture, integration, security |
+| `BOXYHQ-AUTH-001` | Email and Password Sign-In | `implemented` | authentication, security, product |
+| `BOXYHQ-AUTH-002` | Owner Account and Team Registration | `implemented` | authentication, tenancy, product |
+| `BOXYHQ-AUTH-003` | Invitation-Aware Account Registration | `implemented` | authentication, tenancy, workflow |
+| `BOXYHQ-AUTH-004` | Optional Email Confirmation | `implemented` | authentication, notification, configuration |
+| `BOXYHQ-AUTH-005` | Magic-Link Email Authentication | `implemented` | authentication, notification |
+| `BOXYHQ-AUTH-006` | GitHub OAuth Sign-In | `implemented` | authentication, integration |
+| `BOXYHQ-AUTH-007` | Google OAuth Sign-In | `implemented` | authentication, integration |
+| `BOXYHQ-AUTH-008` | Selectable JWT or Database Sessions | `implemented` | authentication, configuration, data |
+| `BOXYHQ-AUTH-009` | Database Session Creation for Credential Flows | `implemented` | authentication, security, data |
+| `BOXYHQ-AUTH-010` | Custom Sign-Out Across Session Strategies | `implemented` | authentication, security |
+| `BOXYHQ-AUTH-011` | Browser Session Inventory | `implemented` | authentication, security, ui |
+| `BOXYHQ-AUTH-012` | Individual Browser Session Revocation | `implemented` | authentication, security, ui |
+| `BOXYHQ-AUTH-013` | Forgotten-Password Recovery | `implemented` | authentication, security, notification |
+| `BOXYHQ-AUTH-014` | Password Reset with Session Invalidation | `implemented` | authentication, security, data |
+| `BOXYHQ-AUTH-015` | Authenticated Password Change | `implemented` | authentication, security, ui |
+| `BOXYHQ-AUTH-016` | Failed-Login Account Lockout | `implemented` | authentication, security, notification |
+| `BOXYHQ-AUTH-017` | Tokenized Account Unlock and Link Renewal | `implemented` | authentication, security, notification |
+| `BOXYHQ-AUTH-018` | Optional Business-Email Allowlist Policy | `implemented` | authentication, security, configuration |
+| `BOXYHQ-AUTH-019` | Optional reCAPTCHA on Credential Entry Points | `implemented` | authentication, security, integration |
+| `BOXYHQ-AUTH-020` | External Identity Account Provisioning and Linking | `implemented` | authentication, integration, data |
+| `BOXYHQ-AUTH-021` | Configurable Multi-Method Sign-In Screen | `implemented` | authentication, ui, configuration |
+| `BOXYHQ-AUTH-022` | Authenticated-Route Login Redirect with Callback | `implemented` | authentication, navigation, security |
+| `BOXYHQ-TEAM-001` | Team Creation and Membership-Scoped Listing | `implemented` | tenancy, product, data |
+| `BOXYHQ-TEAM-002` | Team Name, Slug, and Domain Settings | `implemented` | tenancy, administration, data |
+| `BOXYHQ-TEAM-003` | Feature-Gated Team Deletion | `implemented` | tenancy, administration, security |
+| `BOXYHQ-TEAM-004` | Multi-Team Switching | `implemented` | tenancy, navigation, ui |
+| `BOXYHQ-TEAM-005` | Team Selector and Creation Navigation | `implemented` | tenancy, navigation, ui |
+| `BOXYHQ-TEAM-006` | Many-to-Many Team Membership Persistence | `implemented` | tenancy, data, authorization |
+| `BOXYHQ-TEAM-007` | OWNER, ADMIN, and MEMBER Roles | `implemented` | authorization, tenancy, administration |
+| `BOXYHQ-TEAM-008` | Resource-and-Action Permission Matrix | `implemented` | authorization, security, reusable-internal |
+| `BOXYHQ-TEAM-009` | Server-Side Team Membership Guard | `implemented` | authorization, security, tenancy |
+| `BOXYHQ-TEAM-010` | Team Member Directory | `implemented` | tenancy, administration, ui |
+| `BOXYHQ-TEAM-011` | Email Team Invitations | `implemented` | tenancy, notification, workflow |
+| `BOXYHQ-TEAM-012` | Shareable Team Invitation Links | `implemented` | tenancy, workflow, ui |
+| `BOXYHQ-TEAM-013` | Invitation Domain Restrictions | `implemented` | tenancy, security, workflow |
+| `BOXYHQ-TEAM-014` | Pending Invitation Listing and Revocation | `implemented` | tenancy, administration, ui |
+| `BOXYHQ-TEAM-015` | Invitation Acceptance for Existing Users | `implemented` | tenancy, workflow, authorization |
+| `BOXYHQ-TEAM-016` | Member Removal | `implemented` | tenancy, administration, authorization |
+| `BOXYHQ-TEAM-017` | Team Leave with Last-Owner Guard | `implemented` | tenancy, authorization, workflow |
+| `BOXYHQ-TEAM-018` | Protected Member Role Changes | `implemented` | authorization, administration, tenancy |
+| `BOXYHQ-SSO-001` | Team-Scoped SAML and OIDC Connection Lifecycle | `implemented` | authentication, integration, administration |
+| `BOXYHQ-SSO-002` | SAML Metadata Connection Configuration | `implemented` | authentication, integration, configuration |
+| `BOXYHQ-SSO-003` | OIDC Discovery or Manual Metadata Configuration | `implemented` | authentication, integration, configuration |
+| `BOXYHQ-SSO-004` | SSO Connection Tenant Isolation Guard | `implemented` | authentication, authorization, tenancy |
+| `BOXYHQ-SSO-005` | SSO Discovery by User Email or Team Slug | `implemented` | authentication, tenancy, workflow |
+| `BOXYHQ-SSO-006` | Multiple Identity Provider Selection | `implemented` | authentication, ui, workflow |
+| `BOXYHQ-SSO-007` | Service-Provider-Initiated Enterprise Sign-In | `implemented` | authentication, integration, workflow |
+| `BOXYHQ-SSO-008` | Identity-Provider-Initiated Sign-In | `implemented` | authentication, integration, workflow |
+| `BOXYHQ-SSO-009` | Jackson OAuth and OIDC Broker Endpoints | `implemented` | authentication, api, integration |
+| `BOXYHQ-SSO-010` | Service Provider Configuration and Certificate Publication | `implemented` | authentication, configuration, integration |
+| `BOXYHQ-DSYNC-001` | Team Directory Connection Lifecycle | `implemented` | integration, administration, tenancy |
+| `BOXYHQ-DSYNC-002` | Directory Provider Catalog | `implemented` | integration, configuration |
+| `BOXYHQ-DSYNC-003` | SCIM 2.0 Users and Groups Protocol Endpoint | `implemented` | integration, api, tenancy |
+| `BOXYHQ-DSYNC-004` | SCIM Pagination and Filter Forwarding | `implemented` | integration, search, api |
+| `BOXYHQ-DSYNC-005` | Directory User Provisioning | `implemented` | integration, tenancy, data |
+| `BOXYHQ-DSYNC-006` | Directory User Update, Deactivation, and Reactivation | `implemented` | integration, tenancy, workflow |
+| `BOXYHQ-DSYNC-007` | Directory User Deprovisioning and Orphan Cleanup | `implemented` | integration, tenancy, data |
+| `BOXYHQ-DSYNC-008` | Directory Group Event Seam | `partial` | integration, data |
+| `BOXYHQ-DSYNC-009` | Signed Hosted Directory Event Webhook | `implemented` | integration, security, workflow |
+| `BOXYHQ-AUDIT-001` | Retraced Audit Event Reporting | `implemented` | audit, integration, security |
+| `BOXYHQ-AUDIT-002` | Team-Scoped Embedded Audit Viewer | `implemented` | audit, ui, authorization |
+| `BOXYHQ-AUDIT-003` | Optional External Audit Storage Boundary | `substrate/seam` | audit, configuration, integration |
+| `BOXYHQ-WEBHOOK-001` | Team Webhook Endpoint Lifecycle | `implemented` | integration, administration, tenancy |
+| `BOXYHQ-WEBHOOK-002` | Selectable Webhook Event Types | `implemented` | integration, configuration, ui |
+| `BOXYHQ-WEBHOOK-003` | Member and Invitation Outbound Events | `implemented` | integration, workflow, automation |
+| `BOXYHQ-WEBHOOK-004` | Team-to-Svix Application Mapping | `implemented` | integration, tenancy, reusable-internal |
+| `BOXYHQ-WEBHOOK-005` | Webhook Management Forms and Feedback | `implemented` | integration, ui, interaction |
+| `BOXYHQ-BILLING-001` | Lazy Stripe Customer Provisioning | `implemented` | billing, integration, tenancy |
+| `BOXYHQ-BILLING-002` | Stripe Product and Price Synchronization Command | `implemented` | billing, operations, data |
+| `BOXYHQ-BILLING-003` | Team Pricing and Subscription Screen | `implemented` | billing, ui, tenancy |
+| `BOXYHQ-BILLING-004` | Stripe Checkout Session Creation | `implemented` | billing, integration, workflow |
+| `BOXYHQ-BILLING-005` | Stripe Billing Portal Handoff | `implemented` | billing, integration, workflow |
+| `BOXYHQ-BILLING-006` | Signed Subscription Webhook Persistence | `implemented` | billing, integration, data |
+| `BOXYHQ-ACCOUNT-001` | Profile Name and Conditional Email Update | `implemented` | product, ui, security |
+| `BOXYHQ-ACCOUNT-002` | Avatar Upload as Validated Data URL | `implemented` | product, ui, data |
+| `BOXYHQ-ACCOUNT-003` | Account Profile Settings Surface | `implemented` | product, ui, navigation |
+| `BOXYHQ-UI-001` | Configurable Public Landing Experience | `implemented` | ui, product, configuration |
+| `BOXYHQ-UI-002` | Responsive Application Shell | `implemented` | ui, navigation, interaction |
+| `BOXYHQ-UI-003` | Contextual Product, Team, and User Navigation | `implemented` | ui, navigation, authorization |
+| `BOXYHQ-UI-004` | Reusable Card, Modal, Table, and Form Primitives | `implemented` | ui, reusable-internal, interaction |
+| `BOXYHQ-UI-005` | Loading, Empty, Error, and Toast Feedback | `implemented` | ui, interaction, reusable-internal |
+| `BOXYHQ-UI-006` | Confirmation-Based Destructive Actions | `implemented` | ui, interaction, security |
+| `BOXYHQ-UI-007` | System, Light, and Dark Theme Selection | `implemented` | ui, personalization, configuration |
+| `BOXYHQ-UI-008` | English Translation Infrastructure and Key Validation | `partial` | localization, ui, developer-experience |
+| `BOXYHQ-UI-009` | Keyboard and Semantic Accessibility Baseline | `partial` | accessibility, ui, interaction |
+| `BOXYHQ-UI-010` | Custom Not-Found and Server-Error Pages | `implemented` | ui, operations, product |
+| `BOXYHQ-DATA-001` | PostgreSQL and Prisma Persistence | `implemented` | data, operations, reusable-internal |
+| `BOXYHQ-DATA-002` | Relational Constraints, Indexes, and Cascades | `implemented` | data, security, operations |
+| `BOXYHQ-DATA-003` | Embedded Jackson Store, Index, and TTL Tables | `implemented` | data, integration, reusable-internal |
+| `BOXYHQ-DATA-004` | SWR Resource Hooks | `implemented` | data, ui, reusable-internal |
+| `BOXYHQ-DATA-005` | Browser Theme State Persistence | `implemented` | data, personalization, ui |
+| `BOXYHQ-DATA-006` | Prisma Development Seed and E2E Database Fixtures | `implemented` | data, testing, developer-experience |
+| `BOXYHQ-SEC-001` | bcrypt Password Hashing | `implemented` | security, authentication |
+| `BOXYHQ-SEC-002` | Cryptographically Random Expiring Tokens | `implemented` | security, authentication, data |
+| `BOXYHQ-SEC-003` | Hashed Team API-Key Lifecycle | `partial` | security, api, administration |
+| `BOXYHQ-SEC-004` | NextAuth CSRF Tokens on Credential and Magic-Link Forms | `implemented` | security, authentication, ui |
+| `BOXYHQ-SEC-005` | HTTP Security Headers and Content Security Policy | `implemented` | security, operations, configuration |
+| `BOXYHQ-SEC-006` | Central Zod Request Validation | `implemented` | security, api, reusable-internal |
+| `BOXYHQ-SEC-007` | Stripe Raw-Body Signature Verification | `implemented` | security, integration, billing |
+| `BOXYHQ-SEC-008` | Environment-Based Secret Injection | `implemented` | security, configuration, operations |
+| `BOXYHQ-OBS-001` | Optional OpenTelemetry Counter Metrics | `implemented` | operations, observability, integration |
+| `BOXYHQ-OBS-002` | Sentry Client and Server Instrumentation | `implemented` | operations, observability, integration |
+| `BOXYHQ-OBS-003` | Optional Mixpanel Page Analytics | `implemented` | analytics, operations, integration |
+| `BOXYHQ-OBS-004` | Database-Aware Health Endpoint | `implemented` | operations, api, data |
+| `BOXYHQ-NOTIFY-001` | Optional SMTP Email Transport | `implemented` | notification, integration, configuration |
+| `BOXYHQ-NOTIFY-002` | Authentication Email Templates and Delivery | `implemented` | notification, authentication, ui |
+| `BOXYHQ-NOTIFY-003` | Team Invitation and Welcome Emails | `implemented` | notification, tenancy, workflow |
+| `BOXYHQ-NOTIFY-004` | Account Lockout Email | `implemented` | notification, security, authentication |
+| `BOXYHQ-NOTIFY-005` | Optional Slack Signup Alerts | `implemented` | notification, integration, operations |
+| `BOXYHQ-DEV-001` | npm Development, Build, and Quality Commands | `implemented` | developer-experience, testing, operations |
+| `BOXYHQ-DEV-002` | Strict TypeScript, ESLint, and Prettier Toolchain | `implemented` | developer-experience, testing, reusable-internal |
+| `BOXYHQ-DEV-003` | Localization Consistency Checker | `implemented` | developer-experience, localization, testing |
+| `BOXYHQ-DEV-004` | Jest Unit Test Harness | `implemented` | testing, developer-experience |
+| `BOXYHQ-DEV-005` | Playwright End-to-End Harness | `implemented` | testing, developer-experience, ui |
+| `BOXYHQ-DEV-006` | Authentication and Team Administration E2E Coverage | `implemented` | testing, authentication, tenancy |
+| `BOXYHQ-DEV-007` | GitHub CI Quality and Browser Pipeline | `implemented` | testing, operations, developer-experience |
+| `BOXYHQ-OPS-001` | Local PostgreSQL Docker Compose | `implemented` | deployment, operations, data |
+| `BOXYHQ-OPS-002` | Heroku Deployment Manifest | `implemented` | deployment, operations, configuration |
+| `BOXYHQ-OPS-003` | DigitalOcean App Platform Template | `implemented` | deployment, operations, configuration |
+| `BOXYHQ-OPS-004` | Build, Start, and Database Schema Lifecycle | `implemented` | deployment, operations, data |
+| `BOXYHQ-OPS-005` | Dry-Run Team Deletion Maintenance Command | `implemented` | operations, tenancy, security |
+| `BOXYHQ-OPS-006` | Stripe Catalog Maintenance Command | `implemented` | operations, billing, integration |
