@@ -626,3 +626,377 @@ records are intentionally not represented as production-complete behavior.
 | `KIRANISM-AUTH-014` | Dormant Mock Authentication Form Substrate | authentication, ui, forms, developer-experience | `substrate/seam` |
 | `KIRANISM-QUALITY-008` | Form Card Loading Skeleton Substrate | quality, ui, feedback, reusable-internal | `substrate/seam` |
 | `KIRANISM-ASSET-005` | GitHub CTA and Cached Star Button | assets, ui, integration, reusable-internal | `implemented` |
+
+## SRC-HRNEXT
+
+- **Repository:** `frappe/hrms`
+- **Pinned revision:** `8be64b735e347fdaaf4db3b045605e9a7a9ba856`
+- **Discovery state:** Complete
+- **Repository evidence:** [profile](../repositories/hr-next/REPOSITORY-PROFILE.md), [catalog](../repositories/hr-next/FEATURE-CATALOG.md), [machine catalog](../repositories/hr-next/FEATURE-CATALOG.yaml), [evidence manifest](../repositories/hr-next/EVIDENCE-MANIFEST.md), [license review](../repositories/hr-next/LICENSE-REVIEW.md), [coverage decision](../repositories/hr-next/COVERAGE-REPORT.md), [unknowns and exclusions](../repositories/hr-next/UNKNOWNS.md)
+- **Reference lifecycle:** `KNOWLEDGE_READY`; understanding coverage `0 / 360 (0.0)`; no Knowledge Objects.
+- **Adoption history:** None recorded. Indexing does not select or recommend a feature.
+
+All records below are `Verified` and current at the pinned revision. Partial, substrate/seam, and configuration-only records retain those boundaries.
+
+| Feature ID | Canonical name | Classification | Status |
+|---|---|---|---|
+| `HRNEXT-PLATFORM-001` | Frappe v17 Application Package | architecture, product, operations | `implemented` |
+| `HRNEXT-PLATFORM-002` | ERPNext Hard Runtime Dependency | architecture, integration, data | `implemented` |
+| `HRNEXT-PLATFORM-003` | HR and Payroll Module Boundary | architecture, product, data | `implemented` |
+| `HRNEXT-PLATFORM-004` | Frappe Desk Administrative Surface | ui, administration, navigation | `implemented` |
+| `HRNEXT-PLATFORM-005` | Employee Self-Service PWA | product, ui, responsive, authentication | `implemented` |
+| `HRNEXT-PLATFORM-006` | Shift Roster SPA | product, ui, workflow, administration | `implemented` |
+| `HRNEXT-PLATFORM-007` | Public Jobs and Application Surface | product, ui, public, forms | `implemented` |
+| `HRNEXT-PLATFORM-008` | Hook-Driven Extension Architecture | architecture, reusable-internal, integration | `implemented` |
+| `HRNEXT-PLATFORM-009` | Install, Patch, and Migration Lifecycle | operations, data, developer-experience | `implemented` |
+| `HRNEXT-PLATFORM-010` | Frappe UI Dual Dependency Boundary | ui, dependency, developer-experience | `partial` |
+| `HRNEXT-AUTH-001` | Framework Session Cookie Detection | authentication, security, ui | `partial` |
+| `HRNEXT-AUTH-002` | Email and Password Sign-In | authentication, ui, product | `implemented` |
+| `HRNEXT-AUTH-003` | OTP Login Continuation | authentication, security, ui | `partial` |
+| `HRNEXT-AUTH-004` | Configured Social OAuth Discovery | authentication, integration, security | `implemented` |
+| `HRNEXT-AUTH-005` | Password Recovery Request | authentication, notification, ui | `implemented` |
+| `HRNEXT-AUTH-006` | Authenticated Password Change | authentication, security, ui | `implemented` |
+| `HRNEXT-AUTH-007` | Session Logout | authentication, security, ui | `implemented` |
+| `HRNEXT-AUTH-008` | PWA Protected Route Guard | authentication, authorization, navigation | `implemented` |
+| `HRNEXT-AUTH-009` | Active Employee Session Binding | authentication, authorization, data | `implemented` |
+| `HRNEXT-AUTH-010` | Roster Authentication Redirect | authentication, navigation, ui | `implemented` |
+| `HRNEXT-AUTH-011` | Framework-Owned Administrator Authentication Boundary | authentication, administration, security | `partial` |
+| `HRNEXT-AUTHZ-001` | Role-Based DocType Permission Matrix | authorization, administration, data | `implemented` |
+| `HRNEXT-AUTHZ-002` | Employee Self-Service Record Access | authorization, product, data | `implemented` |
+| `HRNEXT-AUTHZ-003` | Department and Named Approver Resolution | authorization, workflow, organization | `implemented` |
+| `HRNEXT-AUTHZ-004` | Permission-Aware Document Queries | authorization, api, security | `implemented` |
+| `HRNEXT-AUTHZ-005` | Roster Mutation Guards | authorization, workflow, security | `implemented` |
+| `HRNEXT-AUTHZ-006` | Workflow-State Action Guarding | authorization, workflow, api | `implemented` |
+| `HRNEXT-AUTHZ-007` | Attachment Ownership and Permission Checks | authorization, security, data | `implemented` |
+| `HRNEXT-AUTHZ-008` | Apps-Screen Permission Gate | authorization, navigation, administration | `implemented` |
+| `HRNEXT-AUTHZ-009` | No Custom Team or Workspace Authorization Model | authorization, tenancy, architecture | `partial` |
+| `HRNEXT-ORG-001` | ERPNext Company Scope | organization, data, integration | `implemented` |
+| `HRNEXT-ORG-002` | ERPNext Department and Approver Scope | organization, authorization, integration | `implemented` |
+| `HRNEXT-ORG-003` | Branch, Designation, Grade, and Employment Filters | organization, search, administration | `implemented` |
+| `HRNEXT-ORG-004` | External Site-Level Isolation Boundary | tenancy, security, architecture | `partial` |
+| `HRNEXT-API-001` | Current User and Employee Projections | api, authentication, data | `implemented` |
+| `HRNEXT-API-002` | Permission-Aware Employee Directory | api, search, organization | `implemented` |
+| `HRNEXT-API-003` | PWA HR Settings Projection | api, configuration, product | `implemented` |
+| `HRNEXT-API-004` | Notification Resource API | api, notification, data | `implemented` |
+| `HRNEXT-API-005` | Attendance Calendar and Request API | api, attendance, calendar | `implemented` |
+| `HRNEXT-API-006` | Shift Request and Assignment API | api, attendance, workflow | `implemented` |
+| `HRNEXT-API-007` | Leave Balance and Approval API | api, leave, workflow | `implemented` |
+| `HRNEXT-API-008` | Expense Claim and Approval API | api, expenses, workflow | `implemented` |
+| `HRNEXT-API-009` | Currency and Accounting Defaults API | api, integration, data | `implemented` |
+| `HRNEXT-API-010` | Dynamic Form Metadata API | api, forms, authorization | `implemented` |
+| `HRNEXT-API-011` | Attachment and PDF API | api, documents, security | `implemented` |
+| `HRNEXT-API-012` | Roster Event Aggregation API | api, calendar, search | `implemented` |
+| `HRNEXT-API-013` | Roster Schedule Mutation API | api, workflow, automation | `implemented` |
+| `HRNEXT-API-014` | Guest Login Configuration API | api, authentication, public | `implemented` |
+| `HRNEXT-API-015` | Framework Generic Resource Seam | api, data, dependency | `partial` |
+| `HRNEXT-ESS-001` | Responsive Tabbed Mobile Shell | ui, navigation, responsive | `implemented` |
+| `HRNEXT-ESS-002` | Employee Home and Quick Links | ui, product, navigation | `implemented` |
+| `HRNEXT-ESS-003` | Attendance Dashboard and Check-In | attendance, ui, geolocation | `implemented` |
+| `HRNEXT-ESS-004` | Attendance Request Self Service | attendance, forms, workflow | `implemented` |
+| `HRNEXT-ESS-005` | Shift Request Self Service | attendance, forms, workflow | `implemented` |
+| `HRNEXT-ESS-006` | Shift Assignment Self View | attendance, ui, calendar | `implemented` |
+| `HRNEXT-ESS-007` | Leave Balance and Holiday Dashboard | leave, ui, analytics | `implemented` |
+| `HRNEXT-ESS-008` | Leave Application Self Service | leave, forms, workflow | `implemented` |
+| `HRNEXT-ESS-009` | Expense Claim Dashboard | expenses, ui, analytics | `implemented` |
+| `HRNEXT-ESS-010` | Itemized Expense Claim Self Service | expenses, forms, workflow | `implemented` |
+| `HRNEXT-ESS-011` | Employee Advance Self Service | expenses, forms, workflow | `implemented` |
+| `HRNEXT-ESS-012` | Salary Slip Dashboard and Detail | payroll, ui, documents | `implemented` |
+| `HRNEXT-ESS-013` | Team Approval Queues | workflow, authorization, ui | `implemented` |
+| `HRNEXT-ESS-014` | Notification Center | notification, ui, navigation | `implemented` |
+| `HRNEXT-ESS-015` | Employee Profile Surface | account, ui, data | `implemented` |
+| `HRNEXT-ESS-016` | Application Settings and Password Navigation | settings, ui, account | `implemented` |
+| `HRNEXT-ESS-017` | Reusable Dynamic Form Composition | forms, ui, reusable-internal | `implemented` |
+| `HRNEXT-ESS-018` | Reusable List, Filter, and Request Composition | tables, search, ui, reusable-internal | `implemented` |
+| `HRNEXT-ESS-019` | File Upload and Preview | documents, forms, ui | `implemented` |
+| `HRNEXT-ESS-020` | Loading, Empty, Error, Confirmation, and Toast Feedback | ui, feedback, quality | `implemented` |
+| `HRNEXT-ESS-021` | Installable PWA and Service Worker | pwa, operations, ui | `implemented` |
+| `HRNEXT-ESS-022` | Narrow Responsive Employee Layout | responsive, ui, mobile | `implemented` |
+| `HRNEXT-ESS-023` | Workflow Action Sheet | workflow, interaction, authorization | `implemented` |
+| `HRNEXT-ROSTER-001` | Monthly Employee Shift Grid | calendar, ui, attendance | `implemented` |
+| `HRNEXT-ROSTER-002` | Organization and Shift Filters | search, organization, ui | `implemented` |
+| `HRNEXT-ROSTER-003` | Holiday, Leave, and Shift Event Overlay | calendar, leave, attendance | `implemented` |
+| `HRNEXT-ROSTER-004` | Simple Shift Assignment Creation | attendance, forms, workflow | `implemented` |
+| `HRNEXT-ROSTER-005` | Recurring Shift Schedule Assignment | attendance, automation, forms | `implemented` |
+| `HRNEXT-ROSTER-006` | Shift Update and Deletion Scopes | attendance, workflow, interaction | `implemented` |
+| `HRNEXT-ROSTER-007` | Shift Swap and Range Splitting | attendance, workflow, api | `implemented` |
+| `HRNEXT-ROSTER-008` | Frappe Desk Deep Links | navigation, integration, administration | `implemented` |
+| `HRNEXT-AUTOMATION-001` | Interview Reminder Scheduling | automation, notification, recruitment | `implemented` |
+| `HRNEXT-AUTOMATION-002` | Daily Work Summary Scheduling | automation, notification, collaboration | `implemented` |
+| `HRNEXT-AUTOMATION-003` | Automatic Attendance Processing | automation, attendance, jobs | `implemented` |
+| `HRNEXT-AUTOMATION-004` | Automatic Shift Schedule Expansion | automation, attendance, jobs | `implemented` |
+| `HRNEXT-AUTOMATION-005` | Birthday and Work Anniversary Reminders | automation, notification, employee | `implemented` |
+| `HRNEXT-AUTOMATION-006` | Expired Job Opening Closure | automation, recruitment, workflow | `implemented` |
+| `HRNEXT-AUTOMATION-007` | Leave Expiry, Encashment, and Earned Allocation | automation, leave, jobs | `implemented` |
+| `HRNEXT-AUTOMATION-008` | Queued Payroll Slip Creation and Submission | automation, payroll, jobs | `implemented` |
+| `HRNEXT-AUTOMATION-009` | Queued Salary Slip Email Delivery | automation, payroll, notification | `implemented` |
+| `HRNEXT-AUTOMATION-010` | Document Event Integration Bus | automation, events, integration | `implemented` |
+| `HRNEXT-AUTOMATION-011` | Usage and Activation Telemetry Hooks | automation, observability, analytics | `implemented` |
+| `HRNEXT-NOTIFY-001` | Persistent PWA Notifications | notification, data, ui | `implemented` |
+| `HRNEXT-NOTIFY-002` | Realtime Resource Invalidation | realtime, notification, data | `implemented` |
+| `HRNEXT-NOTIFY-003` | Firebase Push Relay Integration | notification, integration, pwa | `configuration-only` |
+| `HRNEXT-NOTIFY-004` | Fixture-Backed Email Notifications | notification, email, workflow | `implemented` |
+| `HRNEXT-NOTIFY-005` | Employee and Workflow Reminder Emails | notification, email, automation | `implemented` |
+| `HRNEXT-INTEGRATION-001` | ERPNext Employee Master Overrides | integration, employee, data | `implemented` |
+| `HRNEXT-INTEGRATION-002` | ERPNext Accounting Integration | integration, accounting, expenses, payroll | `implemented` |
+| `HRNEXT-INTEGRATION-003` | ERPNext Loan Repayment Integration | integration, payroll, loans | `implemented` |
+| `HRNEXT-INTEGRATION-004` | ERPNext Timesheet and Project Integration | integration, payroll, projects | `implemented` |
+| `HRNEXT-INTEGRATION-005` | Social Login Key Integration | integration, authentication, security | `implemented` |
+| `HRNEXT-INTEGRATION-006` | Socket.IO Realtime Integration | integration, realtime, ui | `implemented` |
+| `HRNEXT-INTEGRATION-007` | India Payroll Regional Overrides | integration, localization, payroll | `implemented` |
+| `HRNEXT-INTEGRATION-008` | United Arab Emirates Regional Setup | integration, localization, payroll | `implemented` |
+| `HRNEXT-INTEGRATION-009` | Frappe Cloud Subscription and Usage Seam | integration, billing, telemetry | `configuration-only` |
+| `HRNEXT-DATA-001` | Metadata-Defined Document Persistence | data, forms, reusable-internal | `implemented` |
+| `HRNEXT-DATA-002` | Submitted Document Lifecycle and Amendments | data, workflow, audit | `implemented` |
+| `HRNEXT-DATA-003` | Embedded Child-Table Relationship Model | data, reusable-internal, forms | `implemented` |
+| `HRNEXT-DATA-004` | MariaDB Development Persistence | data, operations, deployment | `configuration-only` |
+| `HRNEXT-DATA-005` | Redis Development Cache and Queue Dependency | data, cache, queues | `configuration-only` |
+| `HRNEXT-DATA-006` | Frappe File Attachment Persistence | data, documents, security | `implemented` |
+| `HRNEXT-DATA-007` | Client Resource Cache | data, cache, ui | `implemented` |
+| `HRNEXT-DATA-008` | Versioned Data Patch Inventory | data, migration, operations | `implemented` |
+| `HRNEXT-SEARCH-001` | Configured Frappe Global Search Records | search, navigation, data | `configuration-only` |
+| `HRNEXT-SEARCH-002` | Workspace Navigation and Linked Reports | search, navigation, ui | `implemented` |
+| `HRNEXT-SEARCH-003` | Report Filter and Export Substrate | search, reports, data | `implemented` |
+| `HRNEXT-SEARCH-004` | PWA List Filtering | search, ui, product | `implemented` |
+| `HRNEXT-UI-001` | Nine Frappe Desk Workspaces | ui, navigation, administration | `implemented` |
+| `HRNEXT-UI-002` | Dashboard Charts and Number Cards | ui, analytics, dashboard | `implemented` |
+| `HRNEXT-UI-003` | Script and Report-Builder Tables | ui, reports, tables | `implemented` |
+| `HRNEXT-UI-004` | Frappe UI Component Foundation | ui, reusable-internal, dependency | `implemented` |
+| `HRNEXT-UI-005` | Ionic Mobile Component Foundation | ui, responsive, interaction | `implemented` |
+| `HRNEXT-UI-006` | Tailwind Styling and Theme Tokens | ui, theme, developer-experience | `implemented` |
+| `HRNEXT-UI-007` | Organization Chart and Team Updates Pages | ui, organization, collaboration | `implemented` |
+| `HRNEXT-UI-008` | Guest Job Application Form | ui, forms, public | `implemented` |
+| `HRNEXT-I18N-001` | Gettext Translation Catalog Set | localization, assets, developer-experience | `implemented` |
+| `HRNEXT-I18N-002` | Runtime PWA Translation Loader | localization, ui, api | `implemented` |
+| `HRNEXT-I18N-003` | Locale-Aware Date Formatting | localization, ui, data | `partial` |
+| `HRNEXT-ACCESS-001` | Semantic and Keyboard-Operable Primitive Baseline | accessibility, ui, interaction | `partial` |
+| `HRNEXT-ACCESS-002` | Responsive Mobile Navigation | accessibility, responsive, navigation | `implemented` |
+| `HRNEXT-ACCESS-003` | No Automated Accessibility Verification | accessibility, testing, quality | `partial` |
+| `HRNEXT-SEC-001` | CSRF Token Bootstrapping | security, authentication, api | `implemented` |
+| `HRNEXT-SEC-002` | Explicit Guest Method Surface | security, api, public | `implemented` |
+| `HRNEXT-SEC-003` | Type-Annotated API Enforcement | security, api, developer-experience | `configuration-only` |
+| `HRNEXT-SEC-004` | Roster Filter Allowlisting | security, api, search | `implemented` |
+| `HRNEXT-SEC-005` | Private Attachment Flag Preservation | security, documents, data | `implemented` |
+| `HRNEXT-SEC-006` | Sensitive OAuth Secret Server-Side Check | security, authentication, integration | `implemented` |
+| `HRNEXT-SEC-007` | No Active Custom Authentication Hook | security, authentication, architecture | `partial` |
+| `HRNEXT-SEC-008` | User Data Protection Mapping Not Configured | security, privacy, data | `partial` |
+| `HRNEXT-SEC-009` | Security Headers and Rate Limits External | security, operations, api | `partial` |
+| `HRNEXT-SEC-010` | Semgrep Security and Correctness Gate | security, testing, developer-experience | `configuration-only` |
+| `HRNEXT-QUALITY-001` | Backend Domain Test Suite | testing, quality, data | `implemented` |
+| `HRNEXT-QUALITY-002` | Three-Way Parallel CI Tests | testing, ci, operations | `configuration-only` |
+| `HRNEXT-QUALITY-003` | Coverage Threshold Gate | testing, quality, ci | `configuration-only` |
+| `HRNEXT-QUALITY-004` | Backend Test Fixtures and Utilities | testing, data, reusable-internal | `implemented` |
+| `HRNEXT-QUALITY-005` | No Vue Test Harness | testing, ui, quality | `partial` |
+| `HRNEXT-DEV-001` | Ruff Python Lint and Format | developer-experience, quality, python | `configuration-only` |
+| `HRNEXT-DEV-002` | Pre-Commit Quality Hooks | developer-experience, quality, automation | `configuration-only` |
+| `HRNEXT-DEV-003` | Vue ESLint and Prettier Configuration | developer-experience, quality, ui | `configuration-only` |
+| `HRNEXT-DEV-004` | TypeScript Roster Configuration | developer-experience, quality, typescript | `configuration-only` |
+| `HRNEXT-DEV-005` | Vite Dual-App Development and Build | developer-experience, build, ui | `configuration-only` |
+| `HRNEXT-DEV-006` | Source Maps for Browser Builds | developer-experience, observability, build | `configuration-only` |
+| `HRNEXT-DEV-007` | Translation Generation and Review Automation | developer-experience, localization, ci | `configuration-only` |
+| `HRNEXT-DEV-008` | Built Asset Commit Automation | developer-experience, build, ci | `configuration-only` |
+| `HRNEXT-DEV-009` | Semantic Commit and Documentation Checks | developer-experience, quality, ci | `configuration-only` |
+| `HRNEXT-OPS-001` | Local Bench Docker Stack | operations, deployment, developer-experience | `configuration-only` |
+| `HRNEXT-OPS-002` | Bench-Native Site Installation | operations, deployment, developer-experience | `configuration-only` |
+| `HRNEXT-OPS-003` | Dual Browser Asset Build | operations, build, ui | `implemented` |
+| `HRNEXT-OPS-004` | Multi-Architecture Release Image Workflow | operations, deployment, ci | `partial` |
+| `HRNEXT-OPS-005` | GitHub Release and Patch Automation | operations, release, ci | `configuration-only` |
+| `HRNEXT-OPS-006` | No Health or Readiness Endpoint | operations, observability, deployment | `partial` |
+| `HRNEXT-OPS-007` | No Kubernetes or Infrastructure-as-Code Deployment | operations, deployment, infrastructure | `partial` |
+| `HRNEXT-OPS-008` | Scheduled and Queue Runtime Dependency | operations, queues, automation | `partial` |
+| `HRNEXT-LICENSE-001` | GPL-3.0-Only Repository License Boundary | license, governance, provenance | `configuration-only` |
+| `HRNEXT-DOC-HR-001` | Appointment Letter Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-002` | Appointment Letter content Embedded Data Rows | data, forms, reusable-internal, recruitment | `substrate/seam` |
+| `HRNEXT-DOC-HR-003` | Appointment Letter Template Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-004` | Appraisal Record Lifecycle | product, data, forms, performance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-005` | Appraisal Cycle Record Lifecycle | product, data, forms, performance | `implemented` |
+| `HRNEXT-DOC-HR-006` | Appraisal Goal Embedded Data Rows | data, forms, reusable-internal, performance | `substrate/seam` |
+| `HRNEXT-DOC-HR-007` | Appraisal KRA Embedded Data Rows | data, forms, reusable-internal, performance | `substrate/seam` |
+| `HRNEXT-DOC-HR-008` | Appraisal Template Record Lifecycle | product, data, forms, performance | `implemented` |
+| `HRNEXT-DOC-HR-009` | Appraisal Template Goal Embedded Data Rows | data, forms, reusable-internal, performance | `substrate/seam` |
+| `HRNEXT-DOC-HR-010` | Appraisee Embedded Data Rows | data, forms, reusable-internal, hr | `substrate/seam` |
+| `HRNEXT-DOC-HR-011` | Attendance Record Lifecycle | product, data, forms, attendance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-012` | Attendance Request Record Lifecycle | product, data, forms, attendance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-013` | Compensatory Leave Request Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-014` | Daily Work Summary Record Lifecycle | product, data, forms, hr | `implemented` |
+| `HRNEXT-DOC-HR-015` | Daily Work Summary Group Record Lifecycle | product, data, forms, hr | `implemented` |
+| `HRNEXT-DOC-HR-016` | Daily Work Summary Group User Embedded Data Rows | data, forms, reusable-internal, hr | `substrate/seam` |
+| `HRNEXT-DOC-HR-017` | Department Approver Embedded Data Rows | data, forms, reusable-internal, hr | `substrate/seam` |
+| `HRNEXT-DOC-HR-018` | Designation Skill Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-019` | Earned Leave Schedule Embedded Data Rows | data, forms, reusable-internal, leave | `substrate/seam` |
+| `HRNEXT-DOC-HR-020` | Employee Advance Record Lifecycle | product, data, forms, expenses, workflow | `implemented` |
+| `HRNEXT-DOC-HR-021` | Employee Attendance Tool Configuration | configuration, administration, data, attendance | `configuration-only` |
+| `HRNEXT-DOC-HR-022` | Employee Boarding Activity Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-023` | Employee Checkin Record Lifecycle | product, data, forms, attendance | `implemented` |
+| `HRNEXT-DOC-HR-024` | Employee Feedback Criteria Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-025` | Employee Feedback Rating Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-026` | Employee Grade Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-027` | Employee Grievance Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-028` | Employee Health Insurance Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-029` | Employee Onboarding Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-030` | Employee Onboarding Template Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-031` | Employee Performance Feedback Record Lifecycle | product, data, forms, performance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-032` | Employee Promotion Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-033` | Employee Property History Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-034` | Employee Referral Record Lifecycle | product, data, forms, recruitment, workflow | `implemented` |
+| `HRNEXT-DOC-HR-035` | Employee Separation Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-036` | Employee Separation Template Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-037` | Employee Skill Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-038` | Employee Skill Map Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-039` | Employee Training Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-040` | Employee Transfer Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-041` | Employment Type Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-042` | Exit Interview Record Lifecycle | product, data, forms, recruitment, workflow | `implemented` |
+| `HRNEXT-DOC-HR-043` | Expected Skill Set Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-044` | Expense Claim Record Lifecycle | product, data, forms, expenses, workflow | `implemented` |
+| `HRNEXT-DOC-HR-045` | Expense Claim Account Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-046` | Expense Claim Advance Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-047` | Expense Claim Detail Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-048` | Expense Claim Type Record Lifecycle | product, data, forms, expenses | `implemented` |
+| `HRNEXT-DOC-HR-049` | Expense Taxes and Charges Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-050` | Full and Final Asset Embedded Data Rows | data, forms, reusable-internal, hr | `substrate/seam` |
+| `HRNEXT-DOC-HR-051` | Full and Final Outstanding Statement Embedded Data Rows | data, forms, reusable-internal, hr | `substrate/seam` |
+| `HRNEXT-DOC-HR-052` | Full and Final Statement Record Lifecycle | product, data, forms, hr, workflow | `implemented` |
+| `HRNEXT-DOC-HR-053` | Goal Record Lifecycle | product, data, forms, performance, hierarchy | `implemented` |
+| `HRNEXT-DOC-HR-054` | Grievance Type Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-055` | Holiday List Assignment Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-056` | HR Settings Configuration | configuration, administration, data, hr | `configuration-only` |
+| `HRNEXT-DOC-HR-057` | Identification Document Type Record Lifecycle | product, data, forms, hr | `implemented` |
+| `HRNEXT-DOC-HR-058` | Interest Record Lifecycle | product, data, forms, hr | `implemented` |
+| `HRNEXT-DOC-HR-059` | Interview Record Lifecycle | product, data, forms, recruitment, workflow | `implemented` |
+| `HRNEXT-DOC-HR-060` | Interview Detail Embedded Data Rows | data, forms, reusable-internal, recruitment | `substrate/seam` |
+| `HRNEXT-DOC-HR-061` | Interview Feedback Record Lifecycle | product, data, forms, recruitment, workflow | `implemented` |
+| `HRNEXT-DOC-HR-062` | Interview Type Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-063` | Interviewer Embedded Data Rows | data, forms, reusable-internal, recruitment | `substrate/seam` |
+| `HRNEXT-DOC-HR-064` | Job Applicant Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-065` | Job Applicant Source Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-066` | Job Offer Record Lifecycle | product, data, forms, recruitment, workflow | `implemented` |
+| `HRNEXT-DOC-HR-067` | Job Offer Term Embedded Data Rows | data, forms, reusable-internal, recruitment | `substrate/seam` |
+| `HRNEXT-DOC-HR-068` | Job Offer Term Template Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-069` | Job Opening Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-070` | Job Opening Template Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-071` | Job Requisition Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-072` | KRA Record Lifecycle | product, data, forms, performance | `implemented` |
+| `HRNEXT-DOC-HR-073` | Leave Adjustment Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-074` | Leave Allocation Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-075` | Leave Application Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-076` | Leave Block List Record Lifecycle | product, data, forms, leave | `implemented` |
+| `HRNEXT-DOC-HR-077` | Leave Block List Allow Embedded Data Rows | data, forms, reusable-internal, leave | `substrate/seam` |
+| `HRNEXT-DOC-HR-078` | Leave Block List Date Embedded Data Rows | data, forms, reusable-internal, leave | `substrate/seam` |
+| `HRNEXT-DOC-HR-079` | Leave Control Panel Configuration | configuration, administration, data, leave | `configuration-only` |
+| `HRNEXT-DOC-HR-080` | Leave Encashment Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-081` | Leave Ledger Entry Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-082` | Leave Period Record Lifecycle | product, data, forms, leave | `implemented` |
+| `HRNEXT-DOC-HR-083` | Leave Policy Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-084` | Leave Policy Assignment Record Lifecycle | product, data, forms, leave, workflow | `implemented` |
+| `HRNEXT-DOC-HR-085` | Leave Policy Detail Embedded Data Rows | data, forms, reusable-internal, leave | `substrate/seam` |
+| `HRNEXT-DOC-HR-086` | Leave Type Record Lifecycle | product, data, forms, leave | `implemented` |
+| `HRNEXT-DOC-HR-087` | Offer Term Record Lifecycle | product, data, forms, recruitment | `implemented` |
+| `HRNEXT-DOC-HR-088` | Overtime Details Embedded Data Rows | data, forms, reusable-internal, attendance | `substrate/seam` |
+| `HRNEXT-DOC-HR-089` | Overtime Salary Component Embedded Data Rows | data, forms, reusable-internal, attendance | `substrate/seam` |
+| `HRNEXT-DOC-HR-090` | Overtime Slip Record Lifecycle | product, data, forms, attendance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-091` | Overtime Type Record Lifecycle | product, data, forms, attendance | `implemented` |
+| `HRNEXT-DOC-HR-092` | Purpose of Travel Record Lifecycle | product, data, forms, expenses | `implemented` |
+| `HRNEXT-DOC-HR-093` | PWA Notification Record Lifecycle | product, data, forms, hr | `implemented` |
+| `HRNEXT-DOC-HR-094` | Shift Assignment Record Lifecycle | product, data, forms, attendance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-095` | Shift Assignment Tool Configuration | configuration, administration, data, attendance | `configuration-only` |
+| `HRNEXT-DOC-HR-096` | Shift Location Record Lifecycle | product, data, forms, attendance | `implemented` |
+| `HRNEXT-DOC-HR-097` | Shift Request Record Lifecycle | product, data, forms, attendance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-098` | Shift Schedule Record Lifecycle | product, data, forms, attendance, workflow | `implemented` |
+| `HRNEXT-DOC-HR-099` | Shift Schedule Assignment Record Lifecycle | product, data, forms, attendance | `implemented` |
+| `HRNEXT-DOC-HR-100` | Shift Type Record Lifecycle | product, data, forms, attendance | `implemented` |
+| `HRNEXT-DOC-HR-101` | Skill Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-102` | Skill Assessment Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-103` | Staffing Plan Record Lifecycle | product, data, forms, recruitment, workflow | `implemented` |
+| `HRNEXT-DOC-HR-104` | Staffing Plan Detail Embedded Data Rows | data, forms, reusable-internal, recruitment | `substrate/seam` |
+| `HRNEXT-DOC-HR-105` | Training Event Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-106` | Training Event Employee Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-107` | Training Feedback Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-108` | Training Program Record Lifecycle | product, data, forms, employee | `implemented` |
+| `HRNEXT-DOC-HR-109` | Training Result Record Lifecycle | product, data, forms, employee, workflow | `implemented` |
+| `HRNEXT-DOC-HR-110` | Training Result Employee Embedded Data Rows | data, forms, reusable-internal, employee | `substrate/seam` |
+| `HRNEXT-DOC-HR-111` | Travel Itinerary Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-112` | Travel Request Record Lifecycle | product, data, forms, expenses, workflow | `implemented` |
+| `HRNEXT-DOC-HR-113` | Travel Request Costing Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-114` | Vehicle Log Record Lifecycle | product, data, forms, expenses, workflow | `implemented` |
+| `HRNEXT-DOC-HR-115` | Vehicle Service Embedded Data Rows | data, forms, reusable-internal, expenses | `substrate/seam` |
+| `HRNEXT-DOC-HR-116` | Vehicle Service Item Record Lifecycle | product, data, forms, expenses | `implemented` |
+| `HRNEXT-DOC-PAY-001` | Additional Salary Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-002` | Arrear Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-003` | Bulk Salary Structure Assignment Configuration | configuration, administration, data, payroll | `configuration-only` |
+| `HRNEXT-DOC-PAY-004` | Employee Benefit Application Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-005` | Employee Benefit Application Detail Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-006` | Employee Benefit Claim Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-007` | Employee Benefit Detail Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-008` | Employee Benefit Ledger Record Lifecycle | product, data, forms, payroll | `implemented` |
+| `HRNEXT-DOC-PAY-009` | Employee Cost Center Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-010` | Employee Incentive Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-011` | Employee Other Income Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-012` | Employee Tax Exemption Category Record Lifecycle | product, data, forms, payroll | `implemented` |
+| `HRNEXT-DOC-PAY-013` | Employee Tax Exemption Declaration Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-014` | Employee Tax Exemption Declaration Category Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-015` | Employee Tax Exemption Proof Submission Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-016` | Employee Tax Exemption Proof Submission Detail Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-017` | Employee Tax Exemption Sub Category Record Lifecycle | product, data, forms, payroll | `implemented` |
+| `HRNEXT-DOC-PAY-018` | Gratuity Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-019` | Gratuity Applicable Component Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-020` | Gratuity Rule Record Lifecycle | product, data, forms, payroll | `implemented` |
+| `HRNEXT-DOC-PAY-021` | Gratuity Rule Slab Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-022` | Income Tax Slab Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-023` | Income Tax Slab Other Charges Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-024` | Payroll Correction Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-025` | Payroll Correction Child Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-026` | Payroll Employee Detail Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-027` | Payroll Entry Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-028` | Payroll Period Record Lifecycle | product, data, forms, payroll | `implemented` |
+| `HRNEXT-DOC-PAY-029` | Payroll Period Date Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-030` | Payroll Settings Configuration | configuration, administration, data, payroll | `configuration-only` |
+| `HRNEXT-DOC-PAY-031` | Retention Bonus Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-032` | Salary Component Record Lifecycle | product, data, forms, payroll | `implemented` |
+| `HRNEXT-DOC-PAY-033` | Salary Component Account Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-034` | Salary Detail Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-035` | Salary Slip Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-036` | Salary Slip Leave Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-037` | Salary Slip Loan Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-038` | Salary Slip Timesheet Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-039` | Salary Structure Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-040` | Salary Structure Assignment Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-041` | Salary Withholding Record Lifecycle | product, data, forms, payroll, workflow | `implemented` |
+| `HRNEXT-DOC-PAY-042` | Salary Withholding Cycle Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-DOC-PAY-043` | Taxable Salary Slab Embedded Data Rows | data, forms, reusable-internal, payroll | `substrate/seam` |
+| `HRNEXT-REPORT-HR-001` | Appraisal Overview | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-002` | Daily Work Summary Replies | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-003` | Employee Advance Summary | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-004` | Employee Analytics | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-005` | Employee Birthday | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-006` | Employee Exits | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-007` | Employee Hours Utilization Based On Timesheet | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-008` | Employee Information | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-009` | Employee Leave Balance | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-010` | Employee Leave Balance Summary | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-011` | Employees working on a holiday | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-012` | Leave Ledger | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-013` | Monthly Attendance Sheet | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-014` | Project Profitability | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-015` | Recruitment Analytics | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-016` | Shift Attendance | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-017` | Unpaid Expense Claim | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-HR-018` | Vehicle Expenses | analytics, reports, tables, search, hr | `implemented` |
+| `HRNEXT-REPORT-PAY-001` | Accrued Earnings Report | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-002` | Bank Remittance | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-003` | Employee CTC Break-up | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-004` | Income Tax Computation | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-005` | Income Tax Deductions | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-006` | Professional Tax Deductions | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-007` | Provident Fund Deductions | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-008` | Salary Payments Based On Payment Mode | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-009` | Salary Payments via ECS | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-REPORT-PAY-010` | Salary Register | analytics, reports, tables, search, payroll | `implemented` |
+| `HRNEXT-WORKSPACE-001` | Expenses Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-002` | HR Setup Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-003` | Leaves Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-004` | Performance Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-005` | Recruitment Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-006` | Shift & Attendance Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-007` | Tenure Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-008` | Payroll Desk Workspace | ui, navigation, administration | `implemented` |
+| `HRNEXT-WORKSPACE-009` | Tax & Benefits Desk Workspace | ui, navigation, administration | `implemented` |

@@ -1,6 +1,6 @@
 schema_version: 0.1.0
 index_type: repository-knowledge-objects
-updated_at: "2026-07-26T18:49:42+03:00"
+updated_at: "2026-07-26T19:24:35+03:00"
 repositories:
   - repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
     repository_slug: aliziodev
@@ -17,4 +17,8 @@ repositories:
   - repository_id: SRC-KIRANISM
     repository_slug: kiranism
     pinned_sha: 06e83c0b0e937f98184b343b92756ae0cadd7c92
+    knowledge_objects: []
+  - repository_id: SRC-HRNEXT
+    repository_slug: hr-next
+    pinned_sha: 8be64b735e347fdaaf4db3b045605e9a7a9ba856
     knowledge_objects: []
