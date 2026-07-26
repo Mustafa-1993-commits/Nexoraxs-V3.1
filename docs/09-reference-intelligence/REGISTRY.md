@@ -37,7 +37,7 @@ A repository may enter **Complete** only after the coverage report passes. A rep
 |---|---|---|---|
 | TARGET-NEXORAXS-V3-1 | `/home/mustafa/projects/Nexoraxs-V3.1` | Active target repository | Active development |
 | SRC-ALIZIODEV-LARAVEL-NEXT-STARTER | `/home/mustafa/projects/aliziodev/laravel-next-starter-kit` | Source repository | Complete |
-| SRC-BOXYHQ | `/home/mustafa/projects/BoxyHQ` | Source repository | Not Started |
+| SRC-BOXYHQ | `/home/mustafa/projects/BoxyHQ` | Source repository | Complete |
 | SRC-HR-NEXT-NEXORAXS | `/home/mustafa/projects/hr-next-nexoraxs` | Source repository | Not Started |
 | SRC-KIRANISM-SHADCN | `/home/mustafa/projects/Kiranism-Shadcn` | Source repository | Not Started |
 | SRC-NEXORAXS-V2 | `/home/mustafa/projects/nexoraxs-v2` | Source repository | Not Started |

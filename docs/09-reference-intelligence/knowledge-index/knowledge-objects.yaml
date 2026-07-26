@@ -1,6 +1,6 @@
 schema_version: 0.1.0
 index_type: repository-knowledge-objects
-updated_at: "2026-07-26T12:09:25+03:00"
+updated_at: "2026-07-26T18:05:54+03:00"
 repositories:
   - repository_id: SRC-ALIZIODEV-LARAVEL-NEXT-STARTER
     repository_slug: aliziodev
@@ -9,4 +9,8 @@ repositories:
   - repository_id: SRC-PLANE
     repository_slug: plane
     pinned_sha: a8e53b6ac7b87bd8e3e931d21188f7679c7ab6c4
+    knowledge_objects: []
+  - repository_id: SRC-BOXYHQ
+    repository_slug: boxyhq
+    pinned_sha: abc9b686823cbfb4973c79bc36fea37a3244be6c
     knowledge_objects: []
