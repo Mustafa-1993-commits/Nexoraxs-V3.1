@@ -1,0 +1,1083 @@
+catalog_version: 0.1
+repository:
+  id: SRC-PLANE
+  canonical_name: makeplane/plane
+  local_path: /home/mustafa/projects/Plane
+  source_url: https://github.com/makeplane/plane.git
+  pinned_discovered_sha: a8e53b6ac7b87bd8e3e931d21188f7679c7ab6c4
+  current_sha: a8e53b6ac7b87bd8e3e931d21188f7679c7ab6c4
+  discovery_state: Complete
+  discovery_mode: initial
+  discovered_at: "2026-07-26T02:24:20+03:00"
+rules:
+  complete_catalog_required: true
+  preselection_allowed: false
+  recommendation_allowed: false
+  verified_evidence_required: true
+
+x-repository-license: &repository_license
+  status: Reviewed
+  notes:
+    - Plane source is AGPL-3.0-only; modified network use and conveyance can trigger source, notice, and license obligations.
+    - No source code was copied; dependency, container, and asset license inventories remain explicit unknowns.
+x-discovery-metadata: &discovery_metadata
+  discovered_sha: a8e53b6ac7b87bd8e3e931d21188f7679c7ab6c4
+  discovered_at: "2026-07-26T02:24:20+03:00"
+  last_verified_at: "2026-07-26T02:24:20+03:00"
+  stale: false
+x-feature-defaults: &feature_defaults
+  aliases: []
+  repository_id: SRC-PLANE
+  evidence_status: Verified
+  behavior: {states: [], workflows: [], success_paths: [], failure_paths: [], edge_cases: []}
+  entry_points: {routes: [], screens: [], navigation_items: [], commands: []}
+  frontend: {components: [], hooks: [], layouts: [], state: [], services: [], styles: [], assets: []}
+  backend: {routes: [], controllers_or_handlers: [], services: [], models: [], migrations: [], policies_or_guards: [], jobs: [], events: [], listeners: [], commands: [], integrations: []}
+  data_and_state: {persistence: [], cache: [], client_state: [], server_state: []}
+  security_and_scope: {authentication: [], authorization: [], tenancy: [], rate_limits: [], sensitive_data: []}
+  configuration: {environment_variables: [], config_keys: [], feature_flags: []}
+  dependencies: {internal_features: [], internal_modules: [], external_packages: [], runtime_services: []}
+  tests: {unit: [], integration: [], end_to_end: [], fixtures: []}
+  reuse_assessment: {isolation: Low, complexity: Medium, coupling_notes: [Plane source and product semantics remain coupled unless stated otherwise.]}
+  license_impact: *repository_license
+  unknowns: []
+  contradictions: []
+  discovery_metadata: *discovery_metadata
+
+features:
+  - <<: *feature_defaults
+    id: PLANE-PLATFORM-001
+    canonical_name: Six-Application Community Runtime
+    classification: [product, operations, integration]
+    purpose: Composes web, admin, Space, Django API, live collaboration, and proxy applications into one Community system.
+    source_evidence: [{path: deployments/cli/community/docker-compose.yml, symbol_or_range: services, evidence_kind: configuration, claim_supported: Defines the deployable applications and supporting services.}]
+  - <<: *feature_defaults
+    id: PLANE-PLATFORM-002
+    canonical_name: Core and Extended Edition Seams
+    classification: [developer-experience, reusable-internal, configuration]
+    purpose: Separates tracked Community implementations from absent or abstract extended implementations.
+    source_evidence: [{path: apps/web/app/routes/extended.ts, symbol_or_range: extendedRoutes, evidence_kind: source, claim_supported: Defines an empty Community extended route contribution.}]
+    unknowns: [Enterprise implementation is not present in the pinned tree.]
+  - <<: *feature_defaults
+    id: PLANE-PLATFORM-003
+    canonical_name: Layered HTTP API Surfaces
+    classification: [product, integration, security]
+    purpose: Separates session app, API-key external, public Space, instance-admin, and auth routes.
+    source_evidence: [{path: apps/api/plane/urls.py, symbol_or_range: urlpatterns, evidence_kind: source, claim_supported: Mounts the five distinct HTTP surfaces.}]
+
+  - <<: *feature_defaults
+    id: PLANE-AUTH-001
+    canonical_name: Database Session and CSRF Authentication
+    classification: [authentication, security, data]
+    purpose: Authenticates browser requests through Django sessions and CSRF-protected cookies.
+    source_evidence: [{path: apps/api/plane/settings/common.py, symbol_or_range: REST_FRAMEWORK and session/CSRF settings, evidence_kind: configuration, claim_supported: Configures SessionAuthentication and secure cookie behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-002
+    canonical_name: Email and Password Sign-In and Registration
+    classification: [authentication, product]
+    purpose: Creates accounts and authenticates users with email/password credentials.
+    source_evidence: [{path: apps/api/plane/authentication/urls.py, symbol_or_range: sign-in/ and sign-up/, evidence_kind: route, claim_supported: Exposes password sign-in and registration routes.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-003
+    canonical_name: Magic-Code Sign-In and Registration
+    classification: [authentication, notification]
+    purpose: Generates an emailed code and consumes it for passwordless sign-in or sign-up.
+    source_evidence: [{path: apps/api/plane/authentication/urls.py, symbol_or_range: magic-generate/ magic-sign-in/ magic-sign-up/, evidence_kind: route, claim_supported: Exposes the magic authentication workflow.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-004
+    canonical_name: Password Recovery and Update
+    classification: [authentication, security, notification]
+    purpose: Supports forgot/reset, set, and change-password workflows with expiring reset tokens.
+    source_evidence: [{path: apps/api/plane/authentication/urls.py, symbol_or_range: forgot-password/ reset-password/ change-password/ set-password/, evidence_kind: route, claim_supported: Exposes password lifecycle routes.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-005
+    canonical_name: Google OAuth Authentication
+    classification: [authentication, integration]
+    purpose: Authenticates application and Space users through configured Google OAuth.
+    source_evidence: [{path: apps/api/plane/authentication/provider/oauth/google.py, symbol_or_range: GoogleOAuthProvider, evidence_kind: source, claim_supported: Implements Google OAuth provider behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-006
+    canonical_name: GitHub OAuth Authentication
+    classification: [authentication, integration]
+    purpose: Authenticates application and Space users through configured GitHub OAuth.
+    source_evidence: [{path: apps/api/plane/authentication/provider/oauth/github.py, symbol_or_range: GitHubOAuthProvider, evidence_kind: source, claim_supported: Implements GitHub OAuth provider behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-007
+    canonical_name: GitLab OAuth Authentication
+    classification: [authentication, integration]
+    purpose: Authenticates application and Space users through configured GitLab OAuth.
+    source_evidence: [{path: apps/api/plane/authentication/provider/oauth/gitlab.py, symbol_or_range: GitLabOAuthProvider, evidence_kind: source, claim_supported: Implements GitLab OAuth provider behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-008
+    canonical_name: Gitea OAuth Authentication
+    classification: [authentication, integration]
+    purpose: Authenticates application and Space users through a configurable Gitea host.
+    source_evidence: [{path: apps/api/plane/authentication/provider/oauth/gitea.py, symbol_or_range: GiteaOAuthProvider, evidence_kind: source, claim_supported: Implements configurable Gitea OAuth behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-009
+    canonical_name: Session Sign-Out
+    classification: [authentication, security]
+    purpose: Ends main application or Space sessions through dedicated sign-out routes.
+    source_evidence: [{path: apps/api/plane/authentication/urls.py, symbol_or_range: sign-out/ and spaces/sign-out/, evidence_kind: route, claim_supported: Exposes both sign-out variants.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-010
+    canonical_name: Space Authentication Variants
+    classification: [authentication, product]
+    purpose: Provides password, magic-code, OAuth, and sign-out paths for users interacting with published Space content.
+    source_evidence: [{path: apps/space/components/account/auth-forms/auth-root.tsx, symbol_or_range: AuthRoot, evidence_kind: source, claim_supported: Renders Space authentication mode and method selection.}]
+    contradictions: [Space OAuth hooks use general provider paths while Space-specific backend paths also exist.]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-011
+    canonical_name: Verified Email Address Update
+    classification: [authentication, security, notification]
+    purpose: Generates and verifies a code before replacing the authenticated user's email.
+    source_evidence: [{path: apps/api/plane/app/urls/user.py, symbol_or_range: users/me/email/generate-code/ and users/me/email/, evidence_kind: route, claim_supported: Exposes email-change code generation and update.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-012
+    canonical_name: Device and Browser Session Metadata
+    classification: [authentication, security, data]
+    purpose: Associates database sessions with devices and exposes current session/user session context.
+    source_evidence: [{path: apps/api/plane/db/models/device.py, symbol_or_range: Device and DeviceSession, evidence_kind: model, claim_supported: Persists device/session associations.}]
+  - <<: *feature_defaults
+    id: PLANE-AUTH-013
+    canonical_name: Personal API Tokens and API-Key Authentication
+    classification: [authentication, security, integration]
+    purpose: Creates expiring API tokens and authenticates external API requests through X-Api-Key with throttling.
+    source_evidence: [{path: apps/api/plane/api/middleware/api_authentication.py, symbol_or_range: APIKeyAuthentication, evidence_kind: source, claim_supported: Validates active unexpired tokens and updates last use.}]
+    tests: {unit: [apps/api/plane/tests/unit/middleware/test_api_authentication.py], integration: [apps/api/plane/tests/contract/app/test_api_token.py, apps/api/plane/tests/contract/api/test_authentication.py], end_to_end: [], fixtures: []}
+  - <<: *feature_defaults
+    id: PLANE-AUTH-014
+    canonical_name: Separate Instance-Administrator Authentication
+    classification: [authentication, administration, security]
+    purpose: Bootstraps and authenticates instance administrators under a distinct admin session cookie.
+    source_evidence: [{path: apps/api/plane/license/urls.py, symbol_or_range: admins/sign-in/ admins/sign-up/ admins/session/, evidence_kind: route, claim_supported: Exposes the instance-admin authentication lifecycle.}]
+
+  - <<: *feature_defaults
+    id: PLANE-TENANT-001
+    canonical_name: Workspace Lifecycle
+    classification: [product, tenancy, data]
+    purpose: Creates, reads, updates, slug-checks, and deletes the top-level Plane workspace.
+    source_evidence: [{path: apps/api/plane/app/urls/workspace.py, symbol_or_range: workspace-slug-check/ workspaces/ workspaces/<slug>/, evidence_kind: route, claim_supported: Exposes workspace identity and lifecycle APIs.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-002
+    canonical_name: Workspace Onboarding and Seed Content
+    classification: [product, automation, tenancy]
+    purpose: Completes user onboarding and asynchronously seeds default workspace/project content.
+    source_evidence: [{path: apps/api/plane/bgtasks/workspace_seed_task.py, symbol_or_range: workspace_seed, evidence_kind: job, claim_supported: Creates initial projects states labels issues pages cycles modules and views.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-003
+    canonical_name: Workspace Invitations
+    classification: [product, tenancy, notification]
+    purpose: Invites users by email and accepts tokenized invitations into a workspace.
+    source_evidence: [{path: apps/api/plane/app/urls/workspace.py, symbol_or_range: invitations and join routes, evidence_kind: route, claim_supported: Exposes invitation list detail and join operations.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-004
+    canonical_name: Workspace Membership and Roles
+    classification: [authorization, tenancy, administration]
+    purpose: Manages active workspace members with Admin Member and Guest roles.
+    source_evidence: [{path: apps/api/plane/db/models/workspace.py, symbol_or_range: WorkspaceMember, evidence_kind: model, claim_supported: Persists member role and active state per workspace.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-005
+    canonical_name: Workspace Leave and Delete
+    classification: [product, tenancy, security]
+    purpose: Lets members leave and authorized administrators delete a workspace under separate guards.
+    source_evidence: [{path: apps/api/plane/app/urls/workspace.py, symbol_or_range: members/leave/ and workspace detail DELETE, evidence_kind: route, claim_supported: Provides leave and deletion operations.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-006
+    canonical_name: Workspace Themes and User Preferences
+    classification: [tenancy, personalization, data]
+    purpose: Persists workspace theme definitions and member-specific view/sidebar/home preferences.
+    source_evidence: [{path: apps/api/plane/db/models/workspace.py, symbol_or_range: WorkspaceTheme WorkspaceUserProperties WorkspaceHomePreference WorkspaceUserPreference, evidence_kind: model, claim_supported: Persists workspace and user customization.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-007
+    canonical_name: Project Lifecycle and Identifiers
+    classification: [product, tenancy, data]
+    purpose: Creates and manages workspace-scoped projects with unique identifiers timezone defaults and archive state.
+    source_evidence: [{path: apps/api/plane/db/models/project.py, symbol_or_range: Project, evidence_kind: model, claim_supported: Defines project identity ownership settings and uniqueness.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-008
+    canonical_name: Project Invitations Membership and Roles
+    classification: [authorization, tenancy, administration]
+    purpose: Invites joins removes and lists active project members with project roles.
+    source_evidence: [{path: apps/api/plane/app/urls/project.py, symbol_or_range: invitations join roles members leave routes, evidence_kind: route, claim_supported: Exposes project membership lifecycle.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-009
+    canonical_name: Project Feature and Automation Settings
+    classification: [configuration, product, automation]
+    purpose: Toggles cycles modules views pages intake time tracking issue types and guest visibility and sets auto-close/archive thresholds.
+    source_evidence: [{path: apps/api/plane/db/models/project.py, symbol_or_range: Project feature fields archive_in close_in, evidence_kind: model, claim_supported: Persists project feature gates and automation thresholds.}]
+  - <<: *feature_defaults
+    id: PLANE-TENANT-010
+    canonical_name: Project Publication and Deploy Boards
+    classification: [product, integration, tenancy]
+    purpose: Publishes a project through anchor-scoped settings consumed by Space.
+    source_evidence: [{path: apps/api/plane/app/urls/project.py, symbol_or_range: project-deploy-boards routes, evidence_kind: route, claim_supported: Manages project publication/deploy-board state.}]
+
+  - <<: *feature_defaults
+    id: PLANE-WORK-001
+    canonical_name: Work-Item CRUD and Human Identifiers
+    classification: [product, data]
+    purpose: Creates lists retrieves updates and deletes project work items addressable by UUID or PROJECT-SEQUENCE.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: issues list/detail/v2 and work-item identifier routes, evidence_kind: route, claim_supported: Exposes work-item lifecycle and identifier lookup.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-002
+    canonical_name: Rich Work-Item Descriptions
+    classification: [product, ui, data]
+    purpose: Edits and persists rich HTML JSON and binary-compatible work-item descriptions.
+    source_evidence: [{path: apps/api/plane/db/models/issue.py, symbol_or_range: Issue description fields, evidence_kind: model, claim_supported: Persists rich work-item description representations.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-003
+    canonical_name: Configurable Workflow States
+    classification: [product, configuration, data]
+    purpose: Defines project states and groups including intake and default-state selection.
+    source_evidence: [{path: apps/api/plane/app/urls/state.py, symbol_or_range: states intake-state and mark-default routes, evidence_kind: route, claim_supported: Manages project workflow states.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-004
+    canonical_name: Work-Item Property Management
+    classification: [product, ui, data]
+    purpose: Assigns priority dates assignees labels estimates cycles modules and other core properties.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/properties/all-properties.tsx, symbol_or_range: AllProperties, evidence_kind: source, claim_supported: Composes visible work-item property controls across layouts.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-005
+    canonical_name: Parent and Sub-Work-Item Hierarchy
+    classification: [product, data, ui]
+    purpose: Relates work items through a parent and provides sub-item list creation and filtering.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: issues/<issue_id>/sub-issues/, evidence_kind: route, claim_supported: Exposes sub-work-item operations.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-006
+    canonical_name: Work-Item Relations and Blockers
+    classification: [product, data]
+    purpose: Records blocked-by duplicate and relates-to style relationships between work items.
+    source_evidence: [{path: apps/api/plane/db/models/issue.py, symbol_or_range: IssueBlocker IssueRelation IssueRelationChoices, evidence_kind: model, claim_supported: Persists blocker and typed relation edges.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-007
+    canonical_name: External Links with Metadata Crawling
+    classification: [product, integration, automation]
+    purpose: Attaches URLs to work items and asynchronously resolves safe title/favicon metadata.
+    source_evidence: [{path: apps/api/plane/bgtasks/work_item_link_task.py, symbol_or_range: crawl_work_item_link_title, evidence_kind: job, claim_supported: Securely fetches link metadata and favicon.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-008
+    canonical_name: Work-Item Attachments
+    classification: [product, data, integration]
+    purpose: Uploads associates lists downloads and removes project-scoped work-item files.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: issue-attachments and v2 attachments routes, evidence_kind: route, claim_supported: Exposes attachment lifecycle.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-009
+    canonical_name: Work-Item Comments
+    classification: [product, collaboration, ui]
+    purpose: Creates edits lists and deletes rich comments on work items.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: issues/<issue_id>/comments routes, evidence_kind: route, claim_supported: Exposes comment CRUD.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-010
+    canonical_name: Issue Comment and Public Vote Reactions
+    classification: [product, collaboration, interaction]
+    purpose: Adds/removes emoji reactions on issues/comments and votes on published issues.
+    source_evidence: [{path: apps/api/plane/space/urls/issue.py, symbol_or_range: reactions and votes routes, evidence_kind: route, claim_supported: Exposes public reaction and vote operations.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-011
+    canonical_name: Subscribers and Mention Participants
+    classification: [product, collaboration, notification]
+    purpose: Subscribes users and extracts mentioned members for work-item updates and notifications.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: issue-subscribers and subscribe routes, evidence_kind: route, claim_supported: Manages work-item subscribers.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-012
+    canonical_name: Work-Item Activity History
+    classification: [product, data, automation]
+    purpose: Records field collaboration relation and lifecycle changes as activity entries.
+    source_evidence: [{path: apps/api/plane/bgtasks/issue_activities_task.py, symbol_or_range: issue_activity and tracking functions, evidence_kind: job, claim_supported: Derives activity records from work-item changes.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-013
+    canonical_name: Work-Item and Description Version History
+    classification: [product, data, automation]
+    purpose: Captures work-item snapshots and rich-description versions for later retrieval.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: versions and description-versions routes, evidence_kind: route, claim_supported: Exposes both version histories.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-014
+    canonical_name: Work-Item Archive and Restore
+    classification: [product, data]
+    purpose: Archives work items and exposes archived-list/detail and unarchive behavior.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: archived-issues and archive routes, evidence_kind: route, claim_supported: Exposes work-item archive lifecycle.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-015
+    canonical_name: Soft Deletion and Retention Purge
+    classification: [data, automation, operations]
+    purpose: Soft-deletes domain records and later hard-deletes them under configurable retention.
+    source_evidence: [{path: apps/api/plane/db/mixins.py, symbol_or_range: SoftDeleteModel, evidence_kind: source, claim_supported: Implements soft deletion and queues related-object deletion.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-016
+    canonical_name: Bulk Work-Item Operations
+    classification: [product, interaction, data]
+    purpose: Bulk-creates labels and bulk-deletes or archives selected work items.
+    source_evidence: [{path: apps/api/plane/app/urls/issue.py, symbol_or_range: bulk-create-labels bulk-delete-issues bulk-archive-issues, evidence_kind: route, claim_supported: Exposes verified bulk operations.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-017
+    canonical_name: Workspace Work-Item Drafts
+    classification: [product, data, ui]
+    purpose: Saves partially composed work items with field joins and converts a draft into an issue.
+    source_evidence: [{path: apps/api/plane/app/urls/workspace.py, symbol_or_range: draft-issues and draft-to-issue routes, evidence_kind: route, claim_supported: Exposes draft CRUD and conversion.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-018
+    canonical_name: Work-Item Type Data Substrate
+    classification: [data, configuration]
+    purpose: Defines issue types and project issue-type associations behind a project feature flag.
+    source_evidence: [{path: apps/api/plane/db/models/issue_type.py, symbol_or_range: IssueType and ProjectIssueType, evidence_kind: model, claim_supported: Persists work-item type definitions and project associations.}]
+    unknowns: [No complete Community settings/API workflow for type management was verified.]
+  - <<: *feature_defaults
+    id: PLANE-WORK-019
+    canonical_name: Per-User Work-Item Display Properties
+    classification: [personalization, data, ui]
+    purpose: Persists filters layout grouping ordering and visible-property preferences per member/project.
+    source_evidence: [{path: apps/api/plane/db/models/project.py, symbol_or_range: ProjectUserProperty, evidence_kind: model, claim_supported: Persists project/member view preferences.}]
+  - <<: *feature_defaults
+    id: PLANE-WORK-020
+    canonical_name: Quick Create Inline Edit and Peek Interaction
+    classification: [interaction, ui, product]
+    purpose: Creates/edits work items in layout context and opens side/full/modal previews without losing list context.
+    source_evidence: [{path: apps/web/core/components/issues/peek-overview/root.tsx, symbol_or_range: IssuePeekOverviewRoot, evidence_kind: source, claim_supported: Implements contextual work-item preview.}]
+
+  - <<: *feature_defaults
+    id: PLANE-VIEW-001
+    canonical_name: Grouped List Work-Item Layout
+    classification: [ui, interaction, product]
+    purpose: Renders grouped work-item lists across project cycle module view profile and archive contexts.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/list/base-list-root.tsx, symbol_or_range: BaseListRoot, evidence_kind: source, claim_supported: Implements the reusable list root.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-002
+    canonical_name: Kanban and Swimlane Work-Item Layout
+    classification: [ui, interaction, product]
+    purpose: Renders grouped/subgrouped cards with swimlanes and drag interaction.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/kanban/base-kanban-root.tsx, symbol_or_range: BaseKanBanRoot, evidence_kind: source, claim_supported: Implements the reusable Kanban root.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-003
+    canonical_name: Editable Spreadsheet Work-Item Layout
+    classification: [ui, interaction, product]
+    purpose: Renders work items as property columns and editable keyboard-aware table rows.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/spreadsheet/spreadsheet-table.tsx, symbol_or_range: SpreadsheetTable, evidence_kind: source, claim_supported: Implements the spreadsheet table.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-004
+    canonical_name: Calendar Work-Item Layout
+    classification: [ui, interaction, product]
+    purpose: Places work items on month/week date tiles with range controls and quick add.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/calendar/base-calendar-root.tsx, symbol_or_range: BaseCalendarRoot, evidence_kind: source, claim_supported: Implements the reusable calendar root.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-005
+    canonical_name: Gantt Work-Item Layout
+    classification: [ui, interaction, product]
+    purpose: Places dated work items on a timeline with reusable block rendering.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/gantt/base-gantt-root.tsx, symbol_or_range: BaseGanttRoot, evidence_kind: source, claim_supported: Implements the work-item Gantt root.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-006
+    canonical_name: Multi-Property Work-Item Filters
+    classification: [search, ui, product]
+    purpose: Filters work items by project state/group priority assignee creator labels cycle module dates and mentions.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/filters/header/filters/index.ts, symbol_or_range: filter exports, evidence_kind: source, claim_supported: Aggregates verified filter controls.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-007
+    canonical_name: Group Sort and Display Configuration
+    classification: [personalization, ui, data]
+    purpose: Selects grouping subgrouping order layout visible fields subissues empty groups and date range.
+    source_evidence: [{path: apps/web/core/components/issues/issue-layouts/filters/header/display-filters/index.ts, symbol_or_range: display filter exports, evidence_kind: source, claim_supported: Aggregates display/group/order controls.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-008
+    canonical_name: Saved Project and Workspace Views
+    classification: [product, search, data]
+    purpose: Persists reusable filtered work-item views at project and workspace scope.
+    source_evidence: [{path: apps/api/plane/app/urls/views.py, symbol_or_range: project and workspace view routes, evidence_kind: route, claim_supported: Exposes both saved-view scopes.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-009
+    canonical_name: Favorite Items and Folders
+    classification: [personalization, navigation, interaction]
+    purpose: Pins and groups projects cycles modules views and other navigation targets in the workspace sidebar.
+    source_evidence: [{path: apps/web/core/components/workspace/sidebar/favorites/favorites-menu.tsx, symbol_or_range: FavoritesMenu, evidence_kind: source, claim_supported: Renders favorite items and folders.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-010
+    canonical_name: Membership-Scoped Global and Entity Search
+    classification: [search, product, security]
+    purpose: Searches accessible workspaces projects work items cycles modules pages views and intake records.
+    source_evidence: [{path: apps/api/plane/app/views/search/base.py, symbol_or_range: GlobalSearchEndpoint, evidence_kind: source, claim_supported: Queries multiple entities under active membership scope.}]
+  - <<: *feature_defaults
+    id: PLANE-VIEW-011
+    canonical_name: Power-K Command and Navigation Palette
+    classification: [search, interaction, accessibility]
+    purpose: Executes context-aware creation navigation entity actions and preference changes through keyboard commands.
+    source_evidence: [{path: apps/web/core/components/power-k/core/registry.ts, symbol_or_range: command registry, evidence_kind: source, claim_supported: Registers context-aware command definitions.}]
+
+  - <<: *feature_defaults
+    id: PLANE-CYCLE-001
+    canonical_name: Cycle Lifecycle Membership and Transfer
+    classification: [product, data]
+    purpose: Creates edits deletes and archives cycles and adds removes or transfers work items.
+    source_evidence: [{path: apps/api/plane/app/urls/cycle.py, symbol_or_range: cycle CRUD cycle-issues transfer archive routes, evidence_kind: route, claim_supported: Exposes cycle lifecycle and membership.}]
+  - <<: *feature_defaults
+    id: PLANE-CYCLE-002
+    canonical_name: Active Cycle Progress and Analytics
+    classification: [analytics, product, ui]
+    purpose: Shows active-cycle statistics productivity progress charts and detailed analytics.
+    source_evidence: [{path: apps/web/core/components/cycles/active-cycle/root.tsx, symbol_or_range: ActiveCycleRoot, evidence_kind: source, claim_supported: Composes active-cycle progress and productivity.}]
+  - <<: *feature_defaults
+    id: PLANE-CYCLE-003
+    canonical_name: Cycle Favorites Filters and User Properties
+    classification: [personalization, search, product]
+    purpose: Favorites cycles and persists per-user properties while filtering lists by date/status.
+    source_evidence: [{path: apps/api/plane/app/urls/cycle.py, symbol_or_range: user-favorite-cycles user-properties date-check, evidence_kind: route, claim_supported: Exposes favorite/property/date-check operations.}]
+
+  - <<: *feature_defaults
+    id: PLANE-MODULE-001
+    canonical_name: Module Lifecycle and Work-Item Membership
+    classification: [product, data]
+    purpose: Creates edits deletes and archives modules and manages their work items.
+    source_evidence: [{path: apps/api/plane/app/urls/module.py, symbol_or_range: module CRUD issue membership and archive routes, evidence_kind: route, claim_supported: Exposes module lifecycle and membership.}]
+  - <<: *feature_defaults
+    id: PLANE-MODULE-002
+    canonical_name: Module Status Lead Members and Links
+    classification: [product, collaboration, integration]
+    purpose: Assigns module status lead/member participation dates and external links.
+    source_evidence: [{path: apps/api/plane/db/models/module.py, symbol_or_range: Module ModuleMember ModuleLink, evidence_kind: model, claim_supported: Persists module coordination fields and links.}]
+  - <<: *feature_defaults
+    id: PLANE-MODULE-003
+    canonical_name: Module Progress Gantt Favorites and Filters
+    classification: [analytics, personalization, ui]
+    purpose: Visualizes module progress/timeline and supports favorites filtering ordering and archived lists.
+    source_evidence: [{path: apps/web/core/components/modules/gantt-chart/index.ts, symbol_or_range: module Gantt exports, evidence_kind: source, claim_supported: Provides module timeline rendering.}]
+
+  - <<: *feature_defaults
+    id: PLANE-PAGE-001
+    canonical_name: Project Page Lifecycle
+    classification: [product, data, ui]
+    purpose: Creates lists edits favorites archives duplicates and deletes project-linked pages.
+    source_evidence: [{path: apps/api/plane/app/urls/page.py, symbol_or_range: pages favorite archive duplicate routes, evidence_kind: route, claim_supported: Exposes page lifecycle operations.}]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-002
+    canonical_name: Realtime Collaborative Page Editing
+    classification: [realtime, collaboration, product]
+    purpose: Synchronizes page documents through authenticated Hocuspocus/Yjs WebSockets and Redis.
+    source_evidence: [{path: apps/live/src/controllers/collaboration.controller.ts, symbol_or_range: CollaborationController.handleConnection, evidence_kind: source, claim_supported: Hands authenticated WebSockets to Hocuspocus.}]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-003
+    canonical_name: Page Access and Lock Controls
+    classification: [authorization, collaboration, product]
+    purpose: Changes page access level and lock state under project/page permissions.
+    source_evidence: [{path: apps/api/plane/app/urls/page.py, symbol_or_range: access and lock routes, evidence_kind: route, claim_supported: Exposes page access and lock operations.}]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-004
+    canonical_name: Page Version History
+    classification: [data, product, automation]
+    purpose: Captures lists and retrieves historical page versions.
+    source_evidence: [{path: apps/api/plane/app/urls/page.py, symbol_or_range: pages/<page_id>/versions routes, evidence_kind: route, claim_supported: Exposes page versions.}]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-005
+    canonical_name: Page Outline Assets and Document Information
+    classification: [ui, navigation, product]
+    purpose: Navigates headings and inspects document actors metadata assets and version history.
+    source_evidence: [{path: apps/web/core/components/pages/navigation-pane/root.tsx, symbol_or_range: PageNavigationPane, evidence_kind: source, claim_supported: Composes outline assets info and version tabs.}]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-006
+    canonical_name: Rich-Document Format Conversion
+    classification: [reusable-internal, integration, data]
+    purpose: Converts validated HTML into JSON and binary editor document formats.
+    source_evidence: [{path: apps/live/src/controllers/document.controller.ts, symbol_or_range: DocumentController.convertDocument, evidence_kind: source, claim_supported: Validates and converts HTML into all editor formats.}]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-007
+    canonical_name: Authenticated Page PDF Export
+    classification: [product, integration, operations]
+    purpose: Renders page content metadata images and mentions into a downloadable PDF with bounded errors.
+    source_evidence: [{path: apps/live/src/controllers/pdf-export.controller.ts, symbol_or_range: PdfExportController.exportToPdf, evidence_kind: source, claim_supported: Validates authenticates renders and returns page PDFs.}]
+    tests: {unit: [apps/live/tests/lib/pdf/pdf-rendering.test.ts, apps/live/tests/services/pdf-export/effect-utils.test.ts], integration: [], end_to_end: [], fixtures: []}
+    contradictions: [The live mentions client calls a Community endpoint not present in the page URL module.]
+  - <<: *feature_defaults
+    id: PLANE-PAGE-008
+    canonical_name: Debounced Page Title Sync and Persistence
+    classification: [realtime, data, reusable-internal]
+    purpose: Observes collaborative title changes and persists debounced updates through the page service.
+    source_evidence: [{path: apps/live/src/extensions/title-sync.ts, symbol_or_range: TitleSync, evidence_kind: source, claim_supported: Observes and coordinates collaborative page title updates.}]
+
+  - <<: *feature_defaults
+    id: PLANE-INTAKE-001
+    canonical_name: Project Intake Configuration and Queue
+    classification: [product, configuration, data]
+    purpose: Defines project intake boards and lists filtered intake work items.
+    source_evidence: [{path: apps/api/plane/app/urls/intake.py, symbol_or_range: intakes and intake-issues routes, evidence_kind: route, claim_supported: Exposes intake configuration and queue operations.}]
+  - <<: *feature_defaults
+    id: PLANE-INTAKE-002
+    canonical_name: Intake Submission and Source Metadata
+    classification: [product, data, integration]
+    purpose: Creates intake-wrapped work items with in-app/public/external source metadata.
+    source_evidence: [{path: apps/api/plane/db/models/intake.py, symbol_or_range: IntakeIssue, evidence_kind: model, claim_supported: Persists the issue source email external identifiers and extra metadata.}]
+  - <<: *feature_defaults
+    id: PLANE-INTAKE-003
+    canonical_name: Intake Accept Reject Snooze and Duplicate Triage
+    classification: [product, workflow, interaction]
+    purpose: Moves incoming items among pending rejected snoozed accepted and duplicate outcomes.
+    source_evidence: [{path: apps/api/plane/db/models/intake.py, symbol_or_range: IntakeIssueStatus, evidence_kind: model, claim_supported: Defines the five triage states and duplicate/snooze fields.}]
+
+  - <<: *feature_defaults
+    id: PLANE-ANALYTICS-001
+    canonical_name: Workspace and Project Work-Item Analytics
+    classification: [analytics, product, ui]
+    purpose: Produces overview advanced stats charts trends distributions and insight tables with configurable filters.
+    source_evidence: [{path: apps/api/plane/app/urls/analytic.py, symbol_or_range: analytics advance-analytics stats charts routes, evidence_kind: route, claim_supported: Exposes workspace and project analytics APIs.}]
+  - <<: *feature_defaults
+    id: PLANE-ANALYTICS-002
+    canonical_name: Saved and Default Analytic Views
+    classification: [analytics, personalization, data]
+    purpose: Persists analytic configurations and selects a default analysis.
+    source_evidence: [{path: apps/api/plane/app/urls/analytic.py, symbol_or_range: analytic-view saved-analytic-view default-analytics, evidence_kind: route, claim_supported: Exposes saved/default analytic configurations.}]
+  - <<: *feature_defaults
+    id: PLANE-ANALYTICS-003
+    canonical_name: Analytics CSV Email Export
+    classification: [analytics, automation, notification]
+    purpose: Generates segmented or unsegmented analytics CSV output and emails it asynchronously.
+    source_evidence: [{path: apps/api/plane/bgtasks/analytic_plot_export.py, symbol_or_range: analytic_export_task and export_analytics_to_csv_email, evidence_kind: job, claim_supported: Builds and emails analytics CSV exports.}]
+  - <<: *feature_defaults
+    id: PLANE-ANALYTICS-004
+    canonical_name: User Profile Statistics Activity and Export
+    classification: [analytics, product, data]
+    purpose: Shows user workload state/priority distributions activity graphs and downloadable activity.
+    source_evidence: [{path: apps/api/plane/app/urls/workspace.py, symbol_or_range: user-stats user-activity export and user-profile routes, evidence_kind: route, claim_supported: Exposes profile analytics and activity export.}]
+  - <<: *feature_defaults
+    id: PLANE-ANALYTICS-005
+    canonical_name: Work-Item Export History and Downloads
+    classification: [analytics, automation, data]
+    purpose: Exports filtered work items into S3-backed archives and retains export history until scheduled expiry.
+    source_evidence: [{path: apps/api/plane/bgtasks/export_task.py, symbol_or_range: issue_export_task, evidence_kind: job, claim_supported: Packages and uploads work-item exports.}]
+    tests: {unit: [apps/api/plane/tests/unit/utils/test_csv_export_sanitization.py, apps/api/plane/tests/unit/utils/test_xlsx_export_sanitization.py], integration: [], end_to_end: [], fixtures: []}
+
+  - <<: *feature_defaults
+    id: PLANE-NOTIFY-001
+    canonical_name: In-App Notification Lifecycle
+    classification: [notification, product, data]
+    purpose: Lists notifications and marks one or all read archived or unread-counted.
+    source_evidence: [{path: apps/api/plane/app/urls/notification.py, symbol_or_range: notification list detail read archive unread mark-all-read routes, evidence_kind: route, claim_supported: Exposes the notification lifecycle.}]
+  - <<: *feature_defaults
+    id: PLANE-NOTIFY-002
+    canonical_name: Notification Center Filters and Cards
+    classification: [notification, ui, interaction]
+    purpose: Presents full-page/sidebar notification cards with filters read/archive actions and loading/empty states.
+    source_evidence: [{path: apps/web/core/components/workspace-notifications/root.tsx, symbol_or_range: WorkspaceNotifications, evidence_kind: source, claim_supported: Composes notification list and sidebar experience.}]
+  - <<: *feature_defaults
+    id: PLANE-NOTIFY-003
+    canonical_name: User Notification Preferences
+    classification: [notification, personalization, data]
+    purpose: Stores per-user delivery preferences and exposes them through the current-user API.
+    source_evidence: [{path: apps/api/plane/db/models/notification.py, symbol_or_range: UserNotificationPreference, evidence_kind: model, claim_supported: Persists user notification choices.}]
+  - <<: *feature_defaults
+    id: PLANE-NOTIFY-004
+    canonical_name: Batched Email Notifications
+    classification: [notification, automation, integration]
+    purpose: Stacks pending notifications under a Redis lock and sends issue email digests every five minutes.
+    source_evidence: [{path: apps/api/plane/bgtasks/email_notification_task.py, symbol_or_range: stack_email_notification and send_email_notification, evidence_kind: job, claim_supported: Batches and delivers email notifications.}]
+  - <<: *feature_defaults
+    id: PLANE-NOTIFY-005
+    canonical_name: Mention Notification and Subscriber Fan-Out
+    classification: [notification, collaboration, automation]
+    purpose: Extracts issue/comment mentions adds subscribers and creates recipient notifications.
+    source_evidence: [{path: apps/api/plane/bgtasks/notification_task.py, symbol_or_range: notifications and mention helpers, evidence_kind: job, claim_supported: Creates mention/subscriber notification fan-out.}]
+
+  - <<: *feature_defaults
+    id: PLANE-HOME-001
+    canonical_name: Configurable Workspace Home Dashboard
+    classification: [product, personalization, ui]
+    purpose: Composes greeting projects recents links and stickies as reorderable/managed home widgets.
+    source_evidence: [{path: apps/web/core/components/home/home-dashboard-widgets.tsx, symbol_or_range: HomeDashboardWidgets, evidence_kind: source, claim_supported: Renders configured workspace home widgets.}]
+  - <<: *feature_defaults
+    id: PLANE-HOME-002
+    canonical_name: Workspace Quick Links
+    classification: [product, navigation, personalization]
+    purpose: Creates edits deletes and displays workspace links on the home dashboard.
+    source_evidence: [{path: apps/api/plane/app/urls/workspace.py, symbol_or_range: quick-links routes, evidence_kind: route, claim_supported: Exposes quick-link CRUD.}]
+  - <<: *feature_defaults
+    id: PLANE-HOME-003
+    canonical_name: Recent Visits
+    classification: [personalization, navigation, data]
+    purpose: Records and displays recently visited projects pages and work items.
+    source_evidence: [{path: apps/api/plane/db/models/recent_visit.py, symbol_or_range: UserRecentVisit, evidence_kind: model, claim_supported: Persists recent entity visits per user/workspace.}]
+  - <<: *feature_defaults
+    id: PLANE-HOME-004
+    canonical_name: Draggable Sticky Notes
+    classification: [product, personalization, interaction]
+    purpose: Creates edits deletes searches and reorders personal workspace stickies.
+    source_evidence: [{path: apps/web/core/components/stickies/layout/sticky-dnd-wrapper.tsx, symbol_or_range: StickyDndWrapper, evidence_kind: source, claim_supported: Provides drag ordering for sticky notes.}]
+  - <<: *feature_defaults
+    id: PLANE-HOME-005
+    canonical_name: User Profile Tour Timezone and Week Preferences
+    classification: [personalization, product, data]
+    purpose: Updates profile onboarding/tour completion timezone language start-of-week and related account settings.
+    source_evidence: [{path: apps/api/plane/app/urls/user.py, symbol_or_range: users/me settings profile onboard tour-completed routes, evidence_kind: route, claim_supported: Exposes account/profile/onboarding preferences.}]
+
+  - <<: *feature_defaults
+    id: PLANE-SPACE-001
+    canonical_name: Anchor-Scoped Published Project Board
+    classification: [product, tenancy, integration]
+    purpose: Resolves project publication metadata and settings through a public anchor.
+    source_evidence: [{path: apps/api/plane/space/urls/project.py, symbol_or_range: anchor meta and settings routes, evidence_kind: route, claim_supported: Exposes anchor-scoped publication metadata/settings.}]
+  - <<: *feature_defaults
+    id: PLANE-SPACE-002
+    canonical_name: Public List and Kanban Browsing
+    classification: [product, ui, search]
+    purpose: Browses published issues in list or Kanban layouts with state label and priority filters.
+    source_evidence: [{path: apps/space/components/issues/issue-layouts/root.tsx, symbol_or_range: IssueLayoutsRoot, evidence_kind: source, claim_supported: Selects and renders public issue layouts.}]
+  - <<: *feature_defaults
+    id: PLANE-SPACE-003
+    canonical_name: Public Issue Detail Comments Reactions and Votes
+    classification: [product, collaboration, interaction]
+    purpose: Opens published issue details and supports authenticated comments emoji reactions and votes.
+    source_evidence: [{path: apps/api/plane/space/urls/issue.py, symbol_or_range: detail comments reactions votes routes, evidence_kind: route, claim_supported: Exposes public issue interaction APIs.}]
+  - <<: *feature_defaults
+    id: PLANE-SPACE-004
+    canonical_name: Anchor-Scoped Public Assets and Intake
+    classification: [product, integration, data]
+    purpose: Uploads/resolves public board assets and submits items into published project intake.
+    source_evidence: [{path: apps/api/plane/space/urls/intake.py, symbol_or_range: anchor intake issue routes, evidence_kind: route, claim_supported: Exposes public intake submissions.}]
+
+  - <<: *feature_defaults
+    id: PLANE-ADMIN-001
+    canonical_name: Instance General Configuration
+    classification: [administration, configuration]
+    purpose: Manages instance identity signup workspace creation and general service settings.
+    source_evidence: [{path: apps/admin/app/(all)/(dashboard)/general/form.tsx, symbol_or_range: GeneralConfigurationForm, evidence_kind: source, claim_supported: Renders editable instance general configuration.}]
+  - <<: *feature_defaults
+    id: PLANE-ADMIN-002
+    canonical_name: Instance Administrator Management
+    classification: [administration, authorization, security]
+    purpose: Lists creates identifies and removes instance administrators under the admin session.
+    source_evidence: [{path: apps/api/plane/license/urls.py, symbol_or_range: admins/ admins/me/ admins/<pk>/, evidence_kind: route, claim_supported: Exposes instance administrator management.}]
+  - <<: *feature_defaults
+    id: PLANE-ADMIN-003
+    canonical_name: Instance Workspace Administration
+    classification: [administration, tenancy, product]
+    purpose: Lists and creates workspaces from the instance-admin application.
+    source_evidence: [{path: apps/admin/app/(all)/(dashboard)/workspace/page.tsx, symbol_or_range: workspace admin page, evidence_kind: screen, claim_supported: Presents instance workspace administration.}]
+  - <<: *feature_defaults
+    id: PLANE-ADMIN-004
+    canonical_name: SMTP Configuration and Test Email
+    classification: [administration, notification, integration]
+    purpose: Configures SMTP settings validates credentials and sends a test email.
+    source_evidence: [{path: apps/admin/app/(all)/(dashboard)/email/test-email-modal.tsx, symbol_or_range: TestEmailModal, evidence_kind: source, claim_supported: Implements administrator test-email interaction.}]
+  - <<: *feature_defaults
+    id: PLANE-ADMIN-005
+    canonical_name: Authentication Provider Configuration
+    classification: [administration, authentication, configuration]
+    purpose: Enables/disables password magic signup and configures Google GitHub GitLab and Gitea providers.
+    source_evidence: [{path: apps/admin/app/(all)/(dashboard)/authentication/page.tsx, symbol_or_range: authentication settings page, evidence_kind: screen, claim_supported: Presents provider and authentication controls.}]
+  - <<: *feature_defaults
+    id: PLANE-ADMIN-006
+    canonical_name: AI and Image-Storage Configuration
+    classification: [administration, configuration, integration]
+    purpose: Configures LLM provider/model/key and S3/MinIO image storage from admin screens.
+    source_evidence: [{path: apps/admin/app/(all)/(dashboard)/ai/form.tsx, symbol_or_range: AI configuration form, evidence_kind: source, claim_supported: Edits LLM provider settings.}]
+
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-001
+    canonical_name: Versioned Outbound Webhooks
+    classification: [integration, automation, administration]
+    purpose: Configures event-selected workspace webhooks with version secret regeneration and delivery logs.
+    source_evidence: [{path: apps/api/plane/app/urls/webhook.py, symbol_or_range: webhook CRUD regenerate and log routes, evidence_kind: route, claim_supported: Exposes webhook administration and logs.}]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-002
+    canonical_name: Webhook and Link SSRF Protection
+    classification: [security, integration, reusable-internal]
+    purpose: Rejects unsafe DNS/IP/domain targets and supports explicit trusted host/IP allowlists.
+    source_evidence: [{path: apps/api/plane/bgtasks/work_item_link_task.py, symbol_or_range: validate_url_ip and safe_get, evidence_kind: source, claim_supported: Validates target addresses and redirects before crawling.}]
+    tests: {unit: [apps/api/plane/tests/unit/bg_tasks/test_ssrf_advisories.py, apps/api/plane/tests/unit/bg_tasks/test_url_security.py], integration: [], end_to_end: [], fixtures: []}
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-003
+    canonical_name: Workspace and Project AI Assistant
+    classification: [integration, product, configuration]
+    purpose: Sends contextual prompts to a configured OpenAI-compatible LLM at workspace or project scope.
+    source_evidence: [{path: apps/api/plane/app/urls/external.py, symbol_or_range: ai-assistant routes, evidence_kind: route, claim_supported: Exposes workspace and project AI assistant APIs.}]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-004
+    canonical_name: Unsplash Image Search
+    classification: [integration, ui, product]
+    purpose: Searches Unsplash for visual assets when an access key is configured.
+    source_evidence: [{path: apps/api/plane/app/urls/external.py, symbol_or_range: unsplash/, evidence_kind: route, claim_supported: Exposes the Unsplash proxy endpoint.}]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-005
+    canonical_name: GitHub Synchronization Substrate
+    classification: [integration, data]
+    purpose: Persists repository issue and comment synchronization associations and provides frontend selection/service seams.
+    source_evidence: [{path: apps/api/plane/db/models/integration/github.py, symbol_or_range: GithubRepository GithubRepositorySync GithubIssueSync GithubCommentSync, evidence_kind: model, claim_supported: Persists GitHub sync mappings.}]
+    unknowns: [No complete Community backend route workflow was verified.]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-006
+    canonical_name: Slack Project Synchronization Substrate
+    classification: [integration, data]
+    purpose: Persists project/channel sync associations and provides a frontend channel-selection seam.
+    source_evidence: [{path: apps/api/plane/db/models/integration/slack.py, symbol_or_range: SlackProjectSync, evidence_kind: model, claim_supported: Persists Slack project synchronization mappings.}]
+    unknowns: [No complete Community backend route workflow was verified.]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-007
+    canonical_name: Jira Frontend Integration Substrate
+    classification: [integration, reusable-internal]
+    purpose: Provides a frontend service seam for Jira integration/import operations.
+    source_evidence: [{path: apps/web/core/services/integrations/jira.service.ts, symbol_or_range: JiraService, evidence_kind: source, claim_supported: Defines Jira-facing frontend service calls.}]
+    unknowns: [No matching Community backend URL module was verified.]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-008
+    canonical_name: OpenAPI Schema Swagger UI and ReDoc
+    classification: [integration, developer-experience]
+    purpose: Publishes configurable external API schema and interactive documentation.
+    source_evidence: [{path: apps/api/plane/api/urls/schema.py, symbol_or_range: schema swagger-ui and redoc routes, evidence_kind: route, claim_supported: Exposes all three API documentation endpoints.}]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-009
+    canonical_name: SMTP Email Transport
+    classification: [integration, notification, configuration]
+    purpose: Delivers invitation magic password notification and export emails through configured SMTP.
+    source_evidence: [{path: apps/api/plane/settings/common.py, symbol_or_range: EMAIL settings, evidence_kind: configuration, claim_supported: Configures SMTP transport and sender.}]
+  - <<: *feature_defaults
+    id: PLANE-INTEGRATION-010
+    canonical_name: PostHog OpenTelemetry and Scout Observability
+    classification: [integration, operations, analytics]
+    purpose: Tracks events pushes OTLP metrics and optionally enables Scout APM.
+    source_evidence: [{path: apps/api/plane/license/bgtasks/telemetry_metrics.py, symbol_or_range: push_instance_metrics, evidence_kind: job, claim_supported: Collects and exports instance metrics.}]
+
+  - <<: *feature_defaults
+    id: PLANE-UI-001
+    canonical_name: System Light Dark and High-Contrast Themes
+    classification: [ui, personalization, accessibility]
+    purpose: Selects system light dark light-contrast or dark-contrast appearance with semantic token variants.
+    source_evidence: [{path: packages/constants/src/themes.ts, symbol_or_range: THEMES and THEME_OPTIONS, evidence_kind: source, claim_supported: Defines all supported theme modes.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-002
+    canonical_name: Custom Theme Editing
+    classification: [ui, personalization, configuration]
+    purpose: Builds a custom primary background and dark palette and persists workspace theme definitions.
+    source_evidence: [{path: apps/web/core/components/core/theme/custom-theme-selector.tsx, symbol_or_range: CustomThemeSelector, evidence_kind: source, claim_supported: Edits and previews custom theme values.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-003
+    canonical_name: Theme Configuration Import and Export
+    classification: [ui, personalization, integration]
+    purpose: Downloads and imports reusable custom-theme configuration files.
+    source_evidence: [{path: apps/web/core/components/core/theme/import-config-button.tsx, symbol_or_range: ImportConfigButton, evidence_kind: source, claim_supported: Imports a custom theme configuration.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-004
+    canonical_name: Responsive Collapsible Workspace Navigation
+    classification: [ui, navigation, personalization]
+    purpose: Provides workspace/project switching quick actions menus and persisted sidebar collapse/peek states.
+    source_evidence: [{path: apps/web/core/components/workspace/sidebar/workspace-menu-root.tsx, symbol_or_range: WorkspaceMenuRoot, evidence_kind: source, claim_supported: Implements workspace navigation and switching shell.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-005
+    canonical_name: Loading Empty Error and Toast Feedback
+    classification: [ui, interaction, reusable-internal]
+    purpose: Supplies consistent skeleton loading empty validation error 404 confirmation progress and toast states.
+    source_evidence: [{path: packages/propel/src/empty-state/index.ts, symbol_or_range: empty-state exports, evidence_kind: source, claim_supported: Exports reusable empty-state components and assets.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-006
+    canonical_name: Semantic Design Token and Animation System
+    classification: [ui, reusable-internal, configuration]
+    purpose: Defines canvas surface layer text border icon status chart label and motion tokens across themes.
+    source_evidence: [{path: packages/tailwind-config/variables.css, symbol_or_range: semantic CSS variables and theme variants, evidence_kind: style, claim_supported: Defines the shared visual token system.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-007
+    canonical_name: Propel Design-System Suite
+    classification: [ui, reusable-internal, accessibility]
+    purpose: Provides shared primitives icons charts emoji empty states portals tables and feedback components.
+    source_evidence: [{path: packages/propel/package.json, symbol_or_range: exports and scripts, evidence_kind: configuration, claim_supported: Publishes the Propel component entry points and Storybook task.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-008
+    canonical_name: Shared UI Form Navigation and Sortable Suite
+    classification: [ui, reusable-internal, accessibility]
+    purpose: Provides auth forms dropdowns form controls navigation modals sortable rows tables and display primitives.
+    source_evidence: [{path: packages/ui/src/index.ts, symbol_or_range: package exports, evidence_kind: source, claim_supported: Exports the shared UI component suite.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-009
+    canonical_name: Drag-and-Drop and Sortable Interactions
+    classification: [interaction, ui, reusable-internal]
+    purpose: Reorders cards groups favorites widgets and stickies and moves work items across layout groups.
+    source_evidence: [{path: packages/ui/src/sortable/index.ts, symbol_or_range: sortable exports, evidence_kind: source, claim_supported: Exports shared draggable and sortable building blocks.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-010
+    canonical_name: Icons Emoji Pickers and Reactions
+    classification: [ui, interaction, reusable-internal]
+    purpose: Supplies a large icon set emoji selection and reusable emoji reaction presentation.
+    source_evidence: [{path: packages/propel/src/emoji-icon-picker/index.ts, symbol_or_range: emoji and icon picker exports, evidence_kind: source, claim_supported: Exports emoji and icon selection components.}]
+  - <<: *feature_defaults
+    id: PLANE-UI-011
+    canonical_name: Code-Level Accessibility and Keyboard Baseline
+    classification: [accessibility, ui, interaction]
+    purpose: Adds ARIA/status labels keyboard navigation focus-aware portals and high-contrast options to shared/product controls.
+    source_evidence: [{path: apps/web/core/components/power-k/core/shortcut-handler.ts, symbol_or_range: ShortcutHandler, evidence_kind: source, claim_supported: Implements global keyboard and sequence handling.}]
+    unknowns: [No automated accessibility audit or WCAG conformance report is tracked.]
+  - <<: *feature_defaults
+    id: PLANE-UI-012
+    canonical_name: Nineteen-Language Localization with LTR Limitation
+    classification: [localization, ui, configuration]
+    purpose: Loads 19 languages across 28 namespaces with ICU and English fallback while remaining LTR-only.
+    source_evidence: [{path: packages/i18n/src/constants/language.ts, symbol_or_range: SUPPORTED_LANGUAGES, evidence_kind: source, claim_supported: Enumerates the 19 supported locales.}]
+    contradictions: [Language changes update html lang but not dir and shared CSS explicitly forces ltr.]
+
+  - <<: *feature_defaults
+    id: PLANE-DATA-001
+    canonical_name: PostgreSQL UUID Audit and Soft-Delete Model Foundation
+    classification: [data, reusable-internal]
+    purpose: Gives domain models UUID keys timestamps actor auditing and soft deletion.
+    source_evidence: [{path: apps/api/plane/db/mixins.py, symbol_or_range: AuditModel, evidence_kind: source, claim_supported: Composes time user and soft-delete mixins.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-002
+    canonical_name: Workspace and Project Scoped Persistence
+    classification: [data, tenancy, security]
+    purpose: Carries workspace/project foreign keys through abstract base models and derives workspace from project.
+    source_evidence: [{path: apps/api/plane/db/models/project.py, symbol_or_range: ProjectBaseModel, evidence_kind: model, claim_supported: Enforces project and derived workspace scope on project entities.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-003
+    canonical_name: Redis Cache and Coordination
+    classification: [data, operations, realtime]
+    purpose: Provides backend caching locks/coordination and live collaboration pub/sub.
+    source_evidence: [{path: apps/api/plane/settings/redis.py, symbol_or_range: Redis configuration and redis_instance, evidence_kind: configuration, claim_supported: Configures the shared Redis connection.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-004
+    canonical_name: RabbitMQ and Celery Queue Substrate
+    classification: [data, automation, operations]
+    purpose: Dispatches asynchronous tasks through RabbitMQ and records Beat/results in Django.
+    source_evidence: [{path: apps/api/plane/settings/common.py, symbol_or_range: CELERY_BROKER_URL and Celery settings, evidence_kind: configuration, claim_supported: Configures the asynchronous queue substrate.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-005
+    canonical_name: Database Sessions with Device Context
+    classification: [data, authentication, security]
+    purpose: Stores browser session payloads in PostgreSQL and associates them with device/user metadata.
+    source_evidence: [{path: apps/api/plane/db/models/session.py, symbol_or_range: Session and SessionStore, evidence_kind: model, claim_supported: Extends database sessions with Plane session behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-006
+    canonical_name: S3 and MinIO Object Storage
+    classification: [data, integration, operations]
+    purpose: Stores uploaded files editor assets exports and images in configurable S3-compatible storage.
+    source_evidence: [{path: apps/api/plane/settings/storage.py, symbol_or_range: storage backend configuration, evidence_kind: configuration, claim_supported: Selects S3/MinIO object storage and signed URL behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-007
+    canonical_name: Optional PostgreSQL Read Replica
+    classification: [data, operations, configuration]
+    purpose: Routes eligible reads to an optional replica while writes remain on the primary.
+    source_evidence: [{path: apps/api/plane/settings/common.py, symbol_or_range: DATABASES and DATABASE_ROUTERS, evidence_kind: configuration, claim_supported: Configures optional read-replica connection and routing.}]
+    tests: {unit: [apps/api/plane/tests/unit/middleware/test_db_routing.py], integration: [], end_to_end: [], fixtures: []}
+  - <<: *feature_defaults
+    id: PLANE-DATA-008
+    canonical_name: MobX Client State Architecture
+    classification: [data, ui, reusable-internal]
+    purpose: Normalizes API projections and actions across web admin and Space feature stores.
+    source_evidence: [{path: apps/web/core/store/root.store.ts, symbol_or_range: RootStore, evidence_kind: source, claim_supported: Composes the main MobX feature stores.}]
+  - <<: *feature_defaults
+    id: PLANE-DATA-009
+    canonical_name: Browser IndexedDB Service
+    classification: [data, reusable-internal]
+    purpose: Provides a shared browser IndexedDB abstraction for client-side persistence.
+    source_evidence: [{path: packages/services/src/indexedDB.service.ts, symbol_or_range: IndexedDBService, evidence_kind: source, claim_supported: Implements browser IndexedDB operations.}]
+    unknowns: [No repository-wide offline synchronization contract was verified.]
+
+  - <<: *feature_defaults
+    id: PLANE-JOB-001
+    canonical_name: Database-Backed Scheduled Job Registry
+    classification: [automation, operations]
+    purpose: Schedules notification metrics automation deletion and cleanup jobs through Celery Beat.
+    source_evidence: [{path: apps/api/plane/celery.py, symbol_or_range: app.conf.beat_schedule, evidence_kind: configuration, claim_supported: Defines all recurring job schedules.}]
+    contradictions: [Exporter expiry is scheduled under two keys at different times.]
+  - <<: *feature_defaults
+    id: PLANE-JOB-002
+    canonical_name: Automatic Work-Item Close and Archive
+    classification: [automation, product]
+    purpose: Closes or archives old work items daily using per-project month thresholds.
+    source_evidence: [{path: apps/api/plane/bgtasks/issue_automation_task.py, symbol_or_range: archive_and_close_old_issues, evidence_kind: job, claim_supported: Runs configured archive and close automation.}]
+  - <<: *feature_defaults
+    id: PLANE-JOB-003
+    canonical_name: Asynchronous Activity Generation
+    classification: [automation, data, product]
+    purpose: Generates activity records for work-item field comments membership links assets reactions votes relations and intake changes.
+    source_evidence: [{path: apps/api/plane/bgtasks/issue_activities_task.py, symbol_or_range: issue_activity, evidence_kind: job, claim_supported: Dispatches detailed activity-generation workflows.}]
+  - <<: *feature_defaults
+    id: PLANE-JOB-004
+    canonical_name: Asynchronous Notification and Webhook Fan-Out
+    classification: [automation, notification, integration]
+    purpose: Creates recipient notifications and outbound webhook deliveries from model changes.
+    source_evidence: [{path: apps/api/plane/bgtasks/webhook_task.py, symbol_or_range: model_activity and webhook_activity, evidence_kind: job, claim_supported: Converts model activity into webhook events.}]
+  - <<: *feature_defaults
+    id: PLANE-JOB-005
+    canonical_name: Asset Copy Metadata and Cleanup Jobs
+    classification: [automation, data, operations]
+    purpose: Copies embedded assets extracts object metadata and removes uploads that never completed.
+    source_evidence: [{path: apps/api/plane/bgtasks/file_asset_task.py, symbol_or_range: delete_unuploaded_file_asset, evidence_kind: job, claim_supported: Cleans incomplete asset records.}]
+  - <<: *feature_defaults
+    id: PLANE-JOB-006
+    canonical_name: Issue and Page Version Synchronization Jobs
+    classification: [automation, data]
+    purpose: Creates/synchronizes issue snapshots description versions and page versions asynchronously.
+    source_evidence: [{path: apps/api/plane/bgtasks/issue_version_sync.py, symbol_or_range: sync_issue_version and schedule_issue_version, evidence_kind: job, claim_supported: Backfills and schedules issue versions.}]
+  - <<: *feature_defaults
+    id: PLANE-JOB-007
+    canonical_name: Email Invitation and Account Lifecycle Jobs
+    classification: [automation, notification, authentication]
+    purpose: Sends password magic invitation activation deactivation and email-update messages outside requests.
+    source_evidence: [{path: apps/api/plane/bgtasks/workspace_invitation_task.py, symbol_or_range: workspace_invitation, evidence_kind: job, claim_supported: Sends tokenized workspace invitations.}]
+  - <<: *feature_defaults
+    id: PLANE-JOB-008
+    canonical_name: Seed Dummy Telemetry and Recent-Visit Jobs
+    classification: [automation, developer-experience, operations]
+    purpose: Seeds/demo-populates workspaces pushes metrics tracks events and records recent visits asynchronously.
+    source_evidence: [{path: apps/api/plane/bgtasks/workspace_seed_task.py, symbol_or_range: workspace_seed, evidence_kind: job, claim_supported: Builds initial workspace content asynchronously.}]
+
+  - <<: *feature_defaults
+    id: PLANE-OPS-001
+    canonical_name: Multi-Container Community Deployment
+    classification: [deployment, operations]
+    purpose: Deploys application workers and bundled PostgreSQL Valkey RabbitMQ MinIO and proxy services.
+    source_evidence: [{path: deployments/cli/community/docker-compose.yml, symbol_or_range: services and volumes, evidence_kind: configuration, claim_supported: Defines the complete standard deployment topology.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-002
+    canonical_name: All-in-One Supervisor Image
+    classification: [deployment, operations]
+    purpose: Runs migrator Space API worker Beat live and proxy processes in one container against external data services.
+    source_evidence: [{path: deployments/aio/community/supervisor.conf, symbol_or_range: program sections, evidence_kind: configuration, claim_supported: Defines all AIO supervised processes.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-003
+    canonical_name: Caddy Base-Path and TLS Proxy
+    classification: [deployment, operations, security]
+    purpose: Routes app API auth live static and object paths and configures ACME TLS body/header limits and forwarded-client trust.
+    source_evidence: [{path: apps/proxy/Caddyfile.ce, symbol_or_range: plane_proxy and site blocks, evidence_kind: configuration, claim_supported: Defines edge routing and TLS behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-004
+    canonical_name: Community Install Start Stop Restart and Upgrade CLI
+    classification: [deployment, operations, developer-experience]
+    purpose: Downloads configuration/images and controls the Community Compose deployment lifecycle.
+    source_evidence: [{path: deployments/cli/community/install.sh, symbol_or_range: installer command dispatch, evidence_kind: command, claim_supported: Implements community deployment lifecycle commands.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-005
+    canonical_name: Backup Restore and Air-Gapped Restore
+    classification: [operations, deployment, data]
+    purpose: Restores Community data/configuration in connected or air-gapped environments.
+    source_evidence: [{path: deployments/cli/community/restore.sh, symbol_or_range: restore workflow, evidence_kind: command, claim_supported: Implements standard backup restoration.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-006
+    canonical_name: Docker Swarm Deployment Helper
+    classification: [deployment, operations]
+    purpose: Prepares and deploys the Community stack through Docker Swarm.
+    source_evidence: [{path: deployments/swarm/community/swarm.sh, symbol_or_range: swarm command workflow, evidence_kind: command, claim_supported: Implements Swarm deployment helper behavior.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-007
+    canonical_name: Kubernetes Deployment Pointer
+    classification: [deployment, operations]
+    purpose: Directs operators to the separately maintained Plane Kubernetes chart.
+    source_evidence: [{path: deployments/kubernetes/community/README.md, symbol_or_range: document, evidence_kind: documentation, claim_supported: Identifies the external Kubernetes deployment path.}]
+    unknowns: [No chart implementation is tracked in this repository.]
+  - <<: *feature_defaults
+    id: PLANE-OPS-008
+    canonical_name: Health Checks Structured Logging and Graceful Shutdown
+    classification: [operations, integration]
+    purpose: Exposes health status emits structured logs and closes live connections/Redis/HTTP cleanly.
+    source_evidence: [{path: apps/live/src/controllers/health.controller.ts, symbol_or_range: HealthController.healthCheck, evidence_kind: source, claim_supported: Returns live-service status timestamp and version.}]
+  - <<: *feature_defaults
+    id: PLANE-OPS-009
+    canonical_name: Environment-Driven Runtime Configuration and Secret Guards
+    classification: [operations, configuration, security]
+    purpose: Configures base paths URLs databases brokers storage providers and secrets with placeholder-key rejection/generation.
+    source_evidence: [{path: apps/api/plane/settings/common.py, symbol_or_range: environment-derived settings and insecure SECRET_KEY guard, evidence_kind: configuration, claim_supported: Loads runtime configuration and rejects known insecure keys.}]
+
+  - <<: *feature_defaults
+    id: PLANE-DEV-001
+    canonical_name: pnpm and Turborepo Monorepo Orchestration
+    classification: [developer-experience, operations]
+    purpose: Builds develops checks and starts dependency-ordered applications and packages.
+    source_evidence: [{path: turbo.json, symbol_or_range: tasks, evidence_kind: configuration, claim_supported: Defines the monorepo task graph.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-002
+    canonical_name: Shared Strict TypeScript Configurations
+    classification: [developer-experience, reusable-internal]
+    purpose: Provides base React React Router Node library and package TypeScript baselines.
+    source_evidence: [{path: packages/typescript-config/base.json, symbol_or_range: compilerOptions, evidence_kind: configuration, claim_supported: Defines the shared TypeScript compiler baseline.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-003
+    canonical_name: Oxlint Oxfmt Ruff and Pre-Commit Quality Gates
+    classification: [developer-experience, testing]
+    purpose: Formats and statically checks JavaScript/TypeScript/Python locally and in pull-request workflows.
+    source_evidence: [{path: package.json, symbol_or_range: lint-staged and check scripts, evidence_kind: configuration, claim_supported: Configures JavaScript format/lint gates.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-004
+    canonical_name: Pytest Unit Contract and Smoke Harness
+    classification: [testing, developer-experience]
+    purpose: Tests Django units external API contracts app API contracts and critical smoke behavior with fixtures/factories.
+    source_evidence: [{path: apps/api/pytest.ini, symbol_or_range: markers and settings, evidence_kind: configuration, claim_supported: Defines unit contract smoke and slow test categories.}]
+    tests: {unit: [apps/api/plane/tests/unit], integration: [apps/api/plane/tests/contract, apps/api/plane/tests/smoke], end_to_end: [], fixtures: [apps/api/plane/tests/conftest.py, apps/api/plane/tests/factories.py]}
+  - <<: *feature_defaults
+    id: PLANE-DEV-005
+    canonical_name: Live PDF Vitest Harness
+    classification: [testing, developer-experience]
+    purpose: Tests PDF rendering and Effect utility behavior in the live service.
+    source_evidence: [{path: apps/live/vitest.config.ts, symbol_or_range: Vitest configuration, evidence_kind: configuration, claim_supported: Configures live-service tests.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-006
+    canonical_name: Tested AST Codemods
+    classification: [developer-experience, reusable-internal, testing]
+    purpose: Rewrites function declarations and removes directives with fixture-driven Vitest coverage.
+    source_evidence: [{path: packages/codemods/tests/function-declaration.spec.ts, symbol_or_range: test suite, evidence_kind: test, claim_supported: Verifies function-declaration codemod transformations.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-007
+    canonical_name: UI and Propel Storybook Workbenches
+    classification: [developer-experience, ui, testing]
+    purpose: Runs isolated component documentation/development for both shared UI systems.
+    source_evidence: [{path: packages/propel/.storybook/main.ts, symbol_or_range: Storybook configuration, evidence_kind: configuration, claim_supported: Configures Propel component stories.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-008
+    canonical_name: Affected Frontend Build Format Lint and Type CI
+    classification: [testing, operations, developer-experience]
+    purpose: Runs cached affected-project frontend build format lint and type checks on pull requests.
+    source_evidence: [{path: .github/workflows/pull-request-build-lint-web-apps.yml, symbol_or_range: check-format build check-lint check-types jobs, evidence_kind: configuration, claim_supported: Defines affected frontend CI gates.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-009
+    canonical_name: API Ruff CI
+    classification: [testing, operations, developer-experience]
+    purpose: Installs backend dependencies and runs Ruff checks for API pull requests.
+    source_evidence: [{path: .github/workflows/pull-request-build-lint-api.yml, symbol_or_range: lint-api job, evidence_kind: configuration, claim_supported: Defines API lint CI.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-010
+    canonical_name: CodeQL React Doctor Copyright and i18n CI
+    classification: [testing, security, accessibility, operations]
+    purpose: Scans Python/JavaScript checks React quality/accessibility enforces notices and validates locale synchronization.
+    source_evidence: [{path: .github/workflows/codeql.yml, symbol_or_range: Python and JavaScript analysis matrix, evidence_kind: configuration, claim_supported: Defines two-language CodeQL analysis.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-011
+    canonical_name: Container Release and Feature-Preview Pipelines
+    classification: [deployment, operations, developer-experience]
+    purpose: Builds/publishes application and AIO images creates releases and deploys feature previews.
+    source_evidence: [{path: .github/workflows/build-branch.yml, symbol_or_range: image build and release jobs, evidence_kind: configuration, claim_supported: Builds six application images and AIO releases.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-012
+    canonical_name: Localization Sync and Type Generation Tooling
+    classification: [localization, developer-experience, testing]
+    purpose: Synchronizes translation keys and generates typed namespace/key definitions.
+    source_evidence: [{path: packages/i18n/scripts/sync-check.ts, symbol_or_range: sync-check CLI, evidence_kind: command, claim_supported: Validates locale-key synchronization.}]
+  - <<: *feature_defaults
+    id: PLANE-DEV-013
+    canonical_name: Django Administration and Maintenance Commands
+    classification: [developer-experience, administration, operations]
+    purpose: Activates users manages admins/members/buckets/cache/passwords versions sequences database readiness and instance registration.
+    source_evidence:
+      - {path: apps/api/plane/db/management/commands/create_instance_admin.py, symbol_or_range: Command, evidence_kind: command, claim_supported: Implements instance-admin creation from Django CLI.}
+      - {path: apps/api/plane/db/management/commands/wait_for_db.py, symbol_or_range: Command, evidence_kind: command, claim_supported: Implements database readiness waiting.}
+      - {path: apps/api/plane/license/management/commands/configure_instance.py, symbol_or_range: Command, evidence_kind: command, claim_supported: Implements instance configuration from Django CLI.}
+
+coverage:
+  inspected_feature_classes:
+    - product
+    - ui
+    - interaction
+    - administration
+    - authentication
+    - security
+    - authorization
+    - tenancy
+    - data
+    - search
+    - analytics
+    - notification
+    - realtime
+    - automation
+    - integration
+    - operations
+    - developer-experience
+    - accessibility
+    - localization
+    - personalization
+    - reusable-internal
+  missing_feature_classes: []
+  known_gaps:
+    - Runtime tests/builds were not executed; static test and configuration coverage is complete.
+    - Enterprise/extended implementation absent from the pinned Community tree is excluded.
+    - Complete dependency/container/asset license SBOM is not tracked.
+  decision: Complete
