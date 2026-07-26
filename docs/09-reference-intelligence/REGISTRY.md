@@ -41,7 +41,7 @@ A repository may enter **Complete** only after the coverage report passes. A rep
 | SRC-HR-NEXT-NEXORAXS | `/home/mustafa/projects/hr-next-nexoraxs` | Source repository | Not Started |
 | SRC-KIRANISM-SHADCN | `/home/mustafa/projects/Kiranism-Shadcn` | Source repository | Not Started |
 | SRC-NEXORAXS-V2 | `/home/mustafa/projects/nexoraxs-v2` | Source repository | Not Started |
-| SRC-PLANE | `/home/mustafa/projects/Plane` | Source repository | Not Started |
+| SRC-PLANE | `/home/mustafa/projects/Plane` | Source repository | Complete |
 | SRC-STUDIO-ADMIN | `/home/mustafa/projects/studio-admin` | Source repository | Not Started |
 
 `/home/mustafa/projects/aliziodev` is a container directory, not a source repository. Every repository placed beneath it must be registered separately.
